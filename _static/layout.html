@@ -1,0 +1,15 @@
+{% block extrahead %}
+  {{ super() }}
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const postIdElement = document.getElementById('mastodon-post-id');
+        if (postIdElement) {
+            const postId = postIdElement.textContent || postIdElement.innerText;
+            if (postId) {
+                // Trigger the comment-fetching logic on page load
+                FetchComments(postId, 5); // Adjust depth as needed
+            }
+        }
+    });
+  </script>
+{% endblock %}

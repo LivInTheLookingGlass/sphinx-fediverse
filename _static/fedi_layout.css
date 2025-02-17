@@ -1,0 +1,100 @@
+/* Base styles for the comment container */
+#comments-section {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    padding: 0;
+    list-style: none;
+}
+
+/* Styling each comment block */
+.comment {
+    background-color: #f9f9f9;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Avatar styling */
+.comment .avatar {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+/* Author section (name and date) */
+.comment .author {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.comment .author a {
+    text-decoration: none;
+    color: #0077cc;
+    font-weight: bold;
+}
+
+.comment .author a .handle {
+    text-decoration: none;
+    color: #888;
+    font-weight: bold;
+    font-size: 0.8em;
+}
+
+.comment .author .date {
+    font-size: 0.9em;
+    color: #555;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* Content area */
+.comment .content {
+    margin-top: 5px;
+}
+
+/* For nested/replied-to comments, we apply indentation */
+.comment.reply {
+    margin-left: 30px;
+    border-left: 3px solid #0077cc;
+    padding-left: 10px;
+}
+
+/* Sensitive content handling with details */
+.comment details {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    border-radius: 5px;
+    margin-top: 10px;
+    padding: 5px;
+}
+
+.comment details summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #721c24;
+}
+
+.comment details p {
+    color: #721c24;
+    margin: 5px 0;
+}
+
+/* Styling for emoji images */
+.comment img {
+    vertical-align: middle;
+}
+
+/* Hide comment content if no subcomments */
+.comment.no-subcomments {
+    background-color: #e9ecef;
+    border: 1px solid #d6d8db;
+}
+
+/* Optional: hover effect for comments */
+.comment:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}

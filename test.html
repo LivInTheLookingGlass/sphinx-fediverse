@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="./_static/fedi_layout.css">
+        <script src="./_static/fedi_script.js"></script>
+    </head>
+    <body>
+        <div id="mastodon-post-id">114009976068464525</div>
+        <h2>Comments:</h2>
+        <div id="comments-section">
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const postIdElement = document.getElementById('mastodon-post-id');
+                if (postIdElement) {
+                    const postId = postIdElement.textContent || postIdElement.innerText;
+                    if (postId) {
+                        // Trigger the comment-fetching logic on page load
+                        FetchComments(postId, 5); // Adjust depth as needed
+                    }
+                }
+            });
+          </script>
+    </body>
+</html>
