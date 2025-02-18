@@ -2,13 +2,16 @@ from json import dump, load
 from os import getenv
 from pathlib import Path
 from shutil import copyfile
+from typing import Set
 
 from docutils import nodes
 from requests import post
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import nested_parse_with_titles
 
-__version__ = (0, 0, 1)
+__version__ = (0, 0, 2)
+
+registered_docs: Set[str] = set()
 
 
 class MastodonCommentDirective(SphinxDirective):
@@ -86,6 +89,9 @@ class MastodonCommentDirective(SphinxDirective):
 
         # Get the final output document URL using base_url + docname
         docname = self.env.docname
+        if docname in registered_docs:
+            raise RuntimeError("Cannot include two comments sections in one document")
+        registered_docs.add(docname)
         replace_index_with_slash = self.config.replace_index_with_slash
 
         # Handle special case for index.html and use configurable URL format
