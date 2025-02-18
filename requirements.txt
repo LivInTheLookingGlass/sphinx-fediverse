@@ -1,0 +1,6 @@
+doctools
+pytest
+pytest-benchmark
+pytest-xdist
+requests
+sphinx
