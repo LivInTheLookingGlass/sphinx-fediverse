@@ -25,17 +25,6 @@ rst_prolog = """
 
     <a rel="me" href="https://tech.lgbt/@LivInTheLookingGlass" role="none"
      style="display: none; visibility: hidden; pointer-events: none; animation: none; transition: none"></a>
-    <script>
-        window.goatcounter = {
-            path: function() {
-                let p = location.pathname;
-                if (p == '/') {
-                    p = '/index.html';
-                }
-                return '/euler' + p;
-            }
-        }
-    </script>
     <script data-goatcounter="https://livinthelookingglass.goatcounter.com/count"
      async src="//gc.zgo.at/count.js"></script>
 """
