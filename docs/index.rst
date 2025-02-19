@@ -6,9 +6,7 @@
 sphinx-fediverse documentation
 ==============================
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 
 
 .. toctree::
