@@ -21,7 +21,7 @@ clean:
 $(THEMES):
 	@echo "Building theme: $@"
 	mkdir -p "$(BUILDDIR)/html/$@"
-	sphinx-build -b html -D html_theme=$@ "$(SOURCEDIR)" "$(BUILDDIR)/html/$@"
+	sphinx-build -b html -D html_theme=$@ -D html_baseurl="http://oliviaappleton.com/sphinx-fediverse/$@" "$(SOURCEDIR)" "$(BUILDDIR)/html/$@"
 
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
