@@ -17,6 +17,28 @@ project = 'sphinx-fediverse'
 copyright = '2025, Olivia Appleton-Crocker'
 author = 'Olivia Appleton-Crocker'
 release = '.'.join(str(x) for x in __version__)
+rst_prolog = """
+.. meta::
+    :fediverse:creator: @LivInTheLookingGlass@tech.lgbt
+
+.. raw:: html
+
+    <a rel="me" href="https://tech.lgbt/@LivInTheLookingGlass" role="none"
+     style="display: none; visibility: hidden; pointer-events: none; animation: none; transition: none"></a>
+    <script>
+        window.goatcounter = {
+            path: function() {
+                let p = location.pathname;
+                if (p == '/') {
+                    p = '/index.html';
+                }
+                return '/euler' + p;
+            }
+        }
+    </script>
+    <script data-goatcounter="https://livinthelookingglass.goatcounter.com/count"
+     async src="//gc.zgo.at/count.js"></script>
+"""
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
