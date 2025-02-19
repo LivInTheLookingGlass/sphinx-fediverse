@@ -46,10 +46,10 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
-mastodon_username = "sphinx-fedi.oliviaappleton.com"
+mastodon_username = "LivInTheLookingGlass"
 mastodon_instance = "tech.lgbt"
 comments_mapping_file = "comments_mapping.json"
-html_baseurl = "http://oliviaappleton.com/sphinx-fediverse/"  # Set the base URL of your site
+html_baseurl = "https://oliviaappleton.com/sphinx-fediverse/"  # Set the base URL of your site
 replace_index_with_slash = True  # Set to True to replace index.html with a trailing slash
-enable_post_creation = False  # Set to False to disable post creation and raise an error if needed
+enable_post_creation = True  # Set to False to disable post creation and raise an error if needed
 raise_error_if_no_post = True    # Set to True to enable errors if posts are not given

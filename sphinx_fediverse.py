@@ -5,11 +5,10 @@ from shutil import copyfile
 from typing import Set
 
 from docutils import nodes
-from requests import post
+from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
-from sphinx.util.nodes import nested_parse_with_titles
 
-__version__ = (0, 0, 3)
+__version__ = (0, 1, 0)
 
 registered_docs: Set[str] = set()
 
@@ -33,24 +32,29 @@ class MastodonCommentDirective(SphinxDirective):
                 return input("Enter the ID and NOTHING ELSE: ")
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
+            
+        if not all((
+            getenv('MASTODON_CLIENT_ID'),
+            getenv('MASTODON_CLIENT_SECRET'),
+            getenv('MASTODON_ACCESS_TOKEN')
+        )):
+            raise EnvironmentError("Must provide all 3 mastodon access tokens")
 
-        auth_token = getenv("MASTODON_AUTH_TOKEN")  # Fetch auth token from environment
-        if not auth_token:
-            print("Error: MASTODON_AUTH_TOKEN environment variable is not set.")
-            return None
-
-        headers = {'Authorization': f'Bearer {auth_token}'}
-        data = {
-            "status": f"Discussion for {post_url}",  # You can customize this text
-            "visibility": "public",  # Or "unlisted" depending on your use case
-            "in_reply_to_id": None  # No reply if it's the first comment
-        }
-        response = post(f"https://{self.config.mastodon_username}/api/v1/statuses", headers=headers, data=data)
-        if response.status_code == 200:
-            return response.json()['id']
-        else:
-            print("Error creating post:", response.status_code)
-            return None
+        api = Mastodon(
+            api_base_url='https://tech.lgbt',
+            client_id=getenv('MASTODON_CLIENT_ID'),
+            client_secret=getenv('MASTODON_CLIENT_SECRET'),
+            access_token=getenv('MASTODON_ACCESS_TOKEN'),
+            user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
+        )
+        message = f"Discussion post for {self.env.config.html_baseurl}"
+        message.rstrip('/')
+        message += '/'
+        message += post_url
+        post = api.status_post(
+            status=message, visibility='public', language='en',
+        )
+        return post.id
 
     def create_post_if_needed(self, post_url, username):
         """Check if a post exists for this URL. If not, create one."""

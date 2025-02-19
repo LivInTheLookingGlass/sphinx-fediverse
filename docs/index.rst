@@ -45,6 +45,9 @@ There are a few necessary values that you must provide
    raise_error_if_no_post        True to raise an error if not post is made            True (default)
    ========================      ===================================================   ===============================
 
+We also rely on the following environment variables: ``MASTODON_CLIENT_ID``, ``MASTODON_CLIENT_SECRET``,
+``MASTODON_ACCESS_TOKEN``. Each of these must be set if you want to have automatic post creation.
+
 Usage
 -----
 
