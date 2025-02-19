@@ -1,5 +1,7 @@
 -r requirements.txt
+defusedxml
 pytest
 pytest-benchmark
 pytest-mock
 pytest-xdist
+sphinx.testing

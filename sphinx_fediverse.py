@@ -27,7 +27,9 @@ class MastodonCommentDirective(SphinxDirective):
     def process_post(self, post_url, username):
         """Post a new comment on Mastodon and return the post ID."""
         if not self.config.enable_post_creation:
-            if input('Would you like to create the post yourself, and provide the ID? (y/N) ').lower()[0] == 'y':
+            if not self.config.raise_error_if_no_post:
+                pass
+            elif input('Would you like to create the post yourself, and provide the ID? (y/N) ').lower()[0] == 'y':
                 return input("Enter the ID and NOTHING ELSE: ")
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")

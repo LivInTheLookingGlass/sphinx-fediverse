@@ -1,0 +1,59 @@
+name: Mirror Repository
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 2 * * 3"
+
+jobs:
+  gitlab:
+    name: GitHub to GitLab
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      # https://github.com/actions/setup-python
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Login Source GitHub
+        run: |
+          gh --version
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
+
+      - name: List repos
+        id: list_repos
+        run: |
+          repo_list=$(gh repo list -L 1000 --json name -t '{{range $i, $n := .}}{{if (gt $i 0)}},{{end}}{{$n.name}}{{end}}')
+          echo "::set-output name=repo_list::${repo_list}"
+
+      - name: GitHub to GitLab
+        uses: k8scat/action-mirror-git@v0.1.3
+        with:
+          source_protocol: https
+          source_host: github.com
+          source_username: LivInTheLookingGlass
+          source_token: ${{ secrets.GITHUB_TOKEN }}
+          dest_protocol: https
+          dest_host: gitlab.com
+          dest_username: LivInTheLookingGlass
+          dest_token: ${{ secrets.DEST_TOKEN_GITLAB }}
+          mirror_repos: ${{ steps.list_repos.outputs.repo_list }}
+          notify_prefix: "GitHub to GitLab"
+          ignore_error: "true"
+          dest_create_repo_script: |
+            # load functions: gitlab_update_project, gitlab_create_project, urlencode
+            source /mirror-git/functions/url.sh
+            source /mirror-git/functions/gitlab.sh
+
+            result=$(gitlab_update_project ${INPUT_DEST_TOKEN} $(urlencode ${INPUT_DEST_USERNAME}/${REPO_NAME}) "{\"lfs_enabled\":false}")
+            if [[ "${result}" = "404" ]]; then
+              result=$(gitlab_create_project ${INPUT_DEST_TOKEN} "{\"name\":\"${REPO_NAME}\",\"lfs_enabled\":false}")
+              if [[ "${result}" != "201" ]]; then
+                notify "Failed to create gitlab project: ${REPO_NAME}"
+                exit 1
+              fi
+            fi
