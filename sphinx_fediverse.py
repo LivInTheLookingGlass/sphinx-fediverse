@@ -9,7 +9,7 @@ from requests import post
 from sphinx.util.docutils import SphinxDirective
 from sphinx.util.nodes import nested_parse_with_titles
 
-__version__ = (0, 0, 2)
+__version__ = (0, 0, 3)
 
 registered_docs: Set[str] = set()
 
@@ -99,11 +99,11 @@ class MastodonCommentDirective(SphinxDirective):
         # Handle special case for index.html and use configurable URL format
         if docname == "index":
             if replace_index_with_slash:
-                post_url = base_url  # Replace index.html with just a slash
+                post_url = "/"  # Replace index.html with just a slash
             else:
-                post_url = base_url + "index.html"  # Keep the index.html
+                post_url = "index.html"  # Keep the index.html
         else:
-            post_url = base_url + docname + ".html"  # Always use .html extension
+            post_url = docname + ".html"  # Always use .html extension
 
         # Create or retrieve the post ID
         post_id = self.create_post_if_needed(post_url, self.config.mastodon_username)
