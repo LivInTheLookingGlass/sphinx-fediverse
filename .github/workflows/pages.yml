@@ -1,0 +1,54 @@
+name: Pages
+
+on:
+  push:
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * 1"
+
+jobs:
+  build:
+    runs-on: 'ubuntu-latest'
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: true
+
+    - name: Use Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: 3.12
+        cache: 'pip'
+        cache-dependency-path: |
+          requirements.txt
+          requirements-dev.txt
+          docs/requirements.txt
+
+    - name: Build sphinx docs
+      run: make dependencies html
+
+    - uses: actions/upload-pages-artifact@v3.0.1
+      with:
+        path: docs/_build/html/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write     # to deploy to Pages
+      id-token: write  # to verify the deployment originates from an appropriate source
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      if: ${{ github.ref == 'refs/heads/main' }}
+      uses: actions/deploy-pages@v4
+
+    - name: Profit
+      run: echo "yay"

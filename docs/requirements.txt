@@ -1,3 +1,5 @@
 docutils
 requests
 sphinx
+sphinx_rtd_theme
+shibuya

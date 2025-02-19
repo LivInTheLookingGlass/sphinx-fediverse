@@ -138,7 +138,7 @@ class MastodonCommentDirective(SphinxDirective):
 def on_builder_inited(app):
     if app.builder.name != 'html':
         return
-    for file_path in Path(__file__).parent.joinpath('_static').iterdir():
+    for file_path in Path(__file__).parent.joinpath('docs/_static').iterdir():
         if file_path.is_file():
             out_path = Path(app.builder.outdir, f'{app.config.html_static_path[0]}/{file_path.name}')
             out_path.parent.mkdir(exist_ok=True, parents=True)
@@ -149,10 +149,10 @@ def setup(app):
     # Register custom configuration options
     app.add_config_value('mastodon_username', '', 'env')
     app.add_config_value('mastodon_instance', '', 'env')
-    app.add_config_value('mastodon_auth_token', '', 'env')
     app.add_config_value('enable_post_creation', True, 'env')
     app.add_config_value('comments_mapping_file', 'comments_mapping.json', 'env')
     app.add_config_value('replace_index_with_slash', True, 'env')
+    app.add_config_value('raise_error_if_no_post', True, 'env')
 
     app.add_directive('mastodon-comments', MastodonCommentDirective)
     app.connect('builder-inited', on_builder_inited)

@@ -3,6 +3,8 @@ import sys
 
 sys.path.append(str(Path(__file__).parent.parent))
 
+from sphinx_fediverse import __version__
+
 # Configuration file for the Sphinx documentation builder.
 #
 # For the full list of built-in configuration values, see the documentation:
@@ -14,7 +16,7 @@ sys.path.append(str(Path(__file__).parent.parent))
 project = 'sphinx-fediverse'
 copyright = '2025, Olivia Appleton-Crocker'
 author = 'Olivia Appleton-Crocker'
-release = '0.1'
+release = '.'.join(str(x) for x in __version__)
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -27,11 +29,10 @@ templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
-
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
-html_theme = 'alabaster'
+html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
 
 mastodon_username = "sphinx-fedi.oliviaappleton.com"

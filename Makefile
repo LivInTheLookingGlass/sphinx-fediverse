@@ -35,29 +35,34 @@ endif
 
 .PHONY: help
 help:
-        @echo "  $(BLUE)test$(NC)           run through all tests in sequence. Utilizes the pytest test runner infrastructure"
-        @echo "  $(BLUE)test_*$(NC)         run through all tests in parallel with the given number of threads. Use auto to allow the test runner to determine it. Utilizes the pytest runner"
-        @echo "  $(BLUE)dependencies$(NC)        grabs all dependencies through pip"
-        @echo "  $(BLUE)clean$(NC)          clean up any stray files"
+	@echo "  $(BLUE)test$(NC)           run through all tests in sequence. Utilizes the pytest test runner infrastructure"
+	@echo "  $(BLUE)test_*$(NC)         run through all tests in parallel with the given number of threads. Use auto to allow the test runner to determine it. Utilizes the pytest runner"
+	@echo "  $(BLUE)dependencies$(NC)   grabs all dependencies through pip"
+	@echo "  $(BLUE)clean$(NC)          clean up any stray files"
+	@echo "  $(BLUE)html$(NC)           Generate documentation"
+
+.PHONY: html
+html:
+	@$(MAKE) -C docs html
 
 .PHONY: test
 test: ../LICENSE dependencies
-        @$(PY) -m pytest $(pytest_args) $(benchmark_flags)
+	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
 
 .PHONY: test_%
 test_%: ../LICENSE dependencies
-        @$(PY) -m pytest $(pytest_args) -d -n$*
+	@$(PY) -m pytest $(pytest_args) -d -n$*
 
 .PHONY: dependencies
 dependencies:
 ifeq ($(MYPY),true)
-        @$(PIP) install -r requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	@$(PIP) install -r requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
-        @cat requirements.txt | grep -v "mypy" > .requirements.txt
-        @$(PIP) install -r .requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	@cat requirements-dev.txt | grep -v "mypy" > .requirements.txt
+	@$(PIP) install -r .requirements.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 endif
 
 .PHONY: clean
 clean: SHELL := bash
 clean:
-        @rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} || echo
+	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} || echo

@@ -15,4 +15,87 @@ documentation for details.
    :maxdepth: 2
    :caption: Contents:
 
+Quick Start Guide
+~~~~~~~~~~~~~~~~~
+
+Installation
+------------
+
+As of now, we are unpublished. Because of this, you must install using git
+
+.. code:: bash
+
+   pip install git+https://github.com/LivInTheLookingGlass/sphinx-fediverse
+
+Configuration
+-------------
+
+There are a few necessary values that you must provide
+
+.. table::
+
+   ========================      ===================================================   ===============================
+   Option                        Description                                           Example
+   ========================      ===================================================   ===============================
+   html_baseurl                  The host your documentation will be hosted on         https://www.sphinx-doc.org/
+   html_static_path              The paths that get copied into your static dir        ``["_static"]``
+   mastodon_username             The username of the account to make posts only        xkcd
+   mastodon_instance             The host you're making comments on                    botsin.space
+   comments_mapping_file         The name of the comments map file                     comments_mapping.json (default)
+   replace_index_with_slash      True to replace ``/index.html`` with ``/``            True (default)
+   enable_post_creation          True to automatically creat posts, False for manual   True (default)
+   raise_error_if_no_post        True to raise an error if not post is made            True (default)
+   ========================      ===================================================   ===============================
+
+Usage
+-----
+
+To use this extension, simply add it to your ``conf.py``'s extension list:
+
+.. code:: python
+
+   extensions = [
+      # ...
+      'sphinx_fediverse',
+   ]
+
+And add the following to each page you want a comments section to appear in:
+
+.. code:: reStructuredText
+
+   .. mastodon-comments::
+
+This will enable a comments section for each post. Upon build, a Mastodon post will be generated for each new page.
+This will be stored in the same directory as your config file. The ID of each page's post will be embedded into the
+output documents, and used to retrieve comments.
+
+.. warning::
+
+   sphinx-fediverse only works in pure HTML builds. If you produce other builds, you *must* wrap it in an "only" directive
+
+   .. code:: reStructuredText
+
+      .. only:: html
+
+         .. mastodon-comments::
+
+Supported Themes
+~~~~~~~~~~~~~~~~
+
+Because this project includes styling, we need to ensure compatibility with each theme individually. To view it in any
+officially supported theme, click one of the links below:
+
+- `alabaster </alabaster/>`_
+- `Read the Docs </sphinx_rtd_theme/>`_
+- `shibuya </shibuya/>`_
+- `agogo </agogo/>`_
+- `bizstyle </bizstyle/>`_
+- `classic </classic/>`_
+- `haiku </haiku/>`_
+- `nature </nature/>`_
+- `pyramid </pyramid/>`_
+- `scrolls </scrolls/>`_
+- `sphinxdoc </sphinxdoc/>`_
+- `traditional </traditional/>`_
+
 .. mastodon-comments::
