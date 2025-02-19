@@ -85,17 +85,17 @@ Supported Themes
 Because this project includes styling, we need to ensure compatibility with each theme individually. To view it in any
 officially supported theme, click one of the links below:
 
-- `alabaster </alabaster/>`_
-- `Read the Docs </sphinx_rtd_theme/>`_
-- `shibuya </shibuya/>`_
-- `agogo </agogo/>`_
-- `bizstyle </bizstyle/>`_
-- `classic </classic/>`_
-- `haiku </haiku/>`_
-- `nature </nature/>`_
-- `pyramid </pyramid/>`_
-- `scrolls </scrolls/>`_
-- `sphinxdoc </sphinxdoc/>`_
-- `traditional </traditional/>`_
+- `alabaster </sphinx-fediverse/alabaster/>`_
+- `Read the Docs </sphinx-fediverse/sphinx_rtd_theme/>`_
+- `shibuya </sphinx-fediverse/shibuya/>`_
+- `agogo </sphinx-fediverse/agogo/>`_
+- `bizstyle </sphinx-fediverse/bizstyle/>`_
+- `classic </sphinx-fediverse/classic/>`_
+- `haiku </sphinx-fediverse/haiku/>`_
+- `nature </sphinx-fediverse/nature/>`_
+- `pyramid </sphinx-fediverse/pyramid/>`_
+- `scrolls </sphinx-fediverse/scrolls/>`_
+- `sphinxdoc </sphinx-fediverse/sphinxdoc/>`_
+- `traditional </sphinx-fediverse/traditional/>`_
 
 .. mastodon-comments::
