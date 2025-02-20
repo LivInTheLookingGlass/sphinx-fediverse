@@ -6,7 +6,6 @@ from tempfile import TemporaryDirectory
 from textwrap import dedent
 
 import pytest
-
 from sphinx.application import Sphinx
 from sphinx.testing.fixtures import *
 
@@ -42,17 +41,11 @@ def mk_app(conf, index, builder='html'):
         outdir = tmpdir_path / "build"
         doctreedir = tmpdir_path / "doctree"
 
-        # Create necessary directories
         srcdir.mkdir()
-
-        # Write the index.rst file with the directive used twice
         (srcdir / "index.rst").write_text(dedent(index))
-
-        # Write a minimal conf.py
         (srcdir / "conf.py").write_text(dedent(conf_prefix) + '\n' + dedent(conf))
         (srcdir / '_static').mkdir(parents=True, exist_ok=True)
 
-        # Initialize the Sphinx application
         app = Sphinx(
             srcdir=srcdir,
             confdir=confdir,

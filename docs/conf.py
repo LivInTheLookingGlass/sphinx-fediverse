@@ -1,17 +1,9 @@
-from pathlib import Path
 import sys
+from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from sphinx_fediverse import __version__
-
-# Configuration file for the Sphinx documentation builder.
-#
-# For the full list of built-in configuration values, see the documentation:
-# https://www.sphinx-doc.org/en/master/usage/configuration.html
-
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+from sphinx_fediverse import __version__  # isort: skip
 
 project = 'sphinx-fediverse'
 copyright = '2025, Olivia Appleton-Crocker'
@@ -45,6 +37,9 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['../_static']
+
+# -- Options for sphinx_fediverse --------------------------------------------
+# https://oliviaappleton.com/sphinx-fediverse/
 
 mastodon_username = "LivInTheLookingGlass"
 mastodon_instance = "tech.lgbt"

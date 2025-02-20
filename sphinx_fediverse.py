@@ -8,7 +8,7 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 2, 2)
+__version__ = (0, 2, 3)
 
 registered_docs: Set[str] = set()
 
