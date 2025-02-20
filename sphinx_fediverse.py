@@ -8,7 +8,7 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 1, 0)
+__version__ = (0, 1, 1)
 
 registered_docs: Set[str] = set()
 
@@ -142,7 +142,7 @@ class MastodonCommentDirective(SphinxDirective):
 def on_builder_inited(app):
     if app.builder.name != 'html':
         return
-    for file_path in Path(__file__).parent.joinpath('docs/_static').iterdir():
+    for file_path in Path(__file__).parent.joinpath('_static').iterdir():
         if file_path.is_file():
             out_path = Path(app.builder.outdir, f'{app.config.html_static_path[0]}/{file_path.name}')
             out_path.parent.mkdir(exist_ok=True, parents=True)
