@@ -11,7 +11,10 @@ function escapeHtml(unsafe) {
 
 function replaceEmoji(string, emojis) {
     emojis.forEach(emoji => {
-        string = string.replaceAll(`:${emoji.shortcode}:`, `<img src="${escapeHtml(emoji.static_url)}" width="20" height="20">`)
+        string = string.replaceAll(
+            `:${emoji.shortcode}:`,
+            `<img src="${escapeHtml(emoji.static_url)}" class="emoji" width="20" height="20" alt="Custom emoji: ${escapeHtml(emoji.shortcode)}">`
+        )
     });
     return string;
 }
@@ -50,7 +53,7 @@ function RenderComment(comment) {
             <div class="mastodon-comment-content">${comment.content}</div>`;
     for (let attachment of comment.media_attachments) {
         if (attachment.type === 'image') {
-            str += `<img src="${attachment.remote_url || attachment.url}" alt="${attachment.description}"`;
+            str += `<img src="${attachment.remote_url || attachment.url}" alt="${attachment.description}" class="attachment"`;
         }
     }
     str += `

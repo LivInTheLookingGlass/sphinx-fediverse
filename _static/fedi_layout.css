@@ -8,8 +8,8 @@
 
 /* Styling each comment block */
 .comment {
-    background-color: #f9f9f9;
-    border: 1px solid #e0e0e0;
+    background-color: var(--sd-color-card-background,var(--sy-c-background,#f9f9f9));
+    border: 1px solid var(--sd-color-card-border,#e0e0e0);
     border-radius: 5px;
     margin-bottom: 10px;
     padding: 10px;
@@ -32,20 +32,20 @@
 
 .comment .author a {
     text-decoration: none;
-    color: #0077cc;
+    color: var(--sd-color-primary-highlight,#0077cc);
     font-weight: bold;
 }
 
 .comment .author a .handle {
     text-decoration: none;
-    color: #888;
+    color: var(--sy-c-link-hover,var(--sd-color-muted,#888));
     font-weight: bold;
     font-size: 0.8em;
 }
 
 .comment .author .date {
     font-size: 0.9em;
-    color: #555;
+    color: var(--sy-c-background-contrast,var(--sd-color-dark,#555));
     margin-left: 10px;
     margin-right: 10px;
 }
@@ -58,14 +58,14 @@
 /* For nested/replied-to comments, we apply indentation */
 .comment.reply {
     margin-left: 30px;
-    border-left: 3px solid #0077cc;
+    border-left: 3px solid var(--sd-color-primary-highlight,#0077cc);
     padding-left: 10px;
 }
 
 /* Sensitive content handling with details */
 .comment details {
-    background-color: #f8d7da;
-    border: 1px solid #f5c6cb;
+    background-color: var(--sd-color-danger,#f8d7da);
+    border: 1px solid var(--sd-color-card-border,#f5c6cb);
     border-radius: 5px;
     margin-top: 10px;
     padding: 5px;
@@ -83,8 +83,12 @@
 }
 
 /* Styling for emoji images */
-.comment img {
+.comment .emoji {
     vertical-align: middle;
+}
+
+.comment .content .attachment {
+    max-width: 100%;
 }
 
 /* Hide comment content if no subcomments */
