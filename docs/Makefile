@@ -27,4 +27,4 @@ $(THEMES):
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 html: Makefile
 	@$(SPHINXBUILD) -M html "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
-	@$(MAKE) $(THEMES)
+	@$(MAKE) -j $(THEMES)
