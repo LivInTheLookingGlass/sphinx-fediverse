@@ -28,25 +28,25 @@ As of now, we are unpublished. Because of this, you must install using git
 Configuration
 -------------
 
-There are a few necessary values that you must provide
+There are a few necessary values that you must provide:
 
 .. table::
 
-   ========================      ===================================================   ===============================
-   Option                        Description                                           Example
-   ========================      ===================================================   ===============================
-   html_baseurl                  The host your documentation will be hosted on         https://www.sphinx-doc.org/
-   html_static_path              The paths that get copied into your static dir        ``["_static"]``
-   mastodon_username             The username of the account to make posts only        xkcd
-   mastodon_instance             The host you're making comments on                    botsin.space
-   comments_mapping_file         The name of the comments map file                     comments_mapping.json (default)
-   replace_index_with_slash      True to replace ``/index.html`` with ``/``            True (default)
-   enable_post_creation          True to automatically creat posts, False for manual   True (default)
-   raise_error_if_no_post        True to raise an error if not post is made            True (default)
-   ========================      ===================================================   ===============================
+   ========================  ============================================  ===============================
+   Option                    Description                                   Example
+   ========================  ============================================  ===============================
+   html_baseurl              The host your documentation will be on        https://www.sphinx-doc.org/
+   mastodon_username         The username of the account to make posts on  xkcd
+   mastodon_instance         The host you're making comments on            botsin.space
+   comments_mapping_file     The name of the comments map file             comments_mapping.json (default)
+   replace_index_with_slash  True to replace ``/index.html`` with ``/``    True (default)
+   enable_post_creation      True to automatically post, False for manual  True (default)
+   raise_error_if_no_post    True to raise an error if not post is made    True (default)
+   ========================  ============================================  ===============================
 
 We also rely on the following environment variables: ``MASTODON_CLIENT_ID``, ``MASTODON_CLIENT_SECRET``,
-``MASTODON_ACCESS_TOKEN``. Each of these must be set if you want to have automatic post creation.
+``MASTODON_ACCESS_TOKEN``. Each of these must be set if you want to have automatic post creation. They are
+intentionally not included in the config file so you are incentivized to not store them publicly.
 
 Usage
 -----
@@ -100,3 +100,5 @@ officially supported theme, click one of the links below:
 - `traditional </sphinx-fediverse/traditional/>`_
 
 .. mastodon-comments::
+
+.. <3
