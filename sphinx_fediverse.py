@@ -8,7 +8,7 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 2, 0)
+__version__ = (0, 2, 1)
 
 registered_docs: Set[str] = set()
 
@@ -144,7 +144,7 @@ def on_builder_inited(app):
         return
     for file_path in Path(__file__).parent.joinpath('_static').iterdir():
         if file_path.is_file():
-            out_path = Path(app.builder.outdir, f'{app.config.html_static_path[0]}/{file_path.name}')
+            out_path = Path(app.builder.outdir, f'_static/{file_path.name}')
             out_path.parent.mkdir(exist_ok=True, parents=True)
             copyfile(file_path, out_path)
 
@@ -167,5 +167,5 @@ def setup(app):
     return {
         'version': '.'.join(str(x) for x in __version__),
         'parallel_read_safe': True,
-        'parallel_write_safe': False,
+        'parallel_write_safe': True,
     }

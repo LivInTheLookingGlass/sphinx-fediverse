@@ -66,3 +66,4 @@ endif
 clean: SHELL := bash
 clean:
 	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} || echo
+	@$(MAKE) -C docs clean
