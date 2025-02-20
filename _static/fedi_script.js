@@ -17,7 +17,6 @@ function replaceEmoji(string, emojis) {
 }
 
 function RenderComment(comment) {
-    // TODO: media_attachment
     // TODO: better input sanitization
     if (document.getElementById(comment.id)) {
         return;
@@ -42,16 +41,22 @@ function RenderComment(comment) {
             <a target="_blank" href="${comment.account.url}" rel="nofollow">
                 <span class="username">${replaceEmoji(escapeHtml(comment.account.display_name), comment.account.emojis)}</span> <span class="handle">(${handle})</span>
             </a>
-        </div>
-        <div class="content">
-            <div class="mastodon-comment-content">${comment.content}</div> 
-        </div>
-    </div>`;
+        </div>`;
     if (comment.sensitive) {
-        str = str
-            .replace('<div class="content">', `<details><summary>${comment.spoiler_text}</summary><div class="content">`)
-            .replace('</div>\n    </div>', '</div>\n    </details></div>');
+        str += `<details><summary>${comment.spoiler_text}</summary>`;
     }
+    str += `
+        <div class="content">
+            <div class="mastodon-comment-content">${comment.content}</div>`;
+    for (let attachment of comment.media_attachments) {
+        if (attachment.type === 'image') {
+            str += `<img src="${attachment.remote_url || attachment.url}" alt="${attachment.description}"`;
+        }
+    }
+    str += `
+        </div>
+        ${comment.sensitive ? "</details>" : ""}
+    </div>`;
     const doc = parser.parseFromString(replaceEmoji(str, comment.emojis), 'text/html');
     const fragment = document.createDocumentFragment();
     Array.from(doc.body.childNodes).forEach(node => fragment.appendChild(node));
@@ -61,7 +66,7 @@ function RenderComment(comment) {
 function RenderCommentsBatch(comments) {
     if (!comments || comments.length === 0) return;
 
-    const container = document.getElementById("comments-section"); // Main container
+    const container = document.getElementById("comments-section");  // Main container
     if (!container) {
         console.error("Comment container not found");
         return;
