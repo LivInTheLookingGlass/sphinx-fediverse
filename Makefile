@@ -46,11 +46,11 @@ html:
 	@$(MAKE) -C docs html
 
 .PHONY: test
-test: ../LICENSE dependencies
+test: LICENSE dependencies
 	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
 
 .PHONY: test_%
-test_%: ../LICENSE dependencies
+test_%: LICENSE dependencies
 	@$(PY) -m pytest $(pytest_args) -d -n$*
 
 .PHONY: dependencies

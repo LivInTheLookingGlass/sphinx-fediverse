@@ -8,7 +8,7 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 2, 1)
+__version__ = (0, 2, 2)
 
 registered_docs: Set[str] = set()
 
@@ -32,34 +32,33 @@ class MastodonCommentDirective(SphinxDirective):
                 return input("Enter the ID and NOTHING ELSE: ")
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
-            
-        if not all((
+        elif not all((
             getenv('MASTODON_CLIENT_ID'),
             getenv('MASTODON_CLIENT_SECRET'),
             getenv('MASTODON_ACCESS_TOKEN')
         )):
             raise EnvironmentError("Must provide all 3 mastodon access tokens")
-
-        api = Mastodon(
-            api_base_url='https://tech.lgbt',
-            client_id=getenv('MASTODON_CLIENT_ID'),
-            client_secret=getenv('MASTODON_CLIENT_SECRET'),
-            access_token=getenv('MASTODON_ACCESS_TOKEN'),
-            user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
-        )
-        message = f"Discussion post for {self.env.config.html_baseurl}"
-        message.rstrip('/')
-        message += '/'
-        message += post_url
-        post = api.status_post(
-            status=message, visibility='public', language='en',
-        )
-        return post.id
+        else:
+            api = Mastodon(
+                api_base_url='https://tech.lgbt',
+                client_id=getenv('MASTODON_CLIENT_ID'),
+                client_secret=getenv('MASTODON_CLIENT_SECRET'),
+                access_token=getenv('MASTODON_ACCESS_TOKEN'),
+                user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
+            )
+            message = f"Discussion post for {self.env.config.html_baseurl}"
+            message.rstrip('/')
+            message += '/'
+            message += post_url
+            post = api.status_post(
+                status=message, visibility='public', language='en',
+            )
+            return post.id
 
     def create_post_if_needed(self, post_url, username):
         """Check if a post exists for this URL. If not, create one."""
         # Read the mapping file
-        mapping_file_path = Path(__file__).parent.joinpath(self.config.comments_mapping_file)
+        mapping_file_path = Path(self.config.comments_mapping_file)
         if not mapping_file_path.exists():
             # File doesn't exist, create an empty mapping
             mapping = {}
