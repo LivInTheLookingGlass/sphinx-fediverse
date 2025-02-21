@@ -11,11 +11,11 @@ author = 'Olivia Appleton-Crocker'
 release = '.'.join(str(x) for x in __version__)
 rst_prolog = """
 .. meta::
-    :fediverse:creator: @LivInTheLookingGlass@tech.lgbt
+    :fediverse:creator: @LivInTheLookingGlass@transfem.social
 
 .. raw:: html
 
-    <a rel="me" href="https://tech.lgbt/@LivInTheLookingGlass" role="none"
+    <a rel="me" href="https://transfem.social/@LivInTheLookingGlass" role="none"
      style="display: none; visibility: hidden; pointer-events: none; animation: none; transition: none"></a>
     <script data-goatcounter="https://livinthelookingglass.goatcounter.com/count"
      async src="//gc.zgo.at/count.js"></script>
