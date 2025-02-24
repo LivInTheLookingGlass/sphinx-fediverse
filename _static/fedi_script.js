@@ -59,6 +59,8 @@ function RenderComment(comment) {
     str += `
         </div>
         ${comment.sensitive ? "</details>" : ""}
+        <div class="info"><img src="_static/like.svg" alt="Likes">${comment.favourites_count}, <img src="_static/boost.svg" alt="Boosts">${comment.reblogs_count}</div>
+        <br>
     </div>`;
     const doc = parser.parseFromString(replaceEmoji(str, comment.emojis), 'text/html');
     const fragment = document.createDocumentFragment();
@@ -87,8 +89,17 @@ function RenderCommentsBatch(comments) {
     });
 }
 
+async function FetchMeta(postId) {
+    const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}`);
+    const data = await response.json();
+    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+    document.getElementById("global-likes").textContent = `${data.favourites_count}`;
+    document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
+}
+
 async function FetchComments(postId, maxDepth) {
     try {
+        FetchMeta(postId);
         const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}/context`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 

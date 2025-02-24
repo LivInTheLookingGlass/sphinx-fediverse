@@ -8,7 +8,7 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 2, 3)
+__version__ = (0, 3, 0)
 
 registered_docs: Set[str] = set()
 
@@ -117,8 +117,15 @@ class MastodonCommentDirective(SphinxDirective):
         # Create the DOM element to store the post ID
         post_id_node = nodes.raw('', f"""
             <div id="mastodon-post-id" style="display:none;">{post_id}</div>
-            <h2>Comments:</h2>
-            <div id="comments-section">
+            <h2>
+                Comments
+                <span class="comments-info">
+                    <img src="_static/like.svg" alt="Likes"><span id="global-likes"></span>, 
+                    <img src="_static/boost.svg" alt="Boosts"><span id="global-reblogs"></span>
+                </span>
+            </h2>
+            <br>
+            <div id="comments-section"></div>
             <script>
             document.addEventListener("DOMContentLoaded", function () {{
                 const postIdElement = document.getElementById('mastodon-post-id');
