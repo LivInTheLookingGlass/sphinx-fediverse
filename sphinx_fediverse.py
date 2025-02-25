@@ -8,7 +8,10 @@ from docutils import nodes
 from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
-__version__ = (0, 3, 0)
+with (Path(__file__).parent / "package.json").open('r') as f:
+    version = load(f)['version']
+
+__version__ = tuple(int(x) for x in version.split("."))
 
 registered_docs: Set[str] = set()
 
@@ -124,7 +127,6 @@ class MastodonCommentDirective(SphinxDirective):
                     <img src="_static/boost.svg" alt="Boosts"><span id="global-reblogs"></span>
                 </span>
             </h2>
-            <br>
             <div id="comments-section"></div>
             <script>
             document.addEventListener("DOMContentLoaded", function () {{

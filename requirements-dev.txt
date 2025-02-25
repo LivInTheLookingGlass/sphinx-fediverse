@@ -4,4 +4,6 @@ pytest
 pytest-benchmark
 pytest-mock
 pytest-xdist
+setuptools
 sphinx.testing
+twine

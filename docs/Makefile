@@ -16,7 +16,7 @@ help:
 .PHONY: help Makefile
 
 clean:
-	rm -r $(BUILDDIR)
+	rm -rf $(BUILDDIR) || echo
 
 $(THEMES):
 	@echo "Building theme: $@"

@@ -42,7 +42,7 @@ help:
 	@echo "  $(BLUE)html$(NC)           Generate documentation"
 
 .PHONY: html
-html:
+html: babel
 	@$(MAKE) -C docs html
 
 .PHONY: test
@@ -65,5 +65,9 @@ endif
 .PHONY: clean
 clean: SHELL := bash
 clean:
-	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} || echo
+	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} _static/fedi_script.js || echo
 	@$(MAKE) -C docs clean
+
+babel:
+	@npm install
+	@npx babel ./fedi_script.js -d _static
