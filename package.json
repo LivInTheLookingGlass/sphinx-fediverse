@@ -1,6 +1,6 @@
 {
   "name": "sphinx-fediverse",
-  "version": "0.4.0",
+  "version": "0.4.2",
   "description": "Bring fediverse comments to your static sphinx site",
   "scripts": {},
   "repository": {
@@ -8,7 +8,7 @@
     "url": "git+https://github.com/LivInTheLookingGlass/sphinx-fediverse.git"
   },
   "author": "Olivia Appleton-Crocker",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/LivInTheLookingGlass/sphinx-fediverse/issues"
   },

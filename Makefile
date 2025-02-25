@@ -65,9 +65,17 @@ endif
 .PHONY: clean
 clean: SHELL := bash
 clean:
-	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} _static/fedi_script.js || echo
+	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info _static/fedi_script.js || echo
 	@$(MAKE) -C docs clean
 
 babel:
 	@npm install
 	@npx babel ./fedi_script.js -d _static
+
+.PHONY: build
+build: clean babel
+	$(PY) setup.py sdist bdist_wheel
+
+.PHONY: publish
+publish: build
+	$(PY) -m twine upload dist/*

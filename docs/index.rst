@@ -19,11 +19,9 @@ Quick Start Guide
 Installation
 ------------
 
-As of now, we are unpublished. Because of this, you must install using git
-
 .. code:: bash
 
-   pip install git+https://github.com/LivInTheLookingGlass/sphinx-fediverse
+   pip install sphinx-fediverse
 
 Configuration
 -------------
