@@ -8,6 +8,25 @@ sphinx-fediverse documentation
 
 For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 
+.. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :alt: PyPI Total Downloads
+.. |license| image:: https://img.shields.io/pypi/l/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :alt: PyPI License
+.. |status| image:: https://img.shields.io/pypi/status/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :alt: PyPI Status
+.. |version| image:: https://img.shields.io/pypi/v/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :alt: PyPI Version
+.. |sponsors| image:: https://img.shields.io/github/sponsors/LivInTheLookingGlass?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :alt: GitHub Sponsors
+.. |issues| image:: https://img.shields.io/github/issues/LivInTheLookingGlass/sphinx-fediverse?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :alt: Open GitHub Issues
+.. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :alt: Open GitHub Pull Requests
+.. |br| raw:: html
+
+   <br>
+
+|license| |status| |version| |downloads| |br| |issues| |prs| |sponsors|
 
 .. toctree::
    :maxdepth: 2
