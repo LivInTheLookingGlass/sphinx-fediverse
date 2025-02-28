@@ -65,7 +65,7 @@ endif
 .PHONY: clean
 clean: SHELL := bash
 clean:
-	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info _static/fedi_script.js || echo
+	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info node_modules _static/fedi_script.js || echo
 	@$(MAKE) -C docs clean
 
 babel:
