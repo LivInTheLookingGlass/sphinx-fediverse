@@ -4,12 +4,9 @@ from setuptools import setup
 from sphinx_fediverse import version
 
 requirements = (Path(__file__).parent / "requirements.txt").read_text().split()
-long_description = (Path(__file__).parent / "docs" / "index.rst").read_text()
-long_description = (
-    long_description[:long_description.index(".. toc")] + 
-    long_description[long_description.index("Quick Start Guide"):long_description.index("\n.. mastodon-comments::")]
-).replace("/sphinx-fediverse/", "https://oliviaappleton.com/sphinx-fediverse/")
-                
+long_description = (Path(__file__).parent / "README.rst").read_text().replace(
+    "/sphinx-fediverse/", "https://oliviaappleton.com/sphinx-fediverse/"
+)
 
 if __name__ == '__main__':
     setup(name='sphinx-fediverse',
