@@ -5,7 +5,7 @@ from sys import path as sys_path
 from tempfile import TemporaryDirectory
 from textwrap import dedent
 
-import pytest
+from pytest import fail, mark, raises
 from sphinx.application import Sphinx
 from sphinx.testing.fixtures import *
 
@@ -27,7 +27,7 @@ def run_in_subprocess(func):
         proc.start()
         proc.join()
         if proc.exitcode != 0:
-            pytest.fail(f"Test {func.__name__} failed in subprocess with exit code {proc.exitcode}")
+            fail(f"Test {func.__name__} failed in subprocess with exit code {proc.exitcode}")
     return wrapper
 
 
@@ -76,11 +76,11 @@ def _test_directive_fails_on_multiple_usage() -> None:
     """
 
     with mk_app(conf, index) as (app, tmpdir):
-        with pytest.raises(RuntimeError, match="Cannot include two comments sections in one document"):
+        with raises(RuntimeError, match="Cannot include two comments sections in one document"):
             app.build()
 
 
-@pytest.mark.parametrize("builder_name", ["dummy", "epub", "latex"])
+@mark.parametrize("builder_name", ["dummy", "epub", "latex"])
 def test_directive_fails_on_non_html(builder_name: str) -> None:
     run_in_subprocess(_test_directive_fails_on_non_html)(builder_name)
 
@@ -93,7 +93,7 @@ def _test_directive_fails_on_non_html(builder_name: str) -> None:
     """
 
     with mk_app("", index, builder='dummy') as (app, tmpdir):
-        with pytest.raises(EnvironmentError, match="Cannot function outside of html build"):
+        with raises(EnvironmentError, match="Cannot function outside of html build"):
             app.build(force_all=True)
 
 
@@ -109,5 +109,5 @@ def _test_error_if_no_auth() -> None:
     """
 
     with mk_app("", index) as (app, tmpdir):
-        with pytest.raises(EnvironmentError, match="Must provide all 3 mastodon access tokens"):
+        with raises(EnvironmentError, match="Must provide all 3 mastodon access tokens"):
             app.build(force_all=True)
