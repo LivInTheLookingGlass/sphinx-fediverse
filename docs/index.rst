@@ -8,6 +8,6 @@
 .. include:: ../README.rst
    :start-after: .. first-cut
 
-.. mastodon-comments::
+.. fedi-comments::
 
 .. <3

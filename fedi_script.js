@@ -19,7 +19,7 @@ function replaceEmoji(string, emojis) {
     return string;
 }
 
-function RenderComment(comment) {
+function RenderComment(fediFlavor, comment) {
     // TODO: better input sanitization
     if (document.getElementById(comment.id)) {
         return;
@@ -50,7 +50,7 @@ function RenderComment(comment) {
     }
     str += `
         <div class="content">
-            <div class="mastodon-comment-content">${comment.content}</div>`;
+            <div class="fedi-comment-content">${comment.content}</div>`;
     for (let attachment of comment.media_attachments) {
         if (attachment.type === 'image') {
             str += `<img src="${attachment.remote_url || attachment.url}" alt="${attachment.description}" class="attachment"`;
@@ -68,7 +68,7 @@ function RenderComment(comment) {
     return fragment;
 }
 
-function RenderCommentsBatch(comments) {
+function RenderCommentsBatch(fediFlavor, comments) {
     if (!comments || comments.length === 0) return;
 
     const container = document.getElementById("comments-section");  // Main container
@@ -80,7 +80,7 @@ function RenderCommentsBatch(comments) {
     comments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     console.log(comments);
     comments.forEach(comment => {
-        const commentElement = RenderComment(comment);
+        const commentElement = RenderComment(fediFlavor, comment);
         if (!commentElement) return;
 
         // Determine where to append the comment
@@ -89,7 +89,7 @@ function RenderCommentsBatch(comments) {
     });
 }
 
-async function FetchMeta(postId) {
+async function FetchMeta(fediFlavor, postId) {
     const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}`);
     const data = await response.json();
     if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
@@ -97,24 +97,24 @@ async function FetchMeta(postId) {
     document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
 }
 
-async function FetchComments(postId, maxDepth) {
+async function FetchComments(fediFlavor, postId, maxDepth) {
     try {
-        FetchMeta(postId);
+        FetchMeta(fediFlavor, postId);
         const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}/context`);
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
         const comments = data.descendants;
 
-        RenderCommentsBatch(comments);
+        RenderCommentsBatch(fediFlavor, comments);
 
-        await Promise.all(comments.map(comment => FetchSubcomments(comment.id, maxDepth - 1)));
+        await Promise.all(comments.map(comment => FetchSubcomments(fediFlavor, comment.id, maxDepth - 1)));
     } catch (error) {
         console.error("Error fetching comments:", error);
     }
 }
 
-async function FetchSubcomments(commentId, depth) {
+async function FetchSubcomments(fediFlavor, commentId, depth) {
     if (depth <= 0) return;
 
     try {
@@ -124,7 +124,7 @@ async function FetchSubcomments(commentId, depth) {
         const data = await response.json();
         const replies = data.descendants;
 
-        RenderCommentsBatch(replies);
+        RenderCommentsBatch(fediFlavor, replies);
 
         await Promise.all(replies.map(reply => FetchSubcomments(reply.id, depth - 1)));
     } catch (error) {

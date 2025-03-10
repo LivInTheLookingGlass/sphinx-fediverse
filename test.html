@@ -5,13 +5,13 @@
         <script src="./docs/_static/fedi_script.js"></script>
     </head>
     <body>
-        <div id="mastodon-post-id">114009976068464525</div>
+        <div id="fedi-post-id">114009976068464525</div>
         <h2>Comments:</h2>
         <div id="comments-section">
         </div>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
-                const postIdElement = document.getElementById('mastodon-post-id');
+                const postIdElement = document.getElementById('fedi-post-id');
                 if (postIdElement) {
                     const postId = postIdElement.textContent || postIdElement.innerText;
                     if (postId) {

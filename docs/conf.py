@@ -52,8 +52,9 @@ html_static_path = ['../_static']
 # -- Options for sphinx_fediverse --------------------------------------------
 # https://oliviaappleton.com/sphinx-fediverse/
 
-mastodon_username = "LivInTheLookingGlass"
-mastodon_instance = "tech.lgbt"
+fedi_version = 'mastodon'
+fedi_username = "LivInTheLookingGlass"
+fedi_instance = "tech.lgbt"
 comments_mapping_file = "comments_mapping.json"
 html_baseurl = "https://oliviaappleton.com/sphinx-fediverse/"  # Set the base URL of your site
 replace_index_with_slash = True  # Set to True to replace index.html with a trailing slash

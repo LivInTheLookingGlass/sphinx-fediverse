@@ -5,7 +5,6 @@ from shutil import copyfile
 from typing import Set
 
 from docutils import nodes
-from mastodon import Mastodon
 from sphinx.util.docutils import SphinxDirective
 
 with (Path(__file__).parent / "package.json").open('r') as f:
@@ -16,7 +15,7 @@ __version__ = tuple(int(x) for x in version.split("."))
 registered_docs: Set[str] = set()
 
 
-class MastodonCommentDirective(SphinxDirective):
+class FediverseCommentDirective(SphinxDirective):
     required_arguments = {}
     optional_arguments = {}
     option_spec = {}
@@ -26,7 +25,7 @@ class MastodonCommentDirective(SphinxDirective):
         super().__init__(*args, **kwargs)
         self.post_id = None
 
-    def process_post(self, post_url, username):
+    def process_post(self, post_url):
         """Post a new comment on Mastodon and return the post ID."""
         if not self.config.enable_post_creation:
             if not self.config.raise_error_if_no_post:
@@ -35,7 +34,15 @@ class MastodonCommentDirective(SphinxDirective):
                 return input("Enter the ID and NOTHING ELSE: ")
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
-        elif not all((
+        elif self.env.config.fedi_flavor == 'mastodon':
+            self.process_mastodon(self, post_url)
+        elif self.env.config.fedi_flavor == 'misskey':
+            self.process_misskey(self, post_url)
+
+    def process_mastodon(self, post_url):
+        from mastodon import Mastodon
+
+        if not all((
             getenv('MASTODON_CLIENT_ID'),
             getenv('MASTODON_CLIENT_SECRET'),
             getenv('MASTODON_ACCESS_TOKEN')
@@ -43,7 +50,7 @@ class MastodonCommentDirective(SphinxDirective):
             raise EnvironmentError("Must provide all 3 mastodon access tokens")
         else:
             api = Mastodon(
-                api_base_url='https://tech.lgbt',
+                api_base_url=self.env.config.fedi_host,
                 client_id=getenv('MASTODON_CLIENT_ID'),
                 client_secret=getenv('MASTODON_CLIENT_SECRET'),
                 access_token=getenv('MASTODON_ACCESS_TOKEN'),
@@ -58,7 +65,28 @@ class MastodonCommentDirective(SphinxDirective):
             )
             return post.id
 
-    def create_post_if_needed(self, post_url, username):
+    def process_misskey(self, post_url):
+        from asyncio import run
+        from misskey import Misskey
+
+        if not getenv('MISSKEY_ACCESS_TOKEN'):
+            raise EnvironmentError("Must provide misskey access token")
+        else:
+            api = Misskey(
+                self.env.config.fedi_host,
+                token=getenv('MISSKEY_ACCESS_TOKEN'),
+                # user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
+            )
+            message = f"Discussion post for {self.env.config.html_baseurl}"
+            message.rstrip('/')
+            message += '/'
+            message += post_url
+            post = api.notes_create(
+                text=message, visibility='public', language='en',
+            )
+            return post.id
+
+    def create_post_if_needed(self, post_url):
         """Check if a post exists for this URL. If not, create one."""
         # Read the mapping file
         mapping_file_path = Path(self.config.comments_mapping_file)
@@ -74,7 +102,7 @@ class MastodonCommentDirective(SphinxDirective):
             return mapping[post_url]
 
         # If not, create the post
-        post_id = self.process_post(post_url, username)
+        post_id = self.process_post(post_url)
         if post_id:
             mapping[post_url] = post_id
             # Save the updated mapping back to the file
@@ -112,14 +140,14 @@ class MastodonCommentDirective(SphinxDirective):
             post_url = docname + ".html"  # Always use .html extension
 
         # Create or retrieve the post ID
-        post_id = self.create_post_if_needed(post_url, self.config.mastodon_username)
+        post_id = self.create_post_if_needed(post_url)
 
         if post_id is None:
             return []
 
         # Create the DOM element to store the post ID
         post_id_node = nodes.raw('', f"""
-            <div id="mastodon-post-id" style="display:none;">{post_id}</div>
+            <div style="display:none;"><span id="fedi-post-id">{post_id}</span><span id="fedi-flavor">{self.env.config.fedi_flavor}</span></div>
             <h2>
                 Comments
                 <span class="comments-info">
@@ -130,12 +158,14 @@ class MastodonCommentDirective(SphinxDirective):
             <div id="comments-section"></div>
             <script>
             document.addEventListener("DOMContentLoaded", function () {{
-                const postIdElement = document.getElementById('mastodon-post-id');
-                if (postIdElement) {{
+                const postIdElement = document.getElementById('fedi-post-id');
+                const fediFlavorElement = document.getElementById('fedi-flavor');
+                if (postIdElement && fediFlavorElement) {{
                     const postId = postIdElement.textContent || postIdElement.innerText;
+                    const fediFlavor = fediFlavorElement.textContent || fediFlavorElement.innerText;
                     if (postId) {{
                         // Trigger the comment-fetching logic on page load
-                        FetchComments(postId, 5); // Adjust depth as needed
+                        FetchComments(fediFlavor, postId, 5); // Adjust depth as needed
                     }}
                 }}
             }});
@@ -159,14 +189,15 @@ def on_builder_inited(app):
 
 def setup(app):
     # Register custom configuration options
-    app.add_config_value('mastodon_username', '', 'env')
-    app.add_config_value('mastodon_instance', '', 'env')
+    app.add_config_value('fedi_flavor', '', 'env')
+    app.add_config_value('fedi_username', '', 'env')
+    app.add_config_value('fedi_instance', '', 'env')
     app.add_config_value('enable_post_creation', True, 'env')
     app.add_config_value('comments_mapping_file', 'comments_mapping.json', 'env')
     app.add_config_value('replace_index_with_slash', True, 'env')
     app.add_config_value('raise_error_if_no_post', True, 'env')
 
-    app.add_directive('mastodon-comments', MastodonCommentDirective)
+    app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)
 
     app.config.html_js_files.append('fedi_script.js')

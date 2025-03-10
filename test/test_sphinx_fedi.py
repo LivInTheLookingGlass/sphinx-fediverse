@@ -69,9 +69,9 @@ def _test_directive_fails_on_multiple_usage() -> None:
     raise_error_if_no_post = False
     """
     index = """
-    .. mastodon-comments::
+    .. fedi-comments::
 
-    .. mastodon-comments::
+    .. fedi-comments::
 
     """
 
@@ -88,7 +88,7 @@ def test_directive_fails_on_non_html(builder_name: str) -> None:
 def _test_directive_fails_on_non_html(builder_name: str) -> None:
     """Ensure that using the a builder other than html raises an error."""
     index = """
-    .. mastodon-comments::
+    .. fedi-comments::
 
     """
 
@@ -104,7 +104,7 @@ def test_error_if_no_auth() -> None:
 def _test_error_if_no_auth() -> None:
     """Ensure that not providing auth will raise an error."""
     index = """
-    .. mastodon-comments::
+    .. fedi-comments::
 
     """
 

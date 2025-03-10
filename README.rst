@@ -46,16 +46,22 @@ There are a few necessary values that you must provide:
    Option                    Description                                   Example
    ========================  ============================================  ===============================
    html_baseurl              The host your documentation will be on        https://www.sphinx-doc.org/
-   mastodon_username         The username of the account to make posts on  xkcd
-   mastodon_instance         The host you're making comments on            botsin.space
+   fedi_flavor               The API your server implements                ``'mastodon'`` or ``'misskey'``
+   fedi_username             The username of the account to make posts on  xkcd
+   fedi_instance             The host you're making comments on            botsin.space
    comments_mapping_file     The name of the comments map file             comments_mapping.json (default)
    replace_index_with_slash  True to replace ``/index.html`` with ``/``    True (default)
    enable_post_creation      True to automatically post, False for manual  True (default)
    raise_error_if_no_post    True to raise an error if not post is made    True (default)
    ========================  ============================================  ===============================
 
-We also rely on the following environment variables: ``MASTODON_CLIENT_ID``, ``MASTODON_CLIENT_SECRET``,
-``MASTODON_ACCESS_TOKEN``. Each of these must be set if you want to have automatic post creation. They are
+We also rely on some environment variables.
+
+For Mastodon instances we require: ``MASTODON_CLIENT_ID``, ``MASTODON_CLIENT_SECRET``, ``MASTODON_ACCESS_TOKEN``.
+
+For Misskey instances we require: ``MISSKEY_ACCESS_TOKEN``.
+
+Each of these must be set if you want to have automatic post creation. They are
 intentionally not included in the config file so you are incentivized to not store them publicly.
 
 Usage
@@ -74,7 +80,7 @@ And add the following to each page you want a comments section to appear in:
 
 .. code:: reStructuredText
 
-   .. mastodon-comments::
+   .. fedi-comments::
 
 This will enable a comments section for each post. Upon build, a Mastodon post will be generated for each new page.
 This will be stored in the same directory as your config file. The ID of each page's post will be embedded into the
@@ -88,7 +94,7 @@ output documents, and used to retrieve comments.
 
       .. only:: html
 
-         .. mastodon-comments::
+         .. fedi-comments::
 
 Supported Themes
 ~~~~~~~~~~~~~~~~
