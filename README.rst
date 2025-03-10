@@ -17,11 +17,9 @@ For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
    :alt: Open GitHub Issues
 .. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
    :alt: Open GitHub Pull Requests
-.. |br| raw:: html
 
-   <br>
-
-|license| |status| |version| |downloads| |br| |issues| |prs| |sponsors|
+| |license| |status| |version| |downloads|  
+| |issues| |prs| |sponsors|
 
 .. first-cut
 
