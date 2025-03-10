@@ -19,7 +19,7 @@ function replaceEmoji(string, emojis) {
     return string;
 }
 
-function RenderComment(fediFlavor, comment) {
+function RenderComment(fediFlavor, fediInstance, comment) {
     // TODO: better input sanitization
     if (document.getElementById(comment.id)) {
         return;
@@ -68,7 +68,7 @@ function RenderComment(fediFlavor, comment) {
     return fragment;
 }
 
-function RenderCommentsBatch(fediFlavor, comments) {
+function RenderCommentsBatch(fediFlavor, fediInstance, comments) {
     if (!comments || comments.length === 0) return;
 
     const container = document.getElementById("comments-section");  // Main container
@@ -80,7 +80,7 @@ function RenderCommentsBatch(fediFlavor, comments) {
     comments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
     console.log(comments);
     comments.forEach(comment => {
-        const commentElement = RenderComment(fediFlavor, comment);
+        const commentElement = RenderComment(fediFlavor, fediInstance, comment);
         if (!commentElement) return;
 
         // Determine where to append the comment
@@ -89,44 +89,100 @@ function RenderCommentsBatch(fediFlavor, comments) {
     });
 }
 
-async function FetchMeta(fediFlavor, postId) {
-    const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}`);
-    const data = await response.json();
-    if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-    document.getElementById("global-likes").textContent = `${data.favourites_count}`;
-    document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
+async function FetchMeta(fediFlavor, fediInstance, postId) {
+    let response;
+    let data;
+
+    try {
+        if (fediFlavor === 'misskey') {
+            // Misskey has a different endpoint for fetching a post's details
+            response = await fetch(`https://${fediInstance}/api/notes/show`, {
+                method: 'POST',
+                body: JSON.stringify({ noteId: postId }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } else if (fediFlavor === 'mastodon') {
+            // Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
+            response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
+        }
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        
+        data = await response.json();
+
+        // Depending on the platform, update the likes and reblogs count
+        if (fediFlavor === 'misskey') {
+            // Misskey API returns favorites_count and reblogs_count differently
+            document.getElementById("global-likes").textContent = `${data.favorites_count}`;
+            document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
+        } else if (fediFlavor === 'mastodon') {
+            document.getElementById("global-likes").textContent = `${data.favourites_count}`;
+            document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
+        }
+
+    } catch (error) {
+        console.error("Error fetching post meta:", error);
+    }
 }
 
-async function FetchComments(fediFlavor, postId, maxDepth) {
+
+async function FetchComments(fediFlavor, fediInstance, postId, maxDepth) {
     try {
-        FetchMeta(fediFlavor, postId);
-        const response = await fetch(`https://tech.lgbt/api/v1/statuses/${postId}/context`);
+        FetchMeta(fediFlavor, fediInstance, postId);
+        
+        // For Misskey, use POST method; For Mastodon, use GET method
+        const contextUrl = fediFlavor === 'misskey' 
+            ? `https://${fediInstance}/api/notes/context`
+            : `https://${fediInstance}/api/v1/statuses/${postId}/context`;
+
+        const response = await (fediFlavor === 'misskey'
+            ? fetch(contextUrl, {
+                method: 'POST',
+                body: JSON.stringify({ noteId: postId })
+            })
+            : fetch(contextUrl)
+        );
+
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        const comments = data.descendants;
+        const comments = fediFlavor === 'misskey' ? data.replies : data.descendants;
 
-        RenderCommentsBatch(fediFlavor, comments);
+        RenderCommentsBatch(fediFlavor, fediInstance, comments);
 
-        await Promise.all(comments.map(comment => FetchSubcomments(fediFlavor, comment.id, maxDepth - 1)));
+        // Fetch subcomments (children) for both Misskey and Mastodon
+        await Promise.all(comments.map(comment => FetchSubcomments(fediFlavor, fediInstance, comment.id, maxDepth - 1)));
     } catch (error) {
         console.error("Error fetching comments:", error);
     }
 }
 
-async function FetchSubcomments(fediFlavor, commentId, depth) {
+async function FetchSubcomments(fediFlavor, fediInstance, commentId, depth) {
     if (depth <= 0) return;
 
     try {
-        const response = await fetch(`https://tech.lgbt/api/v1/statuses/${commentId}/context`);
+        const response = await (
+            fediFlavor === 'misskey'
+            ? fetch(`https://${fediInstance}/api/notes/children`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    noteId: commentId,
+                    limit: 100
+                })
+            })
+            : fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`)
+        );
+
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        const replies = data.descendants;
+        const replies = fediFlavor === 'misskey' ? data.replies : data.descendants;
 
-        RenderCommentsBatch(fediFlavor, replies);
+        RenderCommentsBatch(fediFlavor, fediInstance, replies);
 
-        await Promise.all(replies.map(reply => FetchSubcomments(reply.id, depth - 1)));
+        await Promise.all(replies.map(reply => FetchSubcomments(fediFlavor, fediInstance, reply.id, depth - 1)));
     } catch (error) {
         console.error(`Error fetching subcomments for ${commentId}:`, error);
     }

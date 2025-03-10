@@ -52,7 +52,7 @@ html_static_path = ['../_static']
 # -- Options for sphinx_fediverse --------------------------------------------
 # https://oliviaappleton.com/sphinx-fediverse/
 
-fedi_version = 'mastodon'
+fedi_flavor = 'mastodon'
 fedi_username = "LivInTheLookingGlass"
 fedi_instance = "tech.lgbt"
 comments_mapping_file = "comments_mapping.json"

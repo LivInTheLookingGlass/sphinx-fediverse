@@ -25,7 +25,7 @@ class FediverseCommentDirective(SphinxDirective):
         super().__init__(*args, **kwargs)
         self.post_id = None
 
-    def process_post(self, post_url):
+    def process_post(self, post_url: str) -> str:
         """Post a new comment on Mastodon and return the post ID."""
         if not self.config.enable_post_creation:
             if not self.config.raise_error_if_no_post:
@@ -35,11 +35,13 @@ class FediverseCommentDirective(SphinxDirective):
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
         elif self.env.config.fedi_flavor == 'mastodon':
-            self.process_mastodon(self, post_url)
+            return self.process_mastodon(post_url)
         elif self.env.config.fedi_flavor == 'misskey':
-            self.process_misskey(self, post_url)
+            return self.process_misskey(post_url)
+        else:
+            raise EnvironmentError("Unknown fediverse flavor selected")
 
-    def process_mastodon(self, post_url):
+    def process_mastodon(self, post_url: str) -> str:
         from mastodon import Mastodon
 
         if not all((
@@ -50,7 +52,7 @@ class FediverseCommentDirective(SphinxDirective):
             raise EnvironmentError("Must provide all 3 mastodon access tokens")
         else:
             api = Mastodon(
-                api_base_url=self.env.config.fedi_host,
+                api_base_url=self.env.config.fedi_instance,
                 client_id=getenv('MASTODON_CLIENT_ID'),
                 client_secret=getenv('MASTODON_CLIENT_SECRET'),
                 access_token=getenv('MASTODON_ACCESS_TOKEN'),
@@ -65,7 +67,7 @@ class FediverseCommentDirective(SphinxDirective):
             )
             return post.id
 
-    def process_misskey(self, post_url):
+    def process_misskey(self, post_url: str) -> str:
         from asyncio import run
         from misskey import Misskey
 
@@ -73,8 +75,8 @@ class FediverseCommentDirective(SphinxDirective):
             raise EnvironmentError("Must provide misskey access token")
         else:
             api = Misskey(
-                self.env.config.fedi_host,
-                token=getenv('MISSKEY_ACCESS_TOKEN'),
+                self.env.config.fedi_instance,
+                i=getenv('MISSKEY_ACCESS_TOKEN'),
                 # user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
             )
             message = f"Discussion post for {self.env.config.html_baseurl}"
@@ -82,9 +84,9 @@ class FediverseCommentDirective(SphinxDirective):
             message += '/'
             message += post_url
             post = api.notes_create(
-                text=message, visibility='public', language='en',
+                text=message, visibility='public',
             )
-            return post.id
+            return post['createdNote']['id']
 
     def create_post_if_needed(self, post_url):
         """Check if a post exists for this URL. If not, create one."""
@@ -147,7 +149,11 @@ class FediverseCommentDirective(SphinxDirective):
 
         # Create the DOM element to store the post ID
         post_id_node = nodes.raw('', f"""
-            <div style="display:none;"><span id="fedi-post-id">{post_id}</span><span id="fedi-flavor">{self.env.config.fedi_flavor}</span></div>
+            <div style="display:none;">
+                <span id="fedi-post-id">{post_id}</span>
+                <span id="fedi-instance">{self.env.config.fedi_instance}</span>
+                <span id="fedi-flavor">{self.env.config.fedi_flavor}</span>
+            </div>
             <h2>
                 Comments
                 <span class="comments-info">
@@ -159,13 +165,15 @@ class FediverseCommentDirective(SphinxDirective):
             <script>
             document.addEventListener("DOMContentLoaded", function () {{
                 const postIdElement = document.getElementById('fedi-post-id');
+                const fediInstanceElement = document.getElementById('fedi-instance');
                 const fediFlavorElement = document.getElementById('fedi-flavor');
                 if (postIdElement && fediFlavorElement) {{
                     const postId = postIdElement.textContent || postIdElement.innerText;
+                    const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
                     const fediFlavor = fediFlavorElement.textContent || fediFlavorElement.innerText;
                     if (postId) {{
                         // Trigger the comment-fetching logic on page load
-                        FetchComments(fediFlavor, postId, 5); // Adjust depth as needed
+                        FetchComments(fediFlavor, fediInstance, postId, 5); // Adjust depth as needed
                     }}
                 }}
             }});
