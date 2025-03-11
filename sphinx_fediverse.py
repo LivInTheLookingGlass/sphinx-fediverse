@@ -172,7 +172,7 @@ class FediverseCommentDirective(SphinxDirective):
                     const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
                     const fediFlavor = fediFlavorElement.textContent || fediFlavorElement.innerText;
                     if (postId) {{
-                        setImageLinks("{self.env.config.html_baseurl}/_static/like.svg", "{self.env.config.html_baseurl}/_static/like.svg")
+                        setImageLinks("{self.env.config.html_baseurl}/_static/like.svg", "{self.env.config.html_baseurl}/_static/boost.svg")
                         // Trigger the comment-fetching logic on page load
                         FetchComments(fediFlavor, fediInstance, postId, 5); // Adjust depth as needed
                     }}
