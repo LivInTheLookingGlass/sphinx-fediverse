@@ -10,16 +10,149 @@ function escapeHtml(unsafe) {
 }
 
 function replaceEmoji(string, emojis) {
-    // TODO: custom emoji support for misskey
-    if (emojis.forEach !== undefined) {
-        emojis.forEach(emoji => {
-            string = string.replaceAll(
-                `:${emoji.shortcode}:`,
-                `<img src="${escapeHtml(emoji.static_url)}" class="emoji" width="20" height="20" alt="Custom emoji: ${escapeHtml(emoji.shortcode)}">`
-            )
-        });
-    }
+    for (const shortcode in emojis) {
+        const static_url = emojis[shortcode];
+        string = string.replaceAll(
+            `:${shortcode}:`,
+            `<img src="${escapeHtml(static_url)}" class="emoji" width="20" height="20" alt="Custom emoji: ${escapeHtml(shortcode)}">`
+        )
+    };
     return string;
+}
+
+function ExtractComment(fediFlavor, fediInstance, comment) {
+    /*
+    Return spec:
+    {
+        id: "string",
+        url: "url",
+        date: "string",
+        cw: "null | string",
+        emoji: {
+            name1: "url",
+            name2: "url",
+            ...
+        },
+        reactionCount: "int",
+        boostCount: "int",
+        media: [{
+            url: "url",
+            description: "string",
+        }],
+        content: "string?",
+        user: {
+            host: "string",
+            handle: "string",
+            url: "url",
+            name: "string",
+            avatar: "url",
+            emoji: {
+                name1: "url",
+                name2: "url",
+                ...
+            },
+        },
+    }
+    */
+    switch (fediFlavor) {
+        case 'mastodon':
+            return ExtractMastodonComment(fediInstance, comment);
+        case 'misskey':
+            return ExtractMisskeyComment(fediInstance, comment);
+        default:
+            throw new Error("Unknown fedi flavor; could not extract comment", fediFlavor, fediInstance, comment);
+    }
+}
+
+
+function ExtractMastodonComment(fediInstance, comment) {
+    const user = comment.account;
+    const match = user.url.match(/https?:\/\/([^\/]+)/);
+    const domain = match ? match[1] : null;
+    const attachments = [];
+    const commentEmoji = {};
+    const userEmoji = {};
+    let handle;
+
+    if (!domain) {
+        console.error("Could not extract domain name from url: " + user.url);
+        handle = `@${user.username}`;
+    } else {
+        handle = `@${user.username}@${domain}`;
+    }
+
+    for (const attachment of comment.media_attachments) {
+        if (attachment.type === 'image') {
+            attachments.push({
+                url: attachment.remote_url || attachment.url,
+                description: attachment.description
+            });
+        }
+    }
+
+    for (const emoji of user.emojis) {
+        userEmoji[emoji.shortcode] = emoji.static_url;
+    }
+
+    for (const emoji of comment.emojis) {
+        commentEmoji[emoji.shortcode] = emoji.static_url;
+    }
+
+    return {
+        id: comment.id,
+        url: comment.url,
+        date: comment.created_at,
+        cw: comment.spoiler_text,
+        emoji: commentEmoji,
+        reactionCount: comment.favourites_count,
+        boostCount: comment.reblogs_count,
+        media: attachments,
+        content: comment.content,
+        user: {
+            host: domain,
+            handle: handle,
+            url: user.url,
+            name: user.display_name,
+            avatar: user.avatar_static || user.avatarUrl,
+            emoji: userEmoji
+        }
+    };
+}
+
+function ExtractMisskeyComment(fediInstance, comment) {
+    const user = comment.user;
+    const domain = user.host || fediInstance;
+    const handle = `@${user.username}@${domain}`;
+    const attachments = [];
+
+    for (const attachment of comment.files) {
+        if (attachment.type === 'image') {
+            attachments.push({
+                url: attachment.remote_url || attachment.url,
+                description: attachment.description
+            });
+        }
+    }
+
+    return {
+        id: comment.id,
+        url: `https://${fediInstance}/notes/${comment.id}`,
+        date: comment.createdAt,
+        cw: comment.cw,
+        emoji: {},  // TODO: MFM emoji
+        reactionCount: comment.reactionCount,
+        boostCount: comment.renoteCount,
+        media: attachments,
+        content: comment.text,  // TODO: parse MFM
+        user: {
+            host: domain,
+            handle: handle,
+            url: `https://${fediInstance}/${handle}`,
+            name: user.name,
+            avatar: user.avatarUrl,
+            emoji: {}  // TODO: MFM emoji
+        }
+    };
 }
 
 function RenderComment(fediFlavor, fediInstance, comment) {
@@ -27,59 +160,35 @@ function RenderComment(fediFlavor, fediInstance, comment) {
     if (document.getElementById(comment.id)) {
         return;
     }
-    const user = fediFlavor === 'misskey' ? comment.user : comment.account;
-    let domain;
-    if (fediFlavor === 'misskey') {
-        domain = user.host || fediInstance;
-    } else {
-        const match = user.url.match(/https?:\/\/([^\/]+)/);
-        domain = match ? match[1] : null;
-    }
-    let handle;
-    if (!domain) {
-        console.error("Could not extract domain name from url: " + user.url);
-        handle = `@${user.username}`;
-    } else {
-        handle = `@${user.username}@${domain}`;
-    }
-    const commentUrl = (fediFlavor === 'misskey'
-        ? `https://${fediInstance}/notes/${comment.id}`
-        : comment.url
-    )
-    const userUrl = (fediFlavor === 'misskey'
-        ? `https://${fediInstance}/${handle}`
-        : user.url
-    )
-    let str = `<div class="comment" id=${comment.id}>
+    const parsed = ExtractComment(fediFlavor, fediInstance, comment);
+    let str = `<div class="comment" id=${parsed.id}>
         <div class="author">
             <div class="avatar">
-                <img src="${user.avatar_static || user.avatarUrl}" height="30" width="30" alt="Avatar for ${user.display_name || user.name}">
+                <img src="${parsed.user.avatar}" height="30" width="30" alt="Avatar for ${parsed.user.name}">
             </div>
-            <a target="_blank" class="date" href="${commentUrl}" rel="nofollow">
-                ${new Date(comment.created_at || comment.createdAt).toLocaleString()}
+            <a target="_blank" class="date" href="${parsed.url}" rel="nofollow">
+                ${new Date(parsed.date).toLocaleString()}
             </a>
-            <a target="_blank" href="${userUrl}" rel="nofollow">
-                <span class="username">${replaceEmoji(escapeHtml(user.display_name || user.name), user.emojis || [])}</span> <span class="handle">(${handle})</span>
+            <a target="_blank" href="${parsed.user.url}" rel="nofollow">
+                <span class="username">${replaceEmoji(escapeHtml(parsed.user.name), parsed.user.emoji)}</span> <span class="handle">(${parsed.user.handle})</span>
             </a>
         </div>`;
-    if (comment.sensitive) {
-        str += `<details><summary>${comment.spoiler_text || comment.cw || ""}</summary>`;
+    if (parsed.cw) {
+        str += `<details><summary>${parsed.cw}</summary>`;
     }
     str += `
         <div class="content">
-            <div class="fedi-comment-content">${comment.content || comment.text}</div>`;
-    for (let attachment of (comment.media_attachments || comment.files)) {
-        if (attachment.type === 'image') {
-            str += `<img src="${attachment.remote_url || attachment.url}" alt="${attachment.description}" class="attachment"`;
-        }
+            <div class="fedi-comment-content">${parsed.content}</div>`;
+    for (let attachment of (parsed.media)) {
+        str += `<img src="${attachment.url}" alt="${attachment.description}" class="attachment">`;
     }
     str += `
         </div>
-        ${(comment.sensitive || comment.cw) ? "</details>" : ""}
-        <div class="info"><img src="_static/like.svg" alt="Likes">${comment.favourites_count || comment.reactionCount}, <img src="_static/boost.svg" alt="Boosts">${comment.reblogs_count || comment.renoteCount}</div>
+        ${(parsed.cw) ? "</details>" : ""}
+        <div class="info"><img src="_static/like.svg" alt="Likes">${parsed.reactionCount}, <img src="_static/boost.svg" alt="Boosts">${parsed.boostCount}</div>
         <br>
     </div>`;
-    const doc = parser.parseFromString(replaceEmoji(str, comment.emojis || []), 'text/html');
+    const doc = parser.parseFromString(replaceEmoji(str, parsed.emoji), 'text/html');
     const fragment = document.createDocumentFragment();
     Array.from(doc.body.childNodes).forEach(node => fragment.appendChild(node));
     return fragment;
