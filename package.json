@@ -1,6 +1,6 @@
 {
   "name": "sphinx-fediverse",
-  "version": "0.5.5",
+  "version": "0.5.6",
   "description": "Bring fediverse comments to your static sphinx site",
   "scripts": {},
   "repository": {

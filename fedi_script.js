@@ -3,7 +3,7 @@ let like_link = "_static/like.svg";
 let boost_link = "_static/boost.svg";
 
 function setImageLinks(new_like_link, new_boost_link) {
-    like_link = new_boost_link;
+    like_link = new_like_link;
     boost_link = new_boost_link;
 }
 
