@@ -192,7 +192,7 @@ function RenderComment(fediFlavor, fediInstance, comment) {
     str += `
         </div>
         ${(parsed.cw) ? "</details>" : ""}
-        <div class="info"><img src="${like_link}" alt="Likes">${parsed.reactionCount}, <img src="${boost_link}" alt="Boosts">${parsed.boostCount}</div>
+        <div class="info"><img class="fediIcon" src="${like_link}" alt="Likes">${parsed.reactionCount}, <img class="fediIcon" src="${boost_link}" alt="Boosts">${parsed.boostCount}</div>
         <br>
     </div>`;
     const doc = parser.parseFromString(replaceEmoji(str, parsed.emoji), 'text/html');

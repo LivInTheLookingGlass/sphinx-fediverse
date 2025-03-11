@@ -4,6 +4,7 @@
     margin: 20px;
     padding: 0;
     list-style: none;
+    display: block;
 }
 
 /* Styling each comment block */
@@ -99,6 +100,11 @@
 
 /* Optional: hover effect for comments */
 .comment:hover {
-    background-color: #f1f1f1;
+    filter: invert(0.1);
     cursor: pointer;
+}
+
+.fediIcon {
+    filter: invert(1);
+    mix-blend-mode: difference;
 }
