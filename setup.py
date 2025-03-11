@@ -5,7 +5,7 @@ from sphinx_fediverse import version
 
 requirements = (Path(__file__).parent / "requirements.txt").read_text().split()
 long_description = (Path(__file__).parent / "README.rst").read_text().replace(
-    "/sphinx-fediverse/", "https://oliviaappleton.com/sphinx-fediverse/"
+    "</", "<https://sphinx-fediverse.oliviaappleton.com/"
 )
 
 if __name__ == '__main__':

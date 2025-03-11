@@ -1,4 +1,11 @@
 const parser = new DOMParser();
+let like_link = "_static/like.svg";
+let boost_link = "_static/boost.svg";
+
+function setImageLinks(new_like_link, new_boost_link) {
+    like_link = new_boost_link;
+    boost_link = new_boost_link;
+}
 
 function escapeHtml(unsafe) {
     return unsafe
@@ -185,7 +192,7 @@ function RenderComment(fediFlavor, fediInstance, comment) {
     str += `
         </div>
         ${(parsed.cw) ? "</details>" : ""}
-        <div class="info"><img src="_static/like.svg" alt="Likes">${parsed.reactionCount}, <img src="_static/boost.svg" alt="Boosts">${parsed.boostCount}</div>
+        <div class="info"><img src="${like_link}" alt="Likes">${parsed.reactionCount}, <img src="${boost_link}" alt="Boosts">${parsed.boostCount}</div>
         <br>
     </div>`;
     const doc = parser.parseFromString(replaceEmoji(str, parsed.emoji), 'text/html');
