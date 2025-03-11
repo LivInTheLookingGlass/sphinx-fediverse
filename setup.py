@@ -16,9 +16,9 @@ if __name__ == '__main__':
         long_description_content_type="text/x-rst",
         author='Olivia Appleton-Crocker',
         author_email='liv@oliviaappleton.com',
-        url='https://oliviaappleton.com/sphinx-fediverse/',
+        url='https://sphinx-fediverse.oliviaappleton.com',
         project_urls={  # Useful additional links
-            "Documentation": "https://oliviaappleton.com/sphinx-fediverse/",
+            "Documentation": "https://sphinx-fediverse.oliviaappleton.com",
             "Source Code": "https://github.com/LivInTheLookingGlass/sphinx-fediverse",
             "Issue Tracker": "https://github.com/LivInTheLookingGlass/sphinx-fediverse/issues",
         },
