@@ -101,7 +101,6 @@
 /* Optional: hover effect for comments */
 .comment:hover {
     filter: invert(0.1);
-    cursor: pointer;
 }
 
 .fediIcon {
