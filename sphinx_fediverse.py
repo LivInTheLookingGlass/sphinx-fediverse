@@ -194,6 +194,10 @@ def on_builder_inited(app):
             out_path = Path(app.builder.outdir, f'_static/{file_path.name}')
             out_path.parent.mkdir(exist_ok=True, parents=True)
             copyfile(file_path, out_path)
+    copyfile(
+        app.config.comments_mapping_file,
+        Path(app.builder.outdir, '_static', app.config.comments_mapping_file)
+    )
 
 
 def setup(app):
