@@ -44,6 +44,7 @@ function ExtractComment(fediFlavor, fediInstance, comment) {
         boostCount: "int",
         media: [{
             url: "url",
+            sensitive: "bool",
             description: "string",
         }],
         content: "string?",
@@ -79,6 +80,7 @@ function ExtractMastodonComment(fediInstance, comment) {
     const attachments = [];
     const commentEmoji = {};
     const userEmoji = {};
+    const reactions = {};
     let handle;
 
     if (!domain) {
@@ -92,9 +94,22 @@ function ExtractMastodonComment(fediInstance, comment) {
         if (attachment.type === 'image') {
             attachments.push({
                 url: attachment.remote_url || attachment.url,
+                sensitive: comment.sensitive,
                 description: attachment.description
             });
         }
+    }
+
+    if (comment.emoji_reactions) {  // TODO: test this
+        for (const reaction of comment.emoji_reactions) {
+            if (reaction.name.length === 1) {
+                userEmoji[reaction.name] = reaction.count;
+            } else {
+                reactions["❤"] += reaction.count;
+            }
+        }
+    } else {
+        reactions["❤"] = comment.favourites_count;
     }
 
     for (const emoji of user.emojis) {
@@ -114,6 +129,7 @@ function ExtractMastodonComment(fediInstance, comment) {
         reactionCount: comment.favourites_count,
         boostCount: comment.reblogs_count,
         media: attachments,
+        reactions: reactions,
         content: comment.content,
         user: {
             host: domain,
@@ -131,15 +147,26 @@ function ExtractMisskeyComment(fediInstance, comment) {
     const domain = user.host || fediInstance;
     const handle = `@${user.username}@${domain}`;
     const attachments = [];
+    const reactions = {"❤": 0};
 
     for (const attachment of comment.files) {
-        if (attachment.type === 'image') {
+        if (attachment.type.substring('image') !== -1) {
             attachments.push({
-                url: attachment.remote_url || attachment.url,
-                description: attachment.description
+                url: attachment.url,
+                sensitive: attachment.isSensitive,
+                description: attachment.comment,
             });
         }
     }
+
+    for (const reaction in comment.reactions) {
+        if (reaction.length === 1) {
+            reactions[reaction] = comment.reactions[reaction];
+        } else {
+            reactions["❤"] += comment.reactions[reaction];
+        }
+    }
+
 
     return {
         id: comment.id,
@@ -149,6 +176,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         emoji: {},  // TODO: MFM emoji
         reactionCount: comment.reactionCount,
         boostCount: comment.renoteCount,
+        reactions: reactions,
         media: attachments,
         content: comment.text,  // TODO: parse MFM
         user: {
