@@ -80,7 +80,7 @@ function ExtractMastodonComment(fediInstance, comment) {
     const attachments = [];
     const commentEmoji = {};
     const userEmoji = {};
-    const reactions = {};
+    const reactions = {"❤": 0};
     let handle;
 
     if (!domain) {
@@ -167,7 +167,6 @@ function ExtractMisskeyComment(fediInstance, comment) {
         }
     }
 
-
     return {
         id: comment.id,
         url: `https://${fediInstance}/notes/${comment.id}`,
@@ -178,7 +177,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         boostCount: comment.renoteCount,
         reactions: reactions,
         media: attachments,
-        content: comment.text,  // TODO: parse MFM
+        content: escapeHtml(comment.text),  // TODO: parse MFM
         user: {
             host: domain,
             handle: handle,
