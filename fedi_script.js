@@ -244,7 +244,7 @@ function RenderCommentsBatch(fediFlavor, fediInstance, comments) {
         if (!commentElement) return;
 
         // Determine where to append the comment
-        const parentElement = document.getElementById(comment.in_reply_to_id) || container;
+        const parentElement = document.getElementById(comment.in_reply_to_id || comment.replyId) || container;
         parentElement.appendChild(commentElement); // Append immediately
     });
 }
