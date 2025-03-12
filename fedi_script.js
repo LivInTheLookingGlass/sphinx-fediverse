@@ -177,7 +177,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         boostCount: comment.renoteCount,
         reactions: reactions,
         media: attachments,
-        content: escapeHtml(comment.text),  // TODO: parse MFM
+        content: marked.parse(comment.text), // TODO: the non-annying parts of MFM
         user: {
             host: domain,
             handle: handle,
