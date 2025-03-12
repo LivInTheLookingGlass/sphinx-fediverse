@@ -32,6 +32,7 @@ function ExtractComment(fediFlavor, fediInstance, comment) {
     Return spec:
     {
         id: "string",
+        replyId: "string",
         url: "url",
         date: "string",
         cw: "null | string",
@@ -122,6 +123,7 @@ function ExtractMastodonComment(fediInstance, comment) {
 
     return {
         id: comment.id,
+        replyId: comment.in_reply_to_id,
         url: comment.url,
         date: comment.created_at,
         cw: comment.spoiler_text,
@@ -169,6 +171,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
 
     return {
         id: comment.id,
+        replyId: comment.replyId,
         url: `https://${fediInstance}/notes/${comment.id}`,
         date: comment.createdAt,
         cw: comment.cw,
@@ -189,46 +192,45 @@ function ExtractMisskeyComment(fediInstance, comment) {
     };
 }
 
-function RenderComment(fediFlavor, fediInstance, comment) {
+function RenderComment(comment) {
     // TODO: better input sanitization
     if (document.getElementById(comment.id)) {
         return;
     }
-    const parsed = ExtractComment(fediFlavor, fediInstance, comment);
-    let str = `<div class="comment" id=${parsed.id}>
+    let str = `<div class="comment" id=${comment.id}>
         <div class="author">
             <div class="avatar">
-                <img src="${parsed.user.avatar}" height="30" width="30" alt="Avatar for ${parsed.user.name}">
+                <img src="${comment.user.avatar}" height="30" width="30" alt="Avatar for ${comment.user.name}">
             </div>
-            <a target="_blank" class="date" href="${parsed.url}" rel="nofollow">
-                ${new Date(parsed.date).toLocaleString()}
+            <a target="_blank" class="date" href="${comment.url}" rel="nofollow">
+                ${new Date(comment.date).toLocaleString()}
             </a>
-            <a target="_blank" href="${parsed.user.url}" rel="nofollow">
-                <span class="username">${replaceEmoji(escapeHtml(parsed.user.name), parsed.user.emoji)}</span> <span class="handle">(${parsed.user.handle})</span>
+            <a target="_blank" href="${comment.user.url}" rel="nofollow">
+                <span class="username">${replaceEmoji(escapeHtml(comment.user.name), comment.user.emoji)}</span> <span class="handle">(${comment.user.handle})</span>
             </a>
         </div>`;
-    if (parsed.cw) {
-        str += `<details><summary>${parsed.cw}</summary>`;
+    if (comment.cw) {
+        str += `<details><summary>${comment.cw}</summary>`;
     }
     str += `
         <div class="content">
-            <div class="fedi-comment-content">${parsed.content}</div>`;
-    for (let attachment of (parsed.media)) {
+            <div class="fedi-comment-content">${comment.content}</div>`;
+    for (let attachment of (comment.media)) {
         str += `<img src="${attachment.url}" alt="${attachment.description}" class="attachment">`;
     }
     str += `
         </div>
-        ${(parsed.cw) ? "</details>" : ""}
-        <div class="info"><img class="fediIcon" src="${like_link}" alt="Likes">${parsed.reactionCount}, <img class="fediIcon" src="${boost_link}" alt="Boosts">${parsed.boostCount}</div>
+        ${(comment.cw) ? "</details>" : ""}
+        <div class="info"><img class="fediIcon" src="${like_link}" alt="Likes">${comment.reactionCount}, <img class="fediIcon" src="${boost_link}" alt="Boosts">${comment.boostCount}</div>
         <br>
     </div>`;
-    const doc = parser.parseFromString(replaceEmoji(str, parsed.emoji), 'text/html');
+    const doc = parser.parseFromString(replaceEmoji(str, comment.emoji), 'text/html');
     const fragment = document.createDocumentFragment();
     Array.from(doc.body.childNodes).forEach(node => fragment.appendChild(node));
     return fragment;
 }
 
-function RenderCommentsBatch(fediFlavor, fediInstance, comments) {
+function RenderCommentsBatch(comments) {
     if (!comments || comments.length === 0) return;
 
     const container = document.getElementById("comments-section");  // Main container
@@ -237,14 +239,14 @@ function RenderCommentsBatch(fediFlavor, fediInstance, comments) {
         return;
     }
 
-    comments.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+    comments.sort((a, b) => new Date(a.date) - new Date(b.date));
     console.log(comments);
     comments.forEach(comment => {
-        const commentElement = RenderComment(fediFlavor, fediInstance, comment);
+        const commentElement = RenderComment(comment);
         if (!commentElement) return;
 
         // Determine where to append the comment
-        const parentElement = document.getElementById(comment.in_reply_to_id || comment.replyId) || container;
+        const parentElement = document.getElementById(comment.replyId) || container;
         parentElement.appendChild(commentElement); // Append immediately
     });
 }
@@ -294,35 +296,7 @@ async function FetchMeta(fediFlavor, fediInstance, postId) {
 async function FetchComments(fediFlavor, fediInstance, postId, maxDepth) {
     try {
         FetchMeta(fediFlavor, fediInstance, postId);
-        
-        // For Misskey, use POST method; For Mastodon, use GET method
-        const contextUrl = fediFlavor === 'misskey' 
-            ? `https://${fediInstance}/api/notes/children`
-            : `https://${fediInstance}/api/v1/statuses/${postId}/context`;
-
-        const response = await (fediFlavor === 'misskey'
-            ? fetch(contextUrl, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    noteId: postId,
-                    limit: 100
-                })
-            })  // TODO: support checking if there are more children
-            : fetch(contextUrl)
-        );
-
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const data = await response.json();
-        const comments = fediFlavor === 'misskey' ? data : data.descendants;
-
-        RenderCommentsBatch(fediFlavor, fediInstance, comments);
-
-        // Fetch subcomments (children) for both Misskey and Mastodon
-        await Promise.all(comments.map(comment => FetchSubcomments(fediFlavor, fediInstance, comment.id, maxDepth - 1)));
+        await FetchSubcomments(fediFlavor, fediInstance, postId, maxDepth);
     } catch (error) {
         console.error("Error fetching comments:", error);
     }
@@ -350,9 +324,11 @@ async function FetchSubcomments(fediFlavor, fediInstance, commentId, depth) {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        const replies = fediFlavor === 'misskey' ? data : data.descendants;
+        const replies = (fediFlavor === 'misskey' ? data : data.descendants).map(
+            comment => ExtractComment(fediFlavor, fediInstance, comment)
+        );
 
-        RenderCommentsBatch(fediFlavor, fediInstance, replies);
+        RenderCommentsBatch(replies);
 
         await Promise.all(replies.map(reply => FetchSubcomments(fediFlavor, fediInstance, reply.id, depth - 1)));
     } catch (error) {
