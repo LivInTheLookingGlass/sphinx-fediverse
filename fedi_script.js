@@ -150,6 +150,13 @@ function ExtractMisskeyComment(fediInstance, comment) {
     const handle = `@${user.username}@${domain}`;
     const attachments = [];
     const reactions = {"❤": 0};
+    // TODO: the non-annying parts of MFM
+    // replace mentions, hashtags with markdown links
+    const text = comment.text.replaceAll(
+        /#([^\d\s][\w\p{L}\p{M}-]*)/gu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
+    ).replaceAll(
+        /@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`
+    );
 
     for (const attachment of comment.files) {
         if (attachment.type.substring('image') !== -1) {
@@ -180,7 +187,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         boostCount: comment.renoteCount,
         reactions: reactions,
         media: attachments,
-        content: marked.parse(comment.text), // TODO: the non-annying parts of MFM
+        content: marked.parse(text),
         user: {
             host: domain,
             handle: handle,
