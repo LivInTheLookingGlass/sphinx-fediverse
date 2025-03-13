@@ -3,22 +3,29 @@ sphinx-fediverse documentation
 
 For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 
-.. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+.. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse
    :alt: PyPI Total Downloads
-.. |license| image:: https://img.shields.io/pypi/l/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :target: https://pepy.tech/projects/sphinx-fediverse
+.. |license| image:: https://img.shields.io/pypi/l/sphinx-fediverse
    :alt: PyPI License
-.. |status| image:: https://img.shields.io/pypi/status/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :target: https://pypi.org/project/sphinx-fediverse
+.. |status| image:: https://img.shields.io/pypi/status/sphinx-fediverse
    :alt: PyPI Status
-.. |version| image:: https://img.shields.io/pypi/v/sphinx-fediverse?link=https%3A%2F%2Fpypi.org%2Fproject%2Fsphinx-fediverse
+   :target: https://pypi.org/project/sphinx-fediverse
+.. |version| image:: https://img.shields.io/pypi/v/sphinx-fediverse
    :alt: PyPI Version
-.. |sponsors| image:: https://img.shields.io/github/sponsors/LivInTheLookingGlass?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :target: https://pypi.org/project/sphinx-fediverse
+.. |sponsors| image:: https://img.shields.io/github/sponsors/LivInTheLookingGlass
    :alt: GitHub Sponsors
-.. |issues| image:: https://img.shields.io/github/issues/LivInTheLookingGlass/sphinx-fediverse?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse
+.. |issues| image:: https://img.shields.io/github/issues/LivInTheLookingGlass/sphinx-fediverse
    :alt: Open GitHub Issues
-.. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse?link=https%3A%2F%2Fgithub.com%2FLivInTheLookingGlass%2Fsphinx-fediverse
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/issues
+.. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse
    :alt: Open GitHub Pull Requests
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/pulls
 
-| |license| |status| |version| |downloads|  
+| |license| |status| |version| |downloads|
 | |issues| |prs| |sponsors|
 
 .. first-cut
@@ -100,15 +107,15 @@ Supported Themes
 Because this project includes styling, we need to ensure compatibility with each theme individually. To view it in any
 officially supported theme, click one of the links below:
 
-- `alabaster </alabaster/>`_
-- `Read the Docs </sphinx_rtd_theme/>`_
-- `shibuya </shibuya/>`_
-- `agogo </agogo/>`_
-- `bizstyle </bizstyle/>`_
-- `classic </classic/>`_
-- `haiku </haiku/>`_
-- `nature </nature/>`_
-- `pyramid </pyramid/>`_
-- `scrolls </scrolls/>`_
-- `sphinxdoc </sphinxdoc/>`_
-- `traditional </traditional/>`_
+- `alabaster <https://sphinx-fediverse.oliviaappleton.com/alabaster/>`_
+- `Read the Docs <https://sphinx-fediverse.oliviaappleton.com/sphinx_rtd_theme/>`_
+- `shibuya <https://sphinx-fediverse.oliviaappleton.com/shibuya/>`_
+- `agogo <https://sphinx-fediverse.oliviaappleton.com/agogo/>`_
+- `bizstyle <https://sphinx-fediverse.oliviaappleton.com/bizstyle/>`_
+- `classic <https://sphinx-fediverse.oliviaappleton.com/classic/>`_
+- `haiku <https://sphinx-fediverse.oliviaappleton.com/haiku/>`_
+- `nature <https://sphinx-fediverse.oliviaappleton.com/nature/>`_
+- `pyramid <https://sphinx-fediverse.oliviaappleton.com/pyramid/>`_
+- `scrolls <https://sphinx-fediverse.oliviaappleton.com/scrolls/>`_
+- `sphinxdoc <https://sphinx-fediverse.oliviaappleton.com/sphinxdoc/>`_
+- `traditional <https://sphinx-fediverse.oliviaappleton.com/traditional/>`_

@@ -4,9 +4,7 @@ from setuptools import setup
 from sphinx_fediverse import version
 
 requirements = (Path(__file__).parent / "requirements.txt").read_text().split()
-long_description = (Path(__file__).parent / "README.rst").read_text().replace(
-    "</", "<https://sphinx-fediverse.oliviaappleton.com/"
-)
+long_description = (Path(__file__).parent / "README.rst").read_text()
 
 if __name__ == '__main__':
     setup(name='sphinx-fediverse',
