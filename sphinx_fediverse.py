@@ -25,7 +25,7 @@ class FediverseCommentDirective(SphinxDirective):
         super().__init__(*args, **kwargs)
         self.post_id = None
 
-    def process_post(self, post_url: str) -> str:
+    def process_post(self, post_url: str, title: str) -> str:
         """Post a new comment on Mastodon and return the post ID."""
         if not self.config.enable_post_creation:
             if not self.config.raise_error_if_no_post:
@@ -35,13 +35,13 @@ class FediverseCommentDirective(SphinxDirective):
             else:
                 raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
         elif self.env.config.fedi_flavor == 'mastodon':
-            return self.process_mastodon(post_url)
+            return self.process_mastodon(post_url, title)
         elif self.env.config.fedi_flavor == 'misskey':
-            return self.process_misskey(post_url)
+            return self.process_misskey(post_url, title)
         else:
             raise EnvironmentError("Unknown fediverse flavor selected")
 
-    def process_mastodon(self, post_url: str) -> str:
+    def process_mastodon(self, post_url: str, title: str) -> str:
         from mastodon import Mastodon
 
         if not all((
@@ -58,7 +58,7 @@ class FediverseCommentDirective(SphinxDirective):
                 access_token=getenv('MASTODON_ACCESS_TOKEN'),
                 user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
             )
-            message = f"Discussion post for {self.env.config.html_baseurl}"
+            message = f"Discussion post for {title}\n\n{self.env.config.html_baseurl}"
             message.rstrip('/')
             message += '/'
             message += post_url
@@ -67,8 +67,7 @@ class FediverseCommentDirective(SphinxDirective):
             )
             return post.id
 
-    def process_misskey(self, post_url: str) -> str:
-        from asyncio import run
+    def process_misskey(self, post_url: str, title: str) -> str:
         from misskey import Misskey
 
         if not getenv('MISSKEY_ACCESS_TOKEN'):
@@ -79,10 +78,8 @@ class FediverseCommentDirective(SphinxDirective):
                 i=getenv('MISSKEY_ACCESS_TOKEN'),
                 # user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
             )
-            message = f"Discussion post for {self.env.config.html_baseurl}"
-            message.rstrip('/')
-            message += '/'
-            message += post_url
+            url = f"{self.env.config.html_baseurl.rstrip('/')}/{post_url.replace(')', r'\)')}"
+            message = f"Discussion post for [{title}]({url})"
             post = api.notes_create(
                 text=message, visibility='public',
             )
@@ -104,12 +101,16 @@ class FediverseCommentDirective(SphinxDirective):
             return mapping[post_url]
 
         # If not, create the post
-        post_id = self.process_post(post_url)
+        for node in self.state.document.traverse(nodes.title):
+            title = node.astext()
+            break  # accept the first title seen
+
+        post_id = self.process_post(post_url, title)
         if post_id:
             mapping[post_url] = post_id
             # Save the updated mapping back to the file
             with open(mapping_file_path, "w") as f:
-                dump(mapping, f, indent=4)
+                dump(mapping, f, indent=2)
 
         return post_id
 
@@ -130,11 +131,10 @@ class FediverseCommentDirective(SphinxDirective):
         if docname in registered_docs:
             raise RuntimeError("Cannot include two comments sections in one document")
         registered_docs.add(docname)
-        replace_index_with_slash = self.config.replace_index_with_slash
 
         # Handle special case for index.html and use configurable URL format
         if docname == "index":
-            if replace_index_with_slash:
+            if self.config.replace_index_with_slash:
                 post_url = "/"  # Replace index.html with just a slash
             else:
                 post_url = "index.html"  # Keep the index.html
