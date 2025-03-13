@@ -12,8 +12,10 @@ function escapeHtml(unsafe) {
         .replace(/&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/>/g, "&gt;")
+        .replace(/`/g, '&#96;')
         .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        .replace(/'/g, "&#039;")
+        .replace(/\*/g, "&#42;");
 }
 
 function replaceEmoji(string, emojis) {
@@ -156,6 +158,14 @@ function ExtractMisskeyComment(fediInstance, comment) {
         /#([^\d\s][\w\p{L}\p{M}-]*)/gu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
     ).replaceAll(
         /@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`
+    ).replaceAll(
+        /<plain>(.*?)<\/plain>/gs, (match, p1) => escapeHtml(p1)
+    ).replaceAll(
+        /<center>(.*?)<\/center>/gs, (match, p1) => `<div style="text-align: center;">${p1}</div>`
+    ).replaceAll(
+        /<i>(.*?)<\/i>/gs, (match, p1) => `*${p1}*`
+    ).replaceAll(
+        /<small>(.*?)<\/small>/gs, (match, p1) => `<sub>${p1}</sub>`
     );
 
     for (const attachment of comment.files) {
