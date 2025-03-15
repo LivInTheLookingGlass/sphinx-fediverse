@@ -217,7 +217,7 @@ function RenderComment(comment) {
     let str = `<div class="comment" id=${comment.id}>
         <div class="author">
             <div class="avatar">
-                <img src="${comment.user.avatar}" height="30" width="30" alt="Avatar for ${comment.user.name}">
+                <img src="${comment.user.avatar}" height="30" width="30" alt="Avatar for ${escapeHtml(comment.user.name)}">
             </div>
             <a target="_blank" class="date" href="${comment.url}" rel="nofollow">
                 ${new Date(comment.date).toLocaleString()}
@@ -227,13 +227,13 @@ function RenderComment(comment) {
             </a>
         </div>`;
     if (comment.cw) {
-        str += `<details><summary>${comment.cw}</summary>`;
+        str += `<details><summary>${replaceEmoji(escapeHtml(comment.cw), comment.emoji)}</summary>`;
     }
     str += `
         <div class="content">
             <div class="fedi-comment-content">${comment.content}</div>`;
     for (let attachment of (comment.media)) {
-        str += `<img src="${attachment.url}" alt="${attachment.description}" class="attachment">`;
+        str += `<img src="${attachment.url}" alt="${escapeHtml(attachment.description)}" class="attachment">`;
     }
     str += `
         </div>
