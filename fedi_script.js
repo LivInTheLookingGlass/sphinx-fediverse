@@ -90,7 +90,7 @@ function ExtractMastodonComment(fediInstance, comment) {
         console.error("Could not extract domain name from url: " + user.url);
         handle = `@${user.username}`;
     } else {
-        handle = `@${user.username}@${domain}`;
+        handle = `@${user.username}&#8203;@${domain}`;
     }
 
     for (const attachment of comment.media_attachments) {
@@ -200,7 +200,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         content: marked.parse(text),
         user: {
             host: domain,
-            handle: handle,
+            handle: `@${user.username}&#8203;@${domain}`,
             url: `https://${fediInstance}/${handle}`,
             name: user.name,
             avatar: user.avatarUrl,
@@ -238,7 +238,13 @@ function RenderComment(comment) {
     str += `
         </div>
         ${(comment.cw) ? "</details>" : ""}
-        <div class="info"><img class="fediIcon" src="${like_link}" alt="Likes">${comment.reactionCount}, <img class="fediIcon" src="${boost_link}" alt="Boosts">${comment.boostCount}</div>
+        <div class="info"><span class="reaction"><img class="fediIcon" src="${boost_link}" alt="Boosts">${comment.boostCount}</span>`;
+    const reactionKeys = Object.keys(comment.reactions);
+    reactionKeys.sort((a, b) => comment.reactions[a] < comment.reactions[b]);
+    for (const reaction of reactionKeys) {
+        str += ` <span class="reaction">&nbsp;${reaction} ${comment.reactions[reaction]}</span>`;
+    }
+    str += `</div>
         <br>
     </div>`;
     const doc = parser.parseFromString(replaceEmoji(str, comment.emoji), 'text/html');
@@ -291,7 +297,7 @@ async function FetchMeta(fediFlavor, fediInstance, postId) {
         }
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-        
+
         data = await response.json();
 
         // Depending on the platform, update the likes and reblogs count

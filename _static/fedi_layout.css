@@ -16,6 +16,7 @@
     padding: 10px;
     display: flex;
     flex-direction: column;
+    font-variant-emoji: emoji;
 }
 
 /* Avatar styling */
@@ -106,4 +107,9 @@
 .fediIcon {
     filter: invert(1);
     mix-blend-mode: difference;
+}
+
+.reaction {
+    border: 2px solid var(--sy-c-background-contrast,var(--sd-color-dark,#555));
+    border-radius: 5px;
 }
