@@ -18,15 +18,22 @@ function escapeHtml(unsafe) {
         .replace(/\*/g, "&#42;");
 }
 
+function escapeRegExp(string) {
+    return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&'); // Escape regex special characters
+}
+
 function replaceEmoji(string, emojis) {
+    // TODO: replace with more secure method
+    // Problem: this needs to handle plain text in some places, but HTML in others
+    // Maybe best to move this into ExtractComment?
     for (const shortcode in emojis) {
         const static_url = emojis[shortcode];
         string = string.replaceAll(
             `:${shortcode}:`,
-            `<img src="${escapeHtml(static_url)}" class="emoji" width="20" height="20" alt="Custom emoji: ${escapeHtml(shortcode)}">`
+            `<img src="${escapeHtml(static_url)}" class="emoji" alt="Custom emoji: ${escapeHtml(shortcode)}">`
         )
     };
-    return string;
+    return parser.parseFromString(string, 'text/html').body.firstChild;
 }
 
 function ExtractComment(fediFlavor, fediInstance, comment) {
@@ -50,7 +57,7 @@ function ExtractComment(fediFlavor, fediInstance, comment) {
             sensitive: "bool",
             description: "string",
         }],
-        content: "string?",
+        content: "string?", (maybe it should be a DOM element?)
         user: {
             host: "string",
             handle: "string",
@@ -90,7 +97,7 @@ function ExtractMastodonComment(fediInstance, comment) {
         console.error("Could not extract domain name from url: " + user.url);
         handle = `@${user.username}`;
     } else {
-        handle = `@${user.username}&#8203;@${domain}`;
+        handle = `@${user.username}\u200B@${domain}`;
     }
 
     for (const attachment of comment.media_attachments) {
@@ -200,7 +207,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
         content: marked.parse(text),
         user: {
             host: domain,
-            handle: `@${user.username}&#8203;@${domain}`,
+            handle: `@${user.username}\u200B@${domain}`,
             url: `https://${fediInstance}/${handle}`,
             name: user.name,
             avatar: user.avatarUrl,
@@ -210,46 +217,99 @@ function ExtractMisskeyComment(fediInstance, comment) {
 }
 
 function RenderComment(comment) {
-    // TODO: better input sanitization
     if (document.getElementById(comment.id)) {
         return;
     }
-    let str = `<div class="comment" id=${comment.id}>
-        <div class="author">
-            <div class="avatar">
-                <img src="${comment.user.avatar}" height="30" width="30" alt="Avatar for ${escapeHtml(comment.user.name)}">
-            </div>
-            <a target="_blank" class="date" href="${comment.url}" rel="nofollow">
-                ${new Date(comment.date).toLocaleString()}
-            </a>
-            <a target="_blank" href="${comment.user.url}" rel="nofollow">
-                <span class="username">${replaceEmoji(escapeHtml(comment.user.name), comment.user.emoji)}</span> <span class="handle">(${comment.user.handle})</span>
-            </a>
-        </div>`;
+    const fragment = document.createDocumentFragment();
+    const commentDiv = document.createElement("div");
+    commentDiv.classList.add("comment");
+    commentDiv.id = comment.id;
+
+    const authorDiv = document.createElement("div");
+    authorDiv.classList.add("author");
+    commentDiv.appendChild(authorDiv);
+
+    const avatar = document.createElement("img");
+    avatar.setAttribute("src", comment.user.avatar);
+    avatar.setAttribute("alt", `Avatar for ${escapeHtml(comment.user.name)}`);
+    avatar.setAttribute("height", 30);
+    avatar.setAttribute("width", 30);
+    authorDiv.appendChild(avatar);
+
+    const commentDate = document.createElement("a");
+    commentDate.setAttribute("target", "_blank");
+    commentDate.setAttribute("href", comment.url);
+    commentDate.classList.add("date");
+    commentDate.innerText = new Date(comment.date).toLocaleString();
+    authorDiv.appendChild(commentDate);
+
+    const userInfo = document.createElement("a");
+    userInfo.setAttribute("target", "_blank");
+    userInfo.setAttribute("href", comment.user.url);
+    const userName = document.createElement("span");
+    userName.classList.add("username");
+    userName.appendChild(replaceEmoji(escapeHtml(comment.user.name), comment.user.emoji));
+    userInfo.appendChild(userName);
+    userInfo.appendChild(document.createTextNode(" "));
+    const userHandle = document.createElement("span");
+    userHandle.classList.add("handle");
+    userHandle.innerText = comment.user.handle;
+    userInfo.appendChild(userHandle);
+    authorDiv.appendChild(userInfo);
+
+    let commentInterior;
     if (comment.cw) {
-        str += `<details><summary>${replaceEmoji(escapeHtml(comment.cw), comment.emoji)}</summary>`;
+        commentInterior = document.createElement("details");
+        const commentSummary = document.createElement("summary");
+        commentSummary.appendChild(replaceEmoji(escapeHtml(comment.cw), comment.emoji));
+        commentInterior.appendChild(commentSummary);
+        commentDiv.appendChild(commentInterior);
+    } else {
+        commentInterior = commentDiv;
     }
-    str += `
-        <div class="content">
-            <div class="fedi-comment-content">${comment.content}</div>`;
-    for (let attachment of (comment.media)) {
-        str += `<img src="${attachment.url}" alt="${escapeHtml(attachment.description)}" class="attachment">`;
+
+    const content = document.createElement("div");
+    content.classList.add("content");
+    const contentText = document.createElement("div");
+    // We're assuming sanitized strings here. On Mastodon that's true, but on Misskey it's not. TODO.
+    contentText.appendChild(replaceEmoji(comment.content, comment.emoji));
+    content.appendChild(contentText);
+    
+    for (const attachment of comment.media) {
+        const attachmentNode = document.createElement("img");
+        attachmentNode.setAttribute("src", attachment.url);
+        attachmentNode.setAttribute("alt", attachment.description);
+        attachmentNode.classList.add("attachment");
+        content.appendChild(attachmentNode);
     }
-    str += `
-        </div>
-        ${(comment.cw) ? "</details>" : ""}
-        <div class="info"><span class="reaction"><img class="fediIcon" src="${boost_link}" alt="Boosts">${comment.boostCount}</span>`;
+
+    commentInterior.appendChild(content);
+    const infoNode = document.createElement("div");
+    infoNode.classList.add("info");
+    const boostIcon = document.createElement("span");
+    boostIcon.classList.add("reaction");
+    const boostIconImage = document.createElement("img");
+    boostIconImage.setAttribute("src", boost_link);
+    boostIconImage.setAttribute("alt", "Boosts");
+    boostIconImage.classList.add("fediIcon");
+    boostIcon.appendChild(boostIconImage);
+    boostIcon.appendChild(document.createTextNode(comment.boostCount + ' '));
+    infoNode.appendChild(boostIcon);
+    commentInterior.appendChild(infoNode);
+
     const reactionKeys = Object.keys(comment.reactions);
     reactionKeys.sort((a, b) => comment.reactions[a] < comment.reactions[b]);
     for (const reaction of reactionKeys) {
-        str += ` <span class="reaction">&nbsp;${reaction} ${comment.reactions[reaction]}</span>`;
+        const reactionNode = document.createElement("span");
+        reactionNode.classList.add("reaction");
+        reactionNode.innerText = `\u00A0${reaction} ${comment.reactions[reaction]}\u00A0`;
+        infoNode.appendChild(document.createTextNode('\u00A0'));
+        infoNode.appendChild(reactionNode);
     }
-    str += `</div>
-        <br>
-    </div>`;
-    const doc = parser.parseFromString(replaceEmoji(str, comment.emoji), 'text/html');
-    const fragment = document.createDocumentFragment();
-    Array.from(doc.body.childNodes).forEach(node => fragment.appendChild(node));
+
+    commentDiv.appendChild(document.createElement("br"));
+    
+    fragment.appendChild(commentDiv);
     return fragment;
 }
 

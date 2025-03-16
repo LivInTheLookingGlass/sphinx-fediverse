@@ -86,6 +86,7 @@
 
 /* Styling for emoji images */
 .comment .emoji {
+    height: 1em;
     vertical-align: middle;
 }
 
@@ -105,8 +106,10 @@
 }
 
 .fediIcon {
+    height: 1em;
     filter: invert(1);
     mix-blend-mode: difference;
+    vertical-align: middle;
 }
 
 .reaction {
