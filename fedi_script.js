@@ -1,4 +1,5 @@
 const parser = new DOMParser();
+const emojiCache = {};
 let like_link = "_static/like.svg";
 let boost_link = "_static/boost.svg";
 
@@ -38,7 +39,7 @@ function replaceEmoji(string, emojis) {
     return container;
 }
 
-function ExtractComment(fediFlavor, fediInstance, comment) {
+async function ExtractComment(fediFlavor, fediInstance, comment) {
     /*
     Return spec:
     {
@@ -81,16 +82,16 @@ function ExtractComment(fediFlavor, fediInstance, comment) {
     */
     switch (fediFlavor) {
         case 'mastodon':
-            return ExtractMastodonComment(fediInstance, comment);
+            return await ExtractMastodonComment(fediInstance, comment);
         case 'misskey':
-            return ExtractMisskeyComment(fediInstance, comment);
+            return await ExtractMisskeyComment(fediInstance, comment);
         default:
             throw new Error("Unknown fedi flavor; could not extract comment", fediFlavor, fediInstance, comment);
     }
 }
 
 
-function ExtractMastodonComment(fediInstance, comment) {
+async function ExtractMastodonComment(fediInstance, comment) {
     const user = comment.account;
     const match = user.url.match(/https?:\/\/([^\/]+)/);
     const domain = match ? match[1] : null;
@@ -161,14 +162,14 @@ function ExtractMastodonComment(fediInstance, comment) {
     };
 }
 
-function ExtractMisskeyComment(fediInstance, comment) {
+async function ExtractMisskeyComment(fediInstance, comment) {
     const user = comment.user;
     const domain = user.host || fediInstance;
     const handle = `@${user.username}@${domain}`;
     const attachments = [];
     const reactions = {"❤": 0};
-    let commentEmoji = comment.emojis;
-    let userEmoji = user.emojis;
+    let commentEmoji = comment.emojis || {};
+    let userEmoji = user.emojis || {};
     // TODO: the non-annying parts of MFM
     // replace mentions, hashtags with markdown links
     const text = comment.text.replaceAll(
@@ -184,6 +185,9 @@ function ExtractMisskeyComment(fediInstance, comment) {
     ).replaceAll(
         /<small>(.*?)<\/small>/gs, (match, p1) => `<sub>${p1}</sub>`
     );
+
+    const cw = (comment.cw && user.mandatoryCW) ? `${user.mandatoryCW} + ${comment.cw}` :
+               (user.mandatoryCW ? user.mandatoryCW : comment.cw);
 
     for (const attachment of comment.files) {
         if (attachment.type.substring('image') !== -1) {
@@ -203,12 +207,32 @@ function ExtractMisskeyComment(fediInstance, comment) {
         }
     }
 
+    if (!comment.emojis) {
+        const pattern = /:([\w\p{L}][\w\p{L}\d\p{N}_]+):/gu;
+        const pairs = await Promise.all(
+            Array.from(comment.text.matchAll(pattern))
+                .map(match => match[1])
+                .map(name => fetchMisskeyEmoji(fediInstance, name))
+        );
+        Object.assign(commentEmoji, ...pairs);
+    }
+
+    if (!user.emojis) {
+        const pattern = /:([\w\p{L}][\w\p{L}\d\p{N}_]+):/gu;
+        const pairs = await Promise.all(
+            Array.from(user.name.matchAll(pattern))
+                .map(match => match[1])
+                .map(name => fetchMisskeyEmoji(fediInstance, name))
+        );
+        Object.assign(commentEmoji, ...pairs);
+    }
+
     return {
         id: comment.id,
         replyId: comment.replyId || comment.renoteId,
         url: `https://${fediInstance}/notes/${comment.id}`,
         date: comment.createdAt,
-        cw: comment.cw,
+        cw: cw,
         emoji: commentEmoji,
         reactionEmoji: comment.reactionEmojis,
         reactionCount: comment.reactionCount,
@@ -225,6 +249,33 @@ function ExtractMisskeyComment(fediInstance, comment) {
             emoji: userEmoji
         }
     };
+}
+
+async function fetchMisskeyEmoji(fediInstance, name) {
+    const ret = {};
+    if (emojiCache[name]) {
+        ret[name] = emojiCache[name];
+        return ret;
+    }
+    try {
+        const response = await fetch(`https://${fediInstance}/api/emoji`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ name: name }),
+        });
+        if (response.ok) {
+            const data = await response.json();
+            if (!data.isSensitive) {
+                ret[name] = data.url;
+                emojiCache[name] = data.url;
+            }
+        }
+    } catch (err) {
+        console.log(`Could not fetch Misskey emoji ${name}`, err);
+    }
+    return ret;
 }
 
 function RenderComment(comment) {
@@ -367,9 +418,6 @@ async function FetchMeta(fediFlavor, fediInstance, postId) {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({ noteId: postId }),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
             });
         } else if (fediFlavor === 'mastodon') {
             // Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
@@ -427,8 +475,10 @@ async function FetchSubcomments(fediFlavor, fediInstance, commentId, depth) {
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
 
         const data = await response.json();
-        const replies = (fediFlavor === 'misskey' ? data : data.descendants).map(
-            comment => ExtractComment(fediFlavor, fediInstance, comment)
+        const replies = await Promise.all(
+            (fediFlavor === 'misskey' ? data : data.descendants).map(
+                comment => ExtractComment(fediFlavor, fediInstance, comment)
+            )
         );
 
         RenderCommentsBatch(replies);
