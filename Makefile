@@ -42,7 +42,7 @@ help:
 	@echo "  $(BLUE)html$(NC)           Generate documentation"
 
 .PHONY: html
-html: babel
+html: bundle
 	@$(MAKE) -C docs html
 
 .PHONY: test
@@ -68,12 +68,16 @@ clean:
 	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info node_modules _static/fedi_script.js || echo
 	@$(MAKE) -C docs clean
 
-babel:
+bundle:
 	@npm install
-	@npx babel ./fedi_script.js -d _static
+	@npx babel ./fedi_script.js --out-file ./_static/fedi_script.tmp.js --no-comments
+	@VERSION=$$(npx json version -f package.json) && \
+	LICENSE_COMMENT="/*! @license sphinx-fediverse $$VERSION | (c) Olivia Appleton-Crocker & other contributors | Released under the GPLv3 | github.com/LivInTheLookingGlass/sphinx-fediverse/blob/$$VERSION/LICENSE */" && \
+	echo "$$LICENSE_COMMENT" | cat - ./_static/fedi_script.tmp.js > ./_static/fedi_script.min.js && rm ./_static/fedi_script.tmp.js
+	@npx babel ./node_modules/dompurify/dist/purify.min.js ./node_modules/marked/marked.min.js -d _static
 
 .PHONY: build
-build: clean babel
+build: clean bundle
 	$(PY) setup.py sdist bdist_wheel
 
 .PHONY: publish

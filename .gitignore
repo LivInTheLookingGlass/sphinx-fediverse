@@ -171,4 +171,4 @@ cython_debug/
 .pypirc
 
 node_modules
-_static/fedi_script.js
+_static/*.js

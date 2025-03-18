@@ -19,28 +19,21 @@ function escapeHtml(unsafe) {
         .replace(/\*/g, "&#42;");
 }
 
-function escapeRegExp(string) {
-    return string.replace(/[.*+?^=!:${}()|\[\]\/\\]/g, '\\$&'); // Escape regex special characters
-}
-
 function replaceEmoji(string, emojis) {
-    // TODO: replace with more secure method
-    // Problem: this needs to handle plain text in some places, but HTML in others
-    // Maybe best to move this into ExtractComment?
     for (const shortcode in emojis) {
         const static_url = emojis[shortcode];
         string = string.replaceAll(
             `:${shortcode}:`,
-            `<img src="${escapeHtml(static_url)}" class="emoji" alt="Custom emoji: ${escapeHtml(shortcode)}">`
+            `<img src="${DOMPurify.sanitize(static_url)}" class="emoji" alt="Custom emoji: ${DOMPurify.sanitize(shortcode)}">`
         )
     };
     const container = document.createDocumentFragment();
-    const newBody = parser.parseFromString(string, 'text/html');
+    const newBody = parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
     if (newBody.body.children.length) {
         Array.from(newBody.body.children).forEach(child => container.appendChild(child));
     } else {
         const span = document.createElement("span");
-        span.innerHTML = string;  // This is okay as long as it gets sanitized inputs
+        span.innerHTML = DOMPurify.sanitize(string);
         container.appendChild(span);
     }
     return container;
@@ -300,7 +293,7 @@ function RenderComment(comment) {
 
     const avatar = document.createElement("img");
     avatar.setAttribute("src", comment.user.avatar);
-    avatar.setAttribute("alt", `Avatar for ${escapeHtml(comment.user.name)}`);
+    avatar.setAttribute("alt", `Avatar for ${DOMPurify.sanitize(comment.user.name)}`);
     avatar.setAttribute("height", 30);
     avatar.setAttribute("width", 30);
     authorDiv.appendChild(avatar);
@@ -317,7 +310,7 @@ function RenderComment(comment) {
     userInfo.setAttribute("href", comment.user.url);
     const userName = document.createElement("span");
     userName.classList.add("username");
-    userName.appendChild(replaceEmoji(escapeHtml(comment.user.name), comment.user.emoji));
+    userName.appendChild(replaceEmoji(DOMPurify.sanitize(comment.user.name), comment.user.emoji));
     userInfo.appendChild(userName);
     userInfo.appendChild(document.createTextNode(" "));
     const userHandle = document.createElement("span");
@@ -330,7 +323,7 @@ function RenderComment(comment) {
     if (comment.cw) {
         commentInterior = document.createElement("details");
         const commentSummary = document.createElement("summary");
-        commentSummary.appendChild(replaceEmoji(escapeHtml(comment.cw), comment.emoji));
+        commentSummary.appendChild(replaceEmoji(DOMPurify.sanitize(comment.cw), comment.emoji));
         commentInterior.appendChild(commentSummary);
         commentDiv.appendChild(commentInterior);
     } else {

@@ -213,8 +213,9 @@ def setup(app):
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)
 
-    app.config.html_js_files.append('https://cdn.jsdelivr.net/npm/marked/marked.min.js')
-    app.config.html_js_files.append('fedi_script.js')
+    app.config.html_js_files.append('marked.min.js')
+    app.config.html_js_files.append('purify.min.js')
+    app.config.html_js_files.append('fedi_script.min.js')
     app.config.html_css_files.append('fedi_layout.css')
 
     return {

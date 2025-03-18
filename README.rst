@@ -119,3 +119,14 @@ officially supported theme, click one of the links below:
 - `scrolls <https://sphinx-fediverse.oliviaappleton.com/scrolls/>`_
 - `sphinxdoc <https://sphinx-fediverse.oliviaappleton.com/sphinxdoc/>`_
 - `traditional <https://sphinx-fediverse.oliviaappleton.com/traditional/>`_
+
+Dependencies
+~~~~~~~~~~~~
+
+Note that by using this plugin, you will be including the following in your page:
+
+- `Marked <https://marked.js.org/>`_ for rendering Markdown
+- `DOMPurify <https://github.com/cure53/DOMPurify>`_ for HTML sanitization
+
+We also use `Babel <https://babeljs.io/>`_ to ensure compatibility with most browsers. This is not included directly,
+but is used to pre-process the included javascript before release.
