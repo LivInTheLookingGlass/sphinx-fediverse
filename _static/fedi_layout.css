@@ -43,10 +43,14 @@
     color: var(--sy-c-link-hover,var(--sd-color-muted,#888));
     font-weight: bold;
     font-size: 0.8em;
+    white-space: normal;
+    word-wrap: break-word;
+    text-wrap: balance;
 }
 
 .comment .author .date {
     font-size: 0.9em;
+    text-wrap: balance;
     color: var(--sy-c-background-contrast,var(--sd-color-dark,#555));
     margin-left: 10px;
     margin-right: 10px;

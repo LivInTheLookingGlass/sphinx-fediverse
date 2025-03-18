@@ -280,7 +280,16 @@ function RenderComment(comment) {
         attachmentNode.setAttribute("src", attachment.url);
         attachmentNode.setAttribute("alt", attachment.description);
         attachmentNode.classList.add("attachment");
-        content.appendChild(attachmentNode);
+        if (attachment.sensitive && !comment.cw) {
+            const attachmentContainer = document.createElement("details");
+            const summary = document.createElement("summary");
+            summary.textContent = "Media marked as sensitive, click to expand";
+            attachmentContainer.appendChild(summary);
+            attachmentContainer.appendChild(attachmentNode);
+            content.appendChild(attachmentContainer)
+        } else {
+            content.appendChild(attachmentNode);
+        }
     }
 
     commentInterior.appendChild(content);
