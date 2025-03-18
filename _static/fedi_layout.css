@@ -61,6 +61,10 @@
     margin-top: 5px;
 }
 
+.comment .content .invisible {
+    display: none;
+}
+
 /* For nested/replied-to comments, we apply indentation */
 .comment.reply {
     margin-left: 30px;
@@ -74,6 +78,7 @@
     border: 1px solid var(--sd-color-card-border,#f5c6cb);
     border-radius: 5px;
     margin-top: 10px;
+    margin-bottom: 10px;
     padding: 5px;
 }
 
@@ -106,7 +111,7 @@
 
 /* Optional: hover effect for comments */
 .comment:hover {
-    filter: invert(0.1);
+    filter: invert(0.04);
 }
 
 .fediIcon {

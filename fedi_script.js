@@ -34,8 +34,15 @@ function replaceEmoji(string, emojis) {
             `<img src="${escapeHtml(static_url)}" class="emoji" alt="Custom emoji: ${escapeHtml(shortcode)}">`
         )
     };
-    const container = document.createElement("div");
-    Array.from(parser.parseFromString(string, 'text/html').body.children).forEach(child => container.appendChild(child));
+    const container = document.createDocumentFragment();
+    const newBody = parser.parseFromString(string, 'text/html');
+    if (newBody.body.children.length) {
+        Array.from(newBody.body.children).forEach(child => container.appendChild(child));
+    } else {
+        const span = document.createElement("span");
+        span.innerHTML = string;  // This is okay as long as it gets sanitized inputs
+        container.appendChild(span);
+    }
     return container;
 }
 
@@ -366,7 +373,7 @@ function RenderComment(comment) {
     boostIcon.appendChild(boostIconImage);
     boostIcon.appendChild(document.createTextNode(comment.boostCount + ' '));
     infoNode.appendChild(boostIcon);
-    commentInterior.appendChild(infoNode);
+    commentDiv.appendChild(infoNode);
 
     const reactionKeys = Object.keys(comment.reactions);
     reactionKeys.sort((a, b) => comment.reactions[a] < comment.reactions[b]);
