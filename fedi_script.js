@@ -33,7 +33,9 @@ function replaceEmoji(string, emojis) {
             `<img src="${escapeHtml(static_url)}" class="emoji" alt="Custom emoji: ${escapeHtml(shortcode)}">`
         )
     };
-    return parser.parseFromString(string, 'text/html').body.firstChild;
+    const container = document.createElement("div");
+    Array.from(parser.parseFromString(string, 'text/html').body.children).forEach(child => container.appendChild(child));
+    return container;
 }
 
 function ExtractComment(fediFlavor, fediInstance, comment) {
@@ -50,6 +52,11 @@ function ExtractComment(fediFlavor, fediInstance, comment) {
             name2: "url",
             ...
         },
+        reactionEmoji: {
+            name1: "url",
+            name2: "url",
+            ...
+        }
         reactionCount: "int",
         boostCount: "int",
         media: [{
@@ -113,7 +120,7 @@ function ExtractMastodonComment(fediInstance, comment) {
     if (comment.emoji_reactions) {  // TODO: test this
         for (const reaction of comment.emoji_reactions) {
             if (reaction.name.length === 1) {
-                userEmoji[reaction.name] = reaction.count;
+                reactions[reaction.name] = reaction.count;
             } else {
                 reactions["❤"] += reaction.count;
             }
@@ -138,6 +145,7 @@ function ExtractMastodonComment(fediInstance, comment) {
         cw: comment.spoiler_text,
         emoji: commentEmoji,
         reactionCount: comment.favourites_count,
+        reactionEmoji: {},
         boostCount: comment.reblogs_count,
         media: attachments,
         reactions: reactions,
@@ -159,6 +167,8 @@ function ExtractMisskeyComment(fediInstance, comment) {
     const handle = `@${user.username}@${domain}`;
     const attachments = [];
     const reactions = {"❤": 0};
+    let commentEmoji = comment.emojis;
+    let userEmoji = user.emojis;
     // TODO: the non-annying parts of MFM
     // replace mentions, hashtags with markdown links
     const text = comment.text.replaceAll(
@@ -195,11 +205,12 @@ function ExtractMisskeyComment(fediInstance, comment) {
 
     return {
         id: comment.id,
-        replyId: comment.replyId,
+        replyId: comment.replyId || comment.renoteId,
         url: `https://${fediInstance}/notes/${comment.id}`,
         date: comment.createdAt,
         cw: comment.cw,
-        emoji: {},  // TODO: MFM emoji
+        emoji: commentEmoji,
+        reactionEmoji: comment.reactionEmojis,
         reactionCount: comment.reactionCount,
         boostCount: comment.renoteCount,
         reactions: reactions,
@@ -211,7 +222,7 @@ function ExtractMisskeyComment(fediInstance, comment) {
             url: `https://${fediInstance}/${handle}`,
             name: user.name,
             avatar: user.avatarUrl,
-            emoji: {}  // TODO: MFM emoji
+            emoji: userEmoji
         }
     };
 }
