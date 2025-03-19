@@ -3,25 +3,25 @@ sphinx-fediverse documentation
 
 For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 
-.. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse
+.. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse?label=Downloads
    :alt: PyPI Total Downloads
    :target: https://pepy.tech/projects/sphinx-fediverse
-.. |license| image:: https://img.shields.io/pypi/l/sphinx-fediverse
+.. |license| image:: https://img.shields.io/pypi/l/sphinx-fediverse?label=License
    :alt: PyPI License
    :target: https://pypi.org/project/sphinx-fediverse
-.. |status| image:: https://img.shields.io/pypi/status/sphinx-fediverse
+.. |status| image:: https://img.shields.io/pypi/status/sphinx-fediverse?label=Status
    :alt: PyPI Status
    :target: https://pypi.org/project/sphinx-fediverse
-.. |version| image:: https://img.shields.io/pypi/v/sphinx-fediverse
+.. |version| image:: https://img.shields.io/pypi/v/sphinx-fediverse?label=PyPi
    :alt: PyPI Version
    :target: https://pypi.org/project/sphinx-fediverse
-.. |sponsors| image:: https://img.shields.io/github/sponsors/LivInTheLookingGlass
+.. |sponsors| image:: https://img.shields.io/github/sponsors/LivInTheLookingGlass?label=Sponsors
    :alt: GitHub Sponsors
    :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse
-.. |issues| image:: https://img.shields.io/github/issues/LivInTheLookingGlass/sphinx-fediverse
+.. |issues| image:: https://img.shields.io/github/issues/LivInTheLookingGlass/sphinx-fediverse?label=Issues
    :alt: Open GitHub Issues
    :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/issues
-.. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse
+.. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse?label=Pull%20Requests
    :alt: Open GitHub Pull Requests
    :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/pulls
 .. |python| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/python.yml?label=Py%20Tests
