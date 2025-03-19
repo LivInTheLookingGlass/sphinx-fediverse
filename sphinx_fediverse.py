@@ -174,7 +174,7 @@ class FediverseCommentDirective(SphinxDirective):
                     if (postId) {{
                         setImageLinks("{self.env.config.html_baseurl}/_static/like.svg", "{self.env.config.html_baseurl}/_static/boost.svg")
                         // Trigger the comment-fetching logic on page load
-                        FetchComments(fediFlavor, fediInstance, postId, 5); // Adjust depth as needed
+                        fetchComments(fediFlavor, fediInstance, postId, 5); // Adjust depth as needed
                     }}
                 }}
             }});
@@ -200,6 +200,12 @@ def on_builder_inited(app):
     )
 
 
+def on_config_inited(app, config):
+    app.config.html_js_files.append(f'fedi_script_{app.config.fedi_flavor}.min.js')
+    if app.config.fedi_flavor == 'misskey':
+        app.config.html_js_files.append('marked.min.js')
+
+
 def setup(app):
     # Register custom configuration options
     app.add_config_value('fedi_flavor', '', 'env')
@@ -212,8 +218,8 @@ def setup(app):
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)
+    app.connect('config-inited', on_config_inited)
 
-    app.config.html_js_files.append('marked.min.js')
     app.config.html_js_files.append('purify.min.js')
     app.config.html_js_files.append('fedi_script.min.js')
     app.config.html_css_files.append('fedi_layout.css')
