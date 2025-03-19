@@ -3,7 +3,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).parent.parent / "pysrc"))
 
-from sphinx_fediverse import __version__  # isort: skip
+from sphinx_fediverse import __version__  # isort: skip  # noqa: E402
 
 project = 'sphinx-fediverse'
 copyright = '2025, Olivia Appleton-Crocker'
