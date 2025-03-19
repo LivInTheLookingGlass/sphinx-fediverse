@@ -48,20 +48,22 @@ html: bundle
 .PHONY: test
 test: LICENSE dependencies
 	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
-	@npx mocha
+	@cd jssrc && npx mocha
 
 .PHONY: test_%
 test_%: LICENSE dependencies
 	@$(PY) -m pytest $(pytest_args) -d -n$*
+	@cd jssrc && npx mocha --parallel -j $*
 
 .PHONY: dependencies
 dependencies:
-	@npm install --include=dev
+	@cd jssrc && npm install --include=dev
 ifeq ($(MYPY),true)
 	@$(PIP) install -r requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
 	@cat requirements-dev.txt | grep -v "mypy" > .requirements.txt
 	@$(PIP) install -r .requirements.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	@rm .requirements.txt
 endif
 
 .PHONY: clean
@@ -69,21 +71,21 @@ clean:
 	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info node_modules _static/fedi_script*.js || echo
 	@$(MAKE) -C docs clean
 
-_static/fedi_scrip%.min.js: fedi_scrip%.js dependencies
-	@npx babel $< --out-file $@ --no-comments
-	@VERSION=$$(npx json version -f package.json) && \
+pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
+	@cd jssrc && npx babel ../$< --out-file ../$@ --no-comments
+	@VERSION=$$(npx json version -f jssrc/package.json) && \
 	LICENSE_COMMENT="/*! @license sphinx-fediverse $$VERSION | (c) Olivia Appleton-Crocker & other contributors | Released under the GPLv3 | github.com/LivInTheLookingGlass/sphinx-fediverse/blob/$$VERSION/LICENSE */" && \
 	sed -i --follow-symlinks "1i$$LICENSE_COMMENT" $@
 
 bundle: SHELL := bash
 bundle: dependencies
-	@$(MAKE) -j _static/fedi_script{,_{mastodon,misskey}}.min.js
-	@npx babel ./node_modules/dompurify/dist/purify.min.js ./node_modules/marked/marked.min.js -d _static
+	@$(MAKE) -j pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
+	@cd jssrc && npx babel ./node_modules/{dompurify/dist/purify,marked/marked}.min.js -d ../pysrc/_static
 
 .PHONY: build
 build: clean bundle
-	$(PY) -m build -sw
+	$(PY) -m build -sw pysrc
 
 .PHONY: publish
 publish: build
-	$(PY) -m twine upload dist/*
+	$(PY) -m twine upload pysrc/dist/*

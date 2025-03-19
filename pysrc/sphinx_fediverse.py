@@ -7,7 +7,10 @@ from typing import Set
 from docutils import nodes
 from sphinx.util.docutils import SphinxDirective
 
-with (Path(__file__).parent / "package.json").open('r') as f:
+package_json_path = Path(__file__).parent / "package.json"
+if not package_json_path.exists():
+    copyfile(Path(__file__).parent.parent / "jssrc" / "package.json", package_json_path)
+with package_json_path.open('r') as f:
     version = load(f)['version']
 
 __version__ = tuple(int(x) for x in version.split("."))

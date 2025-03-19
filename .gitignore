@@ -171,4 +171,4 @@ cython_debug/
 .pypirc
 
 node_modules
-_static/*.js
+pysrc/_static/*.js
