@@ -63,7 +63,7 @@ class FediverseCommentDirective(SphinxDirective):
                 client_id=getenv('MASTODON_CLIENT_ID'),
                 client_secret=getenv('MASTODON_CLIENT_SECRET'),
                 access_token=getenv('MASTODON_ACCESS_TOKEN'),
-                user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
+                user_agent=f'Sphinx-Fediverse v{".".join(str(x) for x in __version__)}',
             )
             message = f"Discussion post for {title}\n\n{self.env.config.html_baseurl}"
             message.rstrip('/')
