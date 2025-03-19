@@ -75,9 +75,9 @@ js_dependencies:
 .PHONY: py_dependencies
 py_dependencies:
 ifeq ($(MYPY),true)
-	@$(PIP) install -r requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	@$(PIP) install -r pysrc/requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
-	@cat requirements-dev.txt | grep -v "mypy" > .requirements.txt
+	@cat pysrc/requirements-dev.txt | grep -v "mypy" > .requirements.txt
 	@$(PIP) install -r .requirements.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 	@rm .requirements.txt
 endif
