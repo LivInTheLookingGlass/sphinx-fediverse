@@ -16,7 +16,7 @@ function replaceEmoji(string, emojis) {
         )
     };
     const container = document.createDocumentFragment();
-    const newBody = parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
+    const newBody = config.parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
     if (newBody.body.children.length) {
         Array.from(newBody.body.children).forEach(child => container.appendChild(child));
     } else {
