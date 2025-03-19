@@ -5,6 +5,8 @@ on:
     paths:
       - 'pysrc/**'
       - '.github/workflows/python.yml'
+  workflow_dispatch:
+  pull_request:
   schedule:
   - cron: "0 0 1 * *"
 

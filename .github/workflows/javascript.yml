@@ -5,6 +5,8 @@ on:
     paths:
       - 'jssrc/**'
       - '.github/workflows/javascript.yml'
+  workflow_dispatch:
+  pull_request:
   schedule:
   - cron: "0 0 1 * *"
 

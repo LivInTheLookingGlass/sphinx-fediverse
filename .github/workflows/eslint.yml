@@ -5,6 +5,7 @@ on:
     paths:
       - 'jssrc/**'
       - '.github/workflows/eslint.yml'
+  workflow_dispatch:
   pull_request:
   schedule:
     - cron: '27 15 * * 5'
