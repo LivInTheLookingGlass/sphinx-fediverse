@@ -36,7 +36,8 @@ For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 .. |javascript-lint| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/eslint.yml?label=JS%20Lint
    :alt: GitHub Actions Workflow Status (JavaScript Lint)
    :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/actions/workflows/eslint.yml
-.. |codecov| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse&label=Coverage
+.. |codecov| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse?label=Coverage
+
    :alt: Code Coverage (Overall)
    :target: https://app.codecov.io/gh/LivInTheLookingGlass/sphinx-fediverse/tree/main/
 .. |codecov-py| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse?flag=Python&label=Coverage%20(Py)
