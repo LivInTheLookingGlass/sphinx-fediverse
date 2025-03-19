@@ -85,7 +85,8 @@ class FediverseCommentDirective(SphinxDirective):
                 i=getenv('MISSKEY_ACCESS_TOKEN'),
                 # user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
             )
-            url = f"{self.env.config.html_baseurl.rstrip('/')}/{post_url.replace(')', r'\)')}"
+            escaped_url = post_url.replace(')', r'\)')
+            url = f"{self.env.config.html_baseurl.rstrip('/')}/{escaped_url}"
             message = f"Discussion post for [{title}]({url})"
             post = api.notes_create(
                 text=message, visibility='public',

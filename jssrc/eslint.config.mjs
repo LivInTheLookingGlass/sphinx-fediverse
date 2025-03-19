@@ -29,6 +29,7 @@ export default defineConfig([
         // Overrides for .mjs files
         files: ["**/*.mjs"],
         languageOptions: {
+            ecmaVersion: 'latest',
             sourceType: "module"
         }
     }
