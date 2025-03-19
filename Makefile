@@ -50,19 +50,19 @@ test: js_test py_test
 test_%: js_test_% py_test_%
 
 .PHONY: js_test
-js_test: LICENSE js_dependencies
+js_test: jssrc/LICENSE js_dependencies
 	@cd jssrc && npx mocha
 
 .PHONY: js_test_%
-js_test_%: LICENSE js_dependencies
+js_test_%: jssrc/LICENSE js_dependencies
 	@cd jssrc && npx mocha --parallel -j $*
 
 .PHONY: py_test
-py_test: LICENSE py_dependencies
+py_test: pysrc/LICENSE py_dependencies
 	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
 
 .PHONY: py_test_%
-py_test_%: LICENSE py_dependencies
+py_test_%: pysrc/LICENSE py_dependencies
 	@$(PY) -m pytest $(pytest_args) -d -n$*
 
 .PHONY: dependencies
