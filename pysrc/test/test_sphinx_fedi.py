@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 from pytest import fail, mark, raises
 from sphinx.application import Sphinx
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # cov: ignore
     from typing import Any, Callable, Generator, Tuple
 
 sys_path.append(str(Path(__file__).parent.parent))

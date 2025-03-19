@@ -1,16 +1,17 @@
-let parser;
-let like_link = "_static/like.svg";
-let boost_link = "_static/boost.svg";
+const config = {
+    parser: undefined,
+    boost_link: "_static/boost.svg",
+};
 
 try {
-    parser = new DOMParser();
+    config.parser = new DOMParser();
+// eslint-disable-next-line no-unused-vars
 } catch (err) {
-    console.log("unable to spawn DOM Parser, likely because you're in node.js", err);
+    console.log("unable to spawn DOM Parser, likely because you're in node.js");
 }
 
-function setImageLinks(new_like_link, new_boost_link) {
-    like_link = new_like_link;
-    boost_link = new_boost_link;
+function setImageLink(new_boost_link) {
+    config.boost_link = new_boost_link;
 }
 
 function replaceEmoji(string, emojis) {
@@ -115,7 +116,7 @@ function renderComment(comment) {
     const boostIcon = document.createElement("span");
     boostIcon.classList.add("reaction");
     const boostIconImage = document.createElement("img");
-    boostIconImage.setAttribute("src", boost_link);
+    boostIconImage.setAttribute("src", config.boost_link);
     boostIconImage.setAttribute("alt", "Boosts");
     boostIconImage.classList.add("fediIcon");
     boostIcon.appendChild(boostIconImage);
@@ -173,3 +174,12 @@ async function fetchComments(fediInstance, postId, maxDepth) {
         console.error("Error fetching comments:", error);
     }
 }
+
+module.exports = {
+    config,
+    setImageLink,
+    replaceEmoji,
+    renderComment,
+    renderCommentsBatch,
+    fetchComments,
+};

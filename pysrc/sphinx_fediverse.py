@@ -9,7 +9,7 @@ from typing import TYPE_CHECKING, cast
 from docutils import nodes
 from sphinx.util.docutils import SphinxDirective
 
-if TYPE_CHECKING:
+if TYPE_CHECKING:  # cov: ignore
     from typing import Any, Dict, List, Set, Union
 
     from sphinx.application import Sphinx
@@ -178,8 +178,7 @@ class FediverseCommentDirective(SphinxDirective):
                     const postId = postIdElement.textContent || postIdElement.innerText;
                     const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
                     if (postId) {{
-                        setImageLinks(
-                            "{self.env.config.html_baseurl}/_static/like.svg",
+                        setImageLink(
                             "{self.env.config.html_baseurl}/_static/boost.svg"
                         )
                         // Trigger the comment-fetching logic on page load

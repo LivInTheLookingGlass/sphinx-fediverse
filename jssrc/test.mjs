@@ -59,11 +59,21 @@ describe('fetch() with PollyJS', function () {
     });
 });
 
+describe('Glue Script', function () {
+    const glue = require("./fedi_script.js");
+
+    it('should be able to change image links', async function () {
+        glue.setImageLink('a');
+        assert.equal(glue.config.boost_link, 'a');
+    });
+});
+
 describe('Misskey Implementation', function () {
+    const misskey = require("./fedi_script_misskey.js");
+
     it('should be able to fetch (transfem.social, a58960b3o5ko020v)', async function () {
         const instance = 'transfem.social';
         const id = 'a58960b3o5ko020v';
-        const misskey = require("./fedi_script_misskey.js");
         const comments = await misskey.fetchSubcomments(instance, id);
         assert.ok(comments.length);
         assert.equal(comments[0].user.host, instance);
@@ -72,10 +82,11 @@ describe('Misskey Implementation', function () {
 });
 
 describe('Mastodon Implementation', function () {
+    const mastodon = require("./fedi_script_mastodon.js");
+
     it('should be able to fetch (tech.lgbt, 114032235423688612)', async function () {
         const instance = 'tech.lgbt';
         const id = '114032235423688612';
-        const mastodon = require("./fedi_script_mastodon.js");
         const comments = await mastodon.fetchSubcomments(instance, id);
         assert.ok(comments.length);
         assert.equal(comments[0].user.host, instance);
