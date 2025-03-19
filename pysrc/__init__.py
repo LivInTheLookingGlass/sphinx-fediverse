@@ -1,2 +1,1 @@
-from .sphinx_fediverse import *
-from .sphinx_fediverse import __version__
+from .sphinx_fediverse import FediverseCommentDirective, __version__, setup  # noqa: F401

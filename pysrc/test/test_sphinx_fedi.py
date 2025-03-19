@@ -7,7 +7,6 @@ from textwrap import dedent
 
 from pytest import fail, mark, raises
 from sphinx.application import Sphinx
-from sphinx.testing.fixtures import *
 
 sys_path.append(str(Path(__file__).parent.parent))
 
