@@ -2,7 +2,7 @@ import { defineConfig } from "eslint/config";
 
 const ignoreUnusedPatterns = [
     "^_",
-    "(?:extract|fetch)Comments?",
+    "fetchComments",
     ".*_link",
     "setImageLinks",
 ];

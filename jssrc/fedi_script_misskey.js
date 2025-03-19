@@ -16,25 +16,32 @@ async function extractComment(fediInstance, comment) {
     {
         id: "string",
         replyId: "string",
-        url: "url",                                     date: "string",
-        cw: "null | string",                            emoji: {
+        url: "url",
+        date: "string",
+        cw: "null | string",
+        emoji: {
             name1: "url",
-            name2: "url",                                   ...
+            name2: "url",
+            ...
         },
         reactionEmoji: {
             name1: "url",
             name2: "url",
-            ...                                         }
+            ...
+        },
         reactionCount: "int",
         boostCount: "int",
         media: [{
             url: "url",
-            sensitive: "bool",                              description: "string",
+            sensitive: "bool",
+            description: "string",
         }],
         content: "string?", (maybe it should be a DOM element?)
-        user: {                                             host: "string",
+        user: {
+            host: "string",
             handle: "string",
-            url: "url",                                     name: "string",
+            url: "url",
+            name: "string",
             avatar: "url",
             emoji: {
                 name1: "url",
@@ -93,7 +100,7 @@ async function extractComment(fediInstance, comment) {
         const pairs = await Promise.all(
             Array.from(comment.text.matchAll(pattern))
                 .map(match => match[1])
-                .map(name => fetchMisskeyEmoji(fediInstance, name))
+                .map(name => fetchMisskeyEmoji(domain, name))
         );
         Object.assign(commentEmoji, ...pairs);
     }
@@ -103,7 +110,7 @@ async function extractComment(fediInstance, comment) {
         const pairs = await Promise.all(
             Array.from(user.name.matchAll(pattern))
                 .map(match => match[1])
-                .map(name => fetchMisskeyEmoji(fediInstance, name))
+                .map(name => fetchMisskeyEmoji(domain, name))
         );
         Object.assign(commentEmoji, ...pairs);
     }
@@ -158,3 +165,58 @@ async function fetchMisskeyEmoji(fediInstance, name) {
     }
     return ret;
 }
+
+async function fetchSubcomments(fediInstance, commentId) {
+    try {
+        const response = await fetch(`https://${fediInstance}/api/notes/children`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                noteId: commentId,
+                limit: 100
+            })
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        return Promise.all(data.map(
+            comment => extractComment(fediInstance, comment)
+        ));
+    } catch (error) {
+        console.error(`Error fetching subcomments for ${commentId}:`, error);
+    }
+}
+
+async function fetchMeta(fediInstance, postId) {
+    let response;
+    let data;
+
+    try {
+        // Misskey has a different endpoint for fetching a post's details
+        response = await fetch(`https://${fediInstance}/api/notes/show`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ noteId: postId }),
+        });
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        data = await response.json();
+        document.getElementById("global-likes").textContent = `${data.reactionCount}`;
+        document.getElementById("global-reblogs").textContent = `${data.renoteCount}`;
+    } catch (error) {
+        console.error("Error fetching post meta:", error);
+    }
+}
+
+module.exports = {
+    extractComment,
+    fetchMisskeyEmoji,
+    fetchSubcomments,
+    fetchMeta,
+};

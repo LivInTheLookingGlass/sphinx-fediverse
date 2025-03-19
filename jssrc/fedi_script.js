@@ -160,86 +160,16 @@ function renderCommentsBatch(comments) {
     });
 }
 
-async function fetchMeta(fediFlavor, fediInstance, postId) {
-    let response;
-    let data;
-
+async function fetchComments(fediInstance, postId, maxDepth) {
     try {
-        if (fediFlavor === 'misskey') {
-            // Misskey has a different endpoint for fetching a post's details
-            response = await fetch(`https://${fediInstance}/api/notes/show`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ noteId: postId }),
-            });
-        } else if (fediFlavor === 'mastodon') {
-            // Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
-            response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
+        fetchMeta(fediInstance, postId);
+        while (maxDepth) {
+            maxDepth--;
+            const replies = await fetchSubcomments(fediInstance, postId);
+            renderCommentsBatch(replies);
+            await Promise.all(replies.map(reply => fetchSubcomments(fediInstance, reply.id)));
         }
-
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        data = await response.json();
-
-        // Depending on the platform, update the likes and reblogs count
-        if (fediFlavor === 'misskey') {
-            // Misskey API returns favorites_count and reblogs_count differently
-            document.getElementById("global-likes").textContent = `${data.reactionCount}`;
-            document.getElementById("global-reblogs").textContent = `${data.renoteCount}`;
-        } else if (fediFlavor === 'mastodon') {
-            document.getElementById("global-likes").textContent = `${data.favourites_count}`;
-            document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
-        }
-
-    } catch (error) {
-        console.error("Error fetching post meta:", error);
-    }
-}
-
-
-async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
-    try {
-        fetchMeta(fediFlavor, fediInstance, postId);
-        await fetchSubcomments(fediFlavor, fediInstance, postId, maxDepth);
     } catch (error) {
         console.error("Error fetching comments:", error);
-    }
-}
-
-async function fetchSubcomments(fediFlavor, fediInstance, commentId, depth) {
-    if (depth <= 0) return;
-
-    try {
-        const response = await (
-            fediFlavor === 'misskey'
-                ? fetch(`https://${fediInstance}/api/notes/children`, {
-                    method: 'POST',
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        noteId: commentId,
-                        limit: 100
-                    })
-                })
-                : fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`)
-        );
-
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
-
-        const data = await response.json();
-        const replies = await Promise.all(
-            (fediFlavor === 'misskey' ? data : data.descendants).map(
-                comment => extractComment(fediInstance, comment)
-            )
-        );
-
-        renderCommentsBatch(replies);
-
-        await Promise.all(replies.map(reply => fetchSubcomments(fediFlavor, fediInstance, reply.id, depth - 1)));
-    } catch (error) {
-        console.error(`Error fetching subcomments for ${commentId}:`, error);
     }
 }

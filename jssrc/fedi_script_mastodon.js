@@ -3,25 +3,32 @@ async function extractComment(fediInstance, comment) {
     {
         id: "string",
         replyId: "string",
-        url: "url",                                     date: "string",
-        cw: "null | string",                            emoji: {
+        url: "url",
+        date: "string",
+        cw: "null | string",
+        emoji: {
             name1: "url",
-            name2: "url",                                   ...
+            name2: "url",
+            ...
         },
         reactionEmoji: {
             name1: "url",
             name2: "url",
-            ...                                         }
+            ...
+        },
         reactionCount: "int",
         boostCount: "int",
         media: [{
             url: "url",
-            sensitive: "bool",                              description: "string",
+            sensitive: "bool",
+            description: "string",
         }],
         content: "string?", (maybe it should be a DOM element?)
-        user: {                                             host: "string",
+        user: {
+            host: "string",
             handle: "string",
-            url: "url",                                     name: "string",
+            url: "url",
+            name: "string",
             avatar: "url",
             emoji: {
                 name1: "url",
@@ -100,3 +107,43 @@ async function extractComment(fediInstance, comment) {
         }
     };
 }
+
+async function fetchSubcomments(fediInstance, commentId) {
+    try {
+        const response = await fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`);
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        const data = await response.json();
+        return Promise.all(data.descendants.map(
+            comment => extractComment(fediInstance, comment)
+        ));
+    } catch (error) {
+        console.error(`Error fetching subcomments for ${commentId}:`, error);
+    }
+}
+
+async function fetchMeta(fediInstance, postId) {
+    let response;
+    let data;
+
+    try {
+        // Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
+        response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
+
+        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+        data = await response.json();
+        document.getElementById("global-likes").textContent = `${data.favourites_count}`;
+        document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
+
+    } catch (error) {
+        console.error("Error fetching post meta:", error);
+    }
+}
+
+module.exports = {
+    extractComment,
+    fetchSubcomments,
+    fetchMeta,
+};
