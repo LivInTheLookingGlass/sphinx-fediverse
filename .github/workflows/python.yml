@@ -1,0 +1,90 @@
+name: Py
+
+on:
+  push:
+    paths:
+      - 'pysrc/**'
+      - '.github/workflows/python.yml'
+  schedule:
+  - cron: "0 0 1 * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    strategy:
+      fail-fast: false
+      matrix:
+        version: ["3.6", "3.7", "3.8", "3.9", "3.10", "3.11", "3.12"]
+        os: [ubuntu-latest, windows-latest]
+        exclude:
+        - os: ubuntu-latest
+          version: 3.6
+        - os: ubuntu-latest
+          version: 3.7
+        include:
+        - os: ubuntu-20.04
+          version: 3.6
+        - os: macos-latest
+          version: 3.11
+        - os: macos-latest
+          version: 3.12
+        - os: ubuntu-latest
+          version: graalpy-23.1
+        - os: macos-13
+          version: 3.11
+        - os: macos-13
+          version: 3.12
+        - os: ubuntu-latest
+          version: graalpy-24.0
+        - os: ubuntu-latest
+          version: pypy3.6
+        - os: ubuntu-latest
+          version: pypy3.7
+        - os: ubuntu-latest
+          version: pypy3.8
+        - os: ubuntu-latest
+          version: pypy3.9
+        - os: ubuntu-latest
+          version: pypy3.10
+    runs-on: ${{ matrix.os }}
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Python ${{ matrix.version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.version }}
+        cache: 'pip'
+        cache-dependency-path: |
+          pysrc/requirements.txt
+          c/requirements.txt
+
+    - name: Run tests (serially, benchmarked)
+      if: ${{matrix.os == 'ubuntu-latest' && matrix.version == '3.12'}}
+      run: make py_test COV=true LINT=false
+
+    - name: Run tests (serially)
+      if: ${{contains(matrix.version, 'graalpy')}}
+      run: make py_test LINT=false benchmark_flags=
+
+    - name: Run tests (serially, w/ minimum dependencies)
+      if: ${{(matrix.version == 'pypy3.6') || (matrix.version == 'pypy3.7')}}
+      run: |
+        sed -i '/pytest-[^b\n][^\n]*/d' pysrc/requirements.txt
+        sed -i '/coverage/d' pysrc/requirements.txt
+        make py_test LINT=false COV=false
+
+    - name: Run tests (in parallel)
+      if: ${{!((matrix.os == 'ubuntu-latest' && matrix.version == '3.12') || contains(matrix.version, 'graalpy') || (matrix.version == 'pypy3.6') || (matrix.version == 'pypy3.7'))}}
+      run: make py_test_auto LINT=false COV=true
+
+    - name: Upload coverage reports to Codecov
+      if: ${{!contains(matrix.version, 'graalpy') && matrix.version != 'pypy3.6' && matrix.version != 'pypy3.7'}}
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: Python

@@ -1,0 +1,25 @@
+name: ESLint
+
+on:
+  push:
+    paths:
+      - 'jssrc/**'
+      - '.github/workflows/eslint.yml'
+  pull_request:
+  schedule:
+    - cron: '27 15 * * 5'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eslint:
+    name: Run eslint scanning
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Run ESLint
+        run: make js_lint

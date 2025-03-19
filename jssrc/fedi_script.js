@@ -1,6 +1,12 @@
-const parser = new DOMParser();
+let parser;
 let like_link = "_static/like.svg";
 let boost_link = "_static/boost.svg";
+
+try {
+    parser = new DOMParser();
+} catch (err) {
+    console.log("unable to spawn DOM Parser, likely because you're in node.js", err);
+}
 
 function setImageLinks(new_like_link, new_boost_link) {
     like_link = new_like_link;
@@ -9,10 +15,10 @@ function setImageLinks(new_like_link, new_boost_link) {
 
 function replaceEmoji(string, emojis) {
     for (const shortcode in emojis) {
-        const static_url = emojis[shortcode];
+        const static_url = DOMPurify.sanitize(emojis[shortcode]);
         string = string.replaceAll(
             `:${shortcode}:`,
-            `<img src="${DOMPurify.sanitize(static_url)}" class="emoji" alt="Custom emoji: ${DOMPurify.sanitize(shortcode)}">`
+            `<img src="${static_url}" class="emoji" alt="Custom emoji: ${DOMPurify.sanitize(shortcode)}">`
         )
     };
     const container = document.createDocumentFragment();
@@ -208,17 +214,17 @@ async function fetchSubcomments(fediFlavor, fediInstance, commentId, depth) {
     try {
         const response = await (
             fediFlavor === 'misskey'
-            ? fetch(`https://${fediInstance}/api/notes/children`, {
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    noteId: commentId,
-                    limit: 100
+                ? fetch(`https://${fediInstance}/api/notes/children`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        noteId: commentId,
+                        limit: 100
+                    })
                 })
-            })
-            : fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`)
+                : fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`)
         );
 
         if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);

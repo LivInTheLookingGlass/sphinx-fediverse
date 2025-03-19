@@ -68,7 +68,7 @@ async function extractComment(fediInstance, comment) {
     );
 
     const cw = (comment.cw && user.mandatoryCW) ? `${user.mandatoryCW} + ${comment.cw}` :
-               (user.mandatoryCW ? user.mandatoryCW : comment.cw);
+        (user.mandatoryCW ? user.mandatoryCW : comment.cw);
 
     for (const attachment of comment.files) {
         if (attachment.type.substring('image') !== -1) {

@@ -1,0 +1,28 @@
+coverage:
+  status:
+    project:
+      default:
+        informational: true
+    patch:
+      default:
+        informational: true
+
+component_management:
+  default_rules:  # default rules that will be inherited by all components
+    statuses:
+      - type: project # in this case every component that doens't have a status defined will have a project type one
+        target: auto
+        branches:
+          - "!main"
+  individual_components:
+    - component_id: module_javascript
+      name: JavaScript
+      paths:
+        - javascript/**
+    - component_id: module_python
+      name: Python
+      paths:
+        - python/**
+flag_management:
+  default_rules: # the rules that will be followed for any flag added, generally
+    carryforward: true

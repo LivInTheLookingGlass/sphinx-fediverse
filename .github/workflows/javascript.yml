@@ -1,0 +1,39 @@
+name: JS
+
+on:
+  push:
+    paths:
+      - 'jssrc/**'
+      - '.github/workflows/javascript.yml'
+  schedule:
+  - cron: "0 0 1 * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  nodejs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Use Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: latest
+        cache: 'npm'
+        cache-dependency-path: 'jssrc/package-lock.json'
+
+    - name: Install dependencies
+      run: make js_dependencies COV=true
+
+    - name: Run tests (serially)
+      run: make js_test COV=true
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v4.0.1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        flags: JavaScript

@@ -14,8 +14,6 @@ endif
 
 ifeq ($(LINT),false)
 pytest_args?= -vl
-else ifeq ($(LINT),true)
-pytest_args?= -vl --mypy --mypy-ignore-missing-imports --isort --flake8 -k 'not test_problem and not test_is_prime and not test_groupwise'
 else ifeq ($(LINT),less)
 pytest_args?= -vl --isort
 else
@@ -46,18 +44,36 @@ html: bundle
 	@$(MAKE) -C docs html
 
 .PHONY: test
-test: LICENSE dependencies
-	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
-	@cd jssrc && npx mocha
+test: js_test py_test
 
 .PHONY: test_%
-test_%: LICENSE dependencies
-	@$(PY) -m pytest $(pytest_args) -d -n$*
+test_%: js_test_% py_test_%
+
+.PHONY: js_test
+js_test: LICENSE js_dependencies
+	@cd jssrc && npx mocha
+
+.PHONY: js_test_%
+js_test_%: LICENSE js_dependencies
 	@cd jssrc && npx mocha --parallel -j $*
 
+.PHONY: py_test
+py_test: LICENSE py_dependencies
+	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
+
+.PHONY: py_test_%
+py_test_%: LICENSE py_dependencies
+	@$(PY) -m pytest $(pytest_args) -d -n$*
+
 .PHONY: dependencies
-dependencies:
+dependencies: js_dependencies py_dependencies
+
+.PHONY: js_dependencies
+js_dependencies:
 	@cd jssrc && npm install --include=dev
+
+.PHONY: py_dependencies
+py_dependencies:
 ifeq ($(MYPY),true)
 	@$(PIP) install -r requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
@@ -78,14 +94,18 @@ pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
 	sed -i --follow-symlinks "1i$$LICENSE_COMMENT" $@
 
 bundle: SHELL := bash
-bundle: dependencies
+bundle: js_dependencies
 	@$(MAKE) -j pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
 	@cd jssrc && npx babel ./node_modules/{dompurify/dist/purify,marked/marked}.min.js -d ../pysrc/_static
 
 .PHONY: build
-build: clean bundle
+build: clean dependencies bundle
 	$(PY) -m build -sw pysrc
 
 .PHONY: publish
 publish: build
 	$(PY) -m twine upload pysrc/dist/*
+
+.PHONY: js_lint
+js_lint: 
+	@cd jssrc && npx eslint *.js *.mjs --ignore-pattern "dist/*"

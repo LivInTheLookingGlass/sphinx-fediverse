@@ -22,9 +22,11 @@
     "marked": "^15.0.7"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
     "@pollyjs/adapter-node-http": "^6.0.6",
     "@pollyjs/core": "^6.0.6",
     "@pollyjs/persister-fs": "^6.0.6",
+    "eslint": "^9.22.0",
     "mocha": "^11.1.0",
     "node-fetch": "^3.3.2"
   }
