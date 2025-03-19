@@ -82,7 +82,7 @@ bundle: dependencies
 
 .PHONY: build
 build: clean bundle
-	$(PY) setup.py sdist bdist_wheel
+	$(PY) -m build -sw
 
 .PHONY: publish
 publish: build

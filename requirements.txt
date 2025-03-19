@@ -1,4 +1,5 @@
 doctools
+docutils
 mastodon.py
 misskey.py
 requests
