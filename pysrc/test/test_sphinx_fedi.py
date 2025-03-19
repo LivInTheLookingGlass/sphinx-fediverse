@@ -1,12 +1,18 @@
+from __future__ import annotations
+
 from contextlib import contextmanager
 from multiprocessing import Process
 from pathlib import Path
 from sys import path as sys_path
 from tempfile import TemporaryDirectory
 from textwrap import dedent
+from typing import TYPE_CHECKING
 
 from pytest import fail, mark, raises
 from sphinx.application import Sphinx
+
+if TYPE_CHECKING:
+    from typing import Any, Callable, Generator, Tuple
 
 sys_path.append(str(Path(__file__).parent.parent))
 
@@ -20,8 +26,8 @@ html_static_path = ['_static']
 
 
 # we want to run tests in subprocesses because sphinx doesn't clean up until exit
-def run_in_subprocess(func):
-    def wrapper(*args, **kwargs):
+def run_in_subprocess(func: Callable[..., Any]) -> Callable[..., None]:
+    def wrapper(*args: Any, **kwargs: Any) -> None:
         proc = Process(target=func, args=args, kwargs=kwargs)
         proc.start()
         proc.join()
@@ -32,7 +38,7 @@ def run_in_subprocess(func):
 
 # this reduces the burden of spinning up a new app each time
 @contextmanager
-def mk_app(conf, index, builder='html'):
+def mk_app(conf: str, index: str, builder: str = 'html') -> Generator[Tuple[Sphinx, str], None, None]:
     with TemporaryDirectory() as tmpdir:
         tmpdir_path = Path(tmpdir)
         srcdir = tmpdir_path / "source"

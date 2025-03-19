@@ -7,6 +7,11 @@ COV?=false
 BLUE=\033[0;34m
 NC=\033[0m # No Color
 benchmark_flags=--benchmark-min-time=0.05 --benchmark-sort=fullname --benchmark-group-by=fullfunc --benchmark-verbose
+MOCHA=npx mocha
+
+ifeq ($(COV),true)
+MOCHA=npx nyc --reporter=lcov mocha
+endif
 
 ifneq ($(MYPY),true)
 LINT=less
@@ -51,11 +56,17 @@ test_%: js_test_% py_test_%
 
 .PHONY: js_test
 js_test: jssrc/LICENSE js_dependencies
-	@cd jssrc && npx mocha
+	@cd jssrc && $(MOCHA)
+ifeq ($(COV),true)
+	@npx codecov
+endif
 
 .PHONY: js_test_%
 js_test_%: jssrc/LICENSE js_dependencies
-	@cd jssrc && npx mocha --parallel -j $*
+	@cd jssrc && $(MOCHA) --parallel -j $*
+ifeq ($(COV),true)
+	@npx codecov
+endif
 
 .PHONY: py_test
 py_test: pysrc/LICENSE py_dependencies
@@ -70,6 +81,9 @@ dependencies: js_dependencies py_dependencies
 
 .PHONY: js_dependencies
 js_dependencies:
+ifeq ($(COV),true)
+	@cd jssrc && npm install nyc
+endif
 	@cd jssrc && npm install --include=dev
 
 .PHONY: py_dependencies

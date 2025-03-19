@@ -172,3 +172,5 @@ cython_debug/
 
 node_modules
 pysrc/_static/*.js
+jssrc/.nyc_output
+jssrc/coverage

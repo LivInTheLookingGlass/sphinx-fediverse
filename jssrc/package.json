@@ -19,7 +19,8 @@
     "@babel/preset-env": "^7.26.9",
     "dompurify": "^3.2.4",
     "json": "^11.0.0",
-    "marked": "^15.0.7"
+    "marked": "^15.0.7",
+    "nyc": "^17.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",

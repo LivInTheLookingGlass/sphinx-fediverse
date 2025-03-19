@@ -4,13 +4,13 @@ from json import dump, load
 from os import getenv
 from pathlib import Path
 from shutil import copyfile
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 from docutils import nodes
 from sphinx.util.docutils import SphinxDirective
 
 if TYPE_CHECKING:
-    from typing import Dict, List, Set, Union
+    from typing import Any, Dict, List, Set, Union
 
     from sphinx.application import Sphinx
     from sphinx.config import Config
@@ -29,7 +29,7 @@ registered_docs: Set[str] = set()
 class FediverseCommentDirective(SphinxDirective):
     has_content = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.post_id = None
 
@@ -72,7 +72,7 @@ class FediverseCommentDirective(SphinxDirective):
             post = api.status_post(
                 status=message, visibility='public', language='en',
             )
-            return post.id
+            return cast(str, post.id)
 
     def process_misskey(self, post_url: str, title: str) -> str:
         from misskey import Misskey
@@ -91,7 +91,7 @@ class FediverseCommentDirective(SphinxDirective):
             post = api.notes_create(
                 text=message, visibility='public',
             )
-            return post['createdNote']['id']
+            return cast(str, post['createdNote']['id'])
 
     def create_post_if_needed(self, post_url: str) -> str:
         """Check if a post exists for this URL. If not, create one."""
@@ -99,7 +99,7 @@ class FediverseCommentDirective(SphinxDirective):
         mapping_file_path = Path(self.config.comments_mapping_file)
         if not mapping_file_path.exists():
             # File doesn't exist, create an empty mapping
-            mapping = {}
+            mapping: Dict[str, str] = {}
         else:
             with open(mapping_file_path, "r") as f:
                 mapping = load(f)
