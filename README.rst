@@ -24,8 +24,31 @@ For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
 .. |prs| image:: https://img.shields.io/github/issues-pr/LivInTheLookingGlass/sphinx-fediverse
    :alt: Open GitHub Pull Requests
    :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/pulls
+.. |python| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/python.yml?label=Py%20Tests
+   :alt: GitHub Actions Workflow Status (Python)
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/actions/workflows/python.yml
+.. |javascript| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/javascript.yml?label=JS%20Tests
+   :alt: GitHub Actions Workflow Status (JavaScript)
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/actions/workflows/javascript.yml
+.. |python-lint| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/python-lint.yml?label=Py%20Lint
+   :alt: GitHub Actions Workflow Status (Python Lint)
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/actions/workflows/python-lint.yml
+.. |javascript-lint| image:: https://img.shields.io/github/actions/workflow/status/LivInTheLookingGlass/sphinx-fediverse/eslint.yml?label=JS%20Lint
+   :alt: GitHub Actions Workflow Status (JavaScript Lint)
+   :target: https://github.com/LivInTheLookingGlass/sphinx-fediverse/actions/workflows/eslint.yml
+.. |codecov| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse&label=Coverage
+   :alt: Code Coverage (Overall)
+   :target: https://app.codecov.io/gh/LivInTheLookingGlass/sphinx-fediverse/tree/main/
+.. |codecov-py| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse?flag=Python&label=Coverage%20(Py)
+   :alt: Code Coverage (Python)
+   :target: https://app.codecov.io/gh/LivInTheLookingGlass/sphinx-fediverse/tree/main?flags%5B0%5D=Python
+.. |codecov-js| image:: https://img.shields.io/codecov/c/github/LivInTheLookingGlass/sphinx-fediverse?flag=JavaScript&label=Coverage%20(JS)
+   :alt: Code Coverage (JavaScript)
+   :target: https://app.codecov.io/gh/LivInTheLookingGlass/sphinx-fediverse/tree/main?flags%5B0%5D=JavaScript
 
 | |license| |status| |version| |downloads|
+| |python| |javascript| |python-lint| |javascript-lint|
+| |codecov| |codecov-py| |codecov-js|
 | |issues| |prs| |sponsors|
 
 .. first-cut
