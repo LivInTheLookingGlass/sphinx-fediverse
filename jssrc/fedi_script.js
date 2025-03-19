@@ -1,14 +1,7 @@
 const config = {
-    parser: undefined,
+    parser: (typeof DOMParser === 'undefined') ? undefined : new DOMParser(),
     boost_link: "_static/boost.svg",
 };
-
-try {
-    config.parser = new DOMParser();
-// eslint-disable-next-line no-unused-vars
-} catch (err) {
-    console.log("unable to spawn DOM Parser, likely because you're in node.js");
-}
 
 function setImageLink(new_boost_link) {
     config.boost_link = new_boost_link;
@@ -175,11 +168,13 @@ async function fetchComments(fediInstance, postId, maxDepth) {
     }
 }
 
-module.exports = {
-    config,
-    setImageLink,
-    replaceEmoji,
-    renderComment,
-    renderCommentsBatch,
-    fetchComments,
-};
+if (typeof module !== 'undefined') {
+    module.exports = {
+        config,
+        setImageLink,
+        replaceEmoji,
+        renderComment,
+        renderCommentsBatch,
+        fetchComments,
+    };
+}

@@ -142,8 +142,10 @@ async function fetchMeta(fediInstance, postId) {
     }
 }
 
-module.exports = {
-    extractComment,
-    fetchSubcomments,
-    fetchMeta,
-};
+if (typeof module !== 'undefined') {
+    module.exports = {
+        extractComment,
+        fetchSubcomments,
+        fetchMeta,
+    };
+}
