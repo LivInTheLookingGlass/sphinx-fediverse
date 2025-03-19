@@ -20,5 +20,12 @@
     "dompurify": "^3.2.4",
     "json": "^11.0.0",
     "marked": "^15.0.7"
+  },
+  "devDependencies": {
+    "@pollyjs/adapter-node-http": "^6.0.6",
+    "@pollyjs/core": "^6.0.6",
+    "@pollyjs/persister-fs": "^6.0.6",
+    "mocha": "^11.1.0",
+    "node-fetch": "^3.3.2"
   }
 }

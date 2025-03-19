@@ -48,6 +48,7 @@ html: bundle
 .PHONY: test
 test: LICENSE dependencies
 	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
+	@npx mocha
 
 .PHONY: test_%
 test_%: LICENSE dependencies
@@ -55,6 +56,7 @@ test_%: LICENSE dependencies
 
 .PHONY: dependencies
 dependencies:
+	@npm install --include=dev
 ifeq ($(MYPY),true)
 	@$(PIP) install -r requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
@@ -67,15 +69,14 @@ clean:
 	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info node_modules _static/fedi_script*.js || echo
 	@$(MAKE) -C docs clean
 
-_static/fedi_scrip%.min.js: fedi_scrip%.js
+_static/fedi_scrip%.min.js: fedi_scrip%.js dependencies
 	@npx babel $< --out-file $@ --no-comments
 	@VERSION=$$(npx json version -f package.json) && \
 	LICENSE_COMMENT="/*! @license sphinx-fediverse $$VERSION | (c) Olivia Appleton-Crocker & other contributors | Released under the GPLv3 | github.com/LivInTheLookingGlass/sphinx-fediverse/blob/$$VERSION/LICENSE */" && \
 	sed -i --follow-symlinks "1i$$LICENSE_COMMENT" $@
 
 bundle: SHELL := bash
-bundle:
-	@npm install
+bundle: dependencies
 	@$(MAKE) -j _static/fedi_script{,_{mastodon,misskey}}.min.js
 	@npx babel ./node_modules/dompurify/dist/purify.min.js ./node_modules/marked/marked.min.js -d _static
 
