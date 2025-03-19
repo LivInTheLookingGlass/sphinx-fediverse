@@ -57,16 +57,10 @@ test_%: js_test_% py_test_%
 .PHONY: js_test
 js_test: jssrc/LICENSE js_dependencies
 	@cd jssrc && $(MOCHA)
-ifeq ($(COV),true)
-	@npx codecov
-endif
 
 .PHONY: js_test_%
 js_test_%: jssrc/LICENSE js_dependencies
 	@cd jssrc && $(MOCHA) --parallel -j $*
-ifeq ($(COV),true)
-	@npx codecov
-endif
 
 .PHONY: py_test
 py_test: pysrc/LICENSE py_dependencies
