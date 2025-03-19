@@ -8,3 +8,4 @@ pytest-xdist
 setuptools
 sphinx.testing
 twine
+types-docutils

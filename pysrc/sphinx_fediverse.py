@@ -1,11 +1,19 @@
+from __future__ import annotations
+
 from json import dump, load
 from os import getenv
 from pathlib import Path
 from shutil import copyfile
-from typing import Set
+from typing import TYPE_CHECKING
 
 from docutils import nodes
 from sphinx.util.docutils import SphinxDirective
+
+if TYPE_CHECKING:
+    from typing import Dict, List, Set, Union
+
+    from sphinx.application import Sphinx
+    from sphinx.config import Config
 
 package_json_path = Path(__file__).parent / "package.json"
 if not package_json_path.exists():
@@ -19,9 +27,6 @@ registered_docs: Set[str] = set()
 
 
 class FediverseCommentDirective(SphinxDirective):
-    required_arguments = {}
-    optional_arguments = {}
-    option_spec = {}
     has_content = True
 
     def __init__(self, *args, **kwargs):
@@ -32,7 +37,7 @@ class FediverseCommentDirective(SphinxDirective):
         """Post a new comment on Mastodon and return the post ID."""
         if not self.config.enable_post_creation:
             if not self.config.raise_error_if_no_post:
-                pass
+                return ''
             elif input('Would you like to create the post yourself, and provide the ID? (y/N) ').lower()[0] == 'y':
                 return input("Enter the ID and NOTHING ELSE: ")
             else:
@@ -41,8 +46,7 @@ class FediverseCommentDirective(SphinxDirective):
             return self.process_mastodon(post_url, title)
         elif self.env.config.fedi_flavor == 'misskey':
             return self.process_misskey(post_url, title)
-        else:
-            raise EnvironmentError("Unknown fediverse flavor selected")
+        raise EnvironmentError("Unknown fediverse flavor selected")
 
     def process_mastodon(self, post_url: str, title: str) -> str:
         from mastodon import Mastodon
@@ -88,7 +92,7 @@ class FediverseCommentDirective(SphinxDirective):
             )
             return post['createdNote']['id']
 
-    def create_post_if_needed(self, post_url):
+    def create_post_if_needed(self, post_url: str) -> str:
         """Check if a post exists for this URL. If not, create one."""
         # Read the mapping file
         mapping_file_path = Path(self.config.comments_mapping_file)
@@ -117,7 +121,7 @@ class FediverseCommentDirective(SphinxDirective):
 
         return post_id
 
-    def run(self):
+    def run(self) -> List[nodes.raw]:
         """Main method to execute the directive."""
         # Fetch base URL from conf.py (html_baseurl)
         if self.env.app.builder.name != 'html':
@@ -126,8 +130,6 @@ class FediverseCommentDirective(SphinxDirective):
         base_url = self.config.html_baseurl
         if not base_url:
             raise ValueError("html_baseurl must be set in conf.py for Mastodon comments to work.")
-
-        self.env.app.add_to_head_flag = True
 
         # Get the final output document URL using base_url + docname
         docname = self.env.docname
@@ -189,7 +191,7 @@ class FediverseCommentDirective(SphinxDirective):
         return [post_id_node]
 
 
-def on_builder_inited(app):
+def on_builder_inited(app: Sphinx) -> None:
     if app.builder.name != 'html':
         return
     for file_path in Path(__file__).parent.joinpath('_static').iterdir():
@@ -197,19 +199,20 @@ def on_builder_inited(app):
             out_path = Path(app.builder.outdir, f'_static/{file_path.name}')
             out_path.parent.mkdir(exist_ok=True, parents=True)
             copyfile(file_path, out_path)
-    copyfile(
-        app.config.comments_mapping_file,
-        Path(app.builder.outdir, '_static', app.config.comments_mapping_file)
-    )
+    if Path(app.config.comments_mapping_file).exists():
+        copyfile(
+            app.config.comments_mapping_file,
+            Path(app.builder.outdir, '_static', app.config.comments_mapping_file)
+        )
 
 
-def on_config_inited(app, config):
+def on_config_inited(app: Sphinx, config: Config) -> None:
     app.config.html_js_files.append(f'fedi_script_{app.config.fedi_flavor}.min.js')
     if app.config.fedi_flavor == 'misskey':
         app.config.html_js_files.append('marked.min.js')
 
 
-def setup(app):
+def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     # Register custom configuration options
     app.add_config_value('fedi_flavor', '', 'env')
     app.add_config_value('fedi_username', '', 'env')

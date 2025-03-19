@@ -67,8 +67,12 @@ def _test_directive_fails_on_multiple_usage() -> None:
     conf = """
     enable_post_creation = False
     raise_error_if_no_post = False
+    fedi_flavor = 'mastodon'
     """
     index = """
+    Title
+    -----
+
     .. fedi-comments::
 
     .. fedi-comments::
@@ -88,26 +92,51 @@ def test_directive_fails_on_non_html(builder_name: str) -> None:
 def _test_directive_fails_on_non_html(builder_name: str) -> None:
     """Ensure that using the a builder other than html raises an error."""
     index = """
+    Title
+    -----
+
     .. fedi-comments::
 
     """
 
-    with mk_app("", index, builder='dummy') as (app, tmpdir):
+    with mk_app("fedi_flavor = 'mastodon'", index, builder='dummy') as (app, tmpdir):
         with raises(EnvironmentError, match="Cannot function outside of html build"):
             app.build(force_all=True)
 
 
-def test_error_if_no_auth() -> None:
-    run_in_subprocess(_test_error_if_no_auth)()
+def test_error_if_no_auth_mastodon() -> None:
+    run_in_subprocess(_test_error_if_no_auth_mastodon)()
 
 
-def _test_error_if_no_auth() -> None:
+def _test_error_if_no_auth_mastodon() -> None:
     """Ensure that not providing auth will raise an error."""
     index = """
+    Title
+    -----
+
     .. fedi-comments::
 
     """
 
-    with mk_app("", index) as (app, tmpdir):
+    with mk_app("fedi_flavor = 'mastodon'", index) as (app, tmpdir):
         with raises(EnvironmentError, match="Must provide all 3 mastodon access tokens"):
+            app.build(force_all=True)
+
+
+def test_error_if_no_auth_misskey() -> None:
+    run_in_subprocess(_test_error_if_no_auth_misskey)()
+
+
+def _test_error_if_no_auth_misskey() -> None:
+    """Ensure that not providing auth will raise an error."""
+    index = """
+    Title
+    -----
+
+    .. fedi-comments::
+
+    """
+
+    with mk_app("fedi_flavor = 'misskey'", index) as (app, tmpdir):
+        with raises(EnvironmentError, match="Must provide misskey access token"):
             app.build(force_all=True)

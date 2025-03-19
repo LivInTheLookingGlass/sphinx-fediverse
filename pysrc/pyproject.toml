@@ -11,7 +11,7 @@ license = { file = "LICENSE" }
 authors = [
     { name = "Olivia Appleton-Crocker", email = "liv@oliviaappleton.com" }
 ]
-requires-python = ">=3.6"
+requires-python = ">=3.7"
 
 keywords = [
     "sphinx", "fediverse", "comments", "activitypub", "mastodon", "misskey"
@@ -28,7 +28,6 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
     "Programming Language :: JavaScript",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
@@ -55,7 +54,7 @@ package-dir = { "sphinx_fediverse" = "." }
 include-package-data = true
 
 [tool.setuptools.package-data]
-"sphinx_fediverse" = ["package.json", "requirements.txt", "_static/*"]
+"sphinx_fediverse" = ["package.json", "py.typed", "requirements.txt", "_static/*"]
 
 [tool.setuptools.dynamic]
 version = { attr = "sphinx_fediverse.version" }
