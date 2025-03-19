@@ -129,7 +129,7 @@ class FediverseCommentDirective(SphinxDirective):
 
         base_url = self.config.html_baseurl
         if not base_url:
-            raise ValueError("html_baseurl must be set in conf.py for Mastodon comments to work.")
+            raise ValueError("html_baseurl must be set in conf.py for Fediverse comments to work.")
 
         # Get the final output document URL using base_url + docname
         docname = self.env.docname

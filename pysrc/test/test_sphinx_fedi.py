@@ -140,3 +140,15 @@ def _test_error_if_no_auth_misskey() -> None:
     with mk_app("fedi_flavor = 'misskey'", index) as (app, tmpdir):
         with raises(EnvironmentError, match="Must provide misskey access token"):
             app.build(force_all=True)
+
+
+def test_error_if_no_baseurl() -> None:
+    run_in_subprocess(_test_error_if_no_baseurl)()
+
+
+def _test_error_if_no_baseurl() -> None:
+    """Ensure that not providing html_baseurl will raise an error."""
+
+    with mk_app("html_baseurl = ''", ".. fedi-comments::\n") as (app, tmpdir):
+        with raises(ValueError, match="html_baseurl must be set in conf.py for Fediverse comments to work."):
+            app.build(force_all=True)
