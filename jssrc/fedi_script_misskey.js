@@ -153,7 +153,12 @@ async function fetchMisskeyEmoji(fediInstance, name) {
             },
             body: JSON.stringify({ name: name }),
         });
-        if (response.ok) {
+        if (!response.ok) {
+            if (response.status == 429) {
+                await new Promise((resolve) => setTimeout(resolve, 100))
+                return await fetchMisskeyEmoji(fediInstance, name);
+            }
+        } else {
             const data = await response.json();
             if (!data.isSensitive) {
                 ret[name] = data.url;
@@ -179,7 +184,13 @@ async function fetchSubcomments(fediInstance, commentId) {
             })
         });
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) {
+            if (response.status == 429) {
+                await new Promise((resolve) => setTimeout(resolve, 100))
+                return await fetchSubcomments(fediInstance, commentId);
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         const data = await response.json();
         return Promise.all(data.map(
@@ -204,7 +215,13 @@ async function fetchMeta(fediInstance, postId) {
             body: JSON.stringify({ noteId: postId }),
         });
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) {
+            if (response.status == 429) {
+                await new Promise((resolve) => setTimeout(resolve, 100))
+                return await fetchMeta(fediInstance, postId);
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         data = await response.json();
         document.getElementById("global-likes").textContent = `${data.reactionCount}`;

@@ -1,14 +1,20 @@
+import assert from 'assert';
 import { createHash } from 'crypto';
+import { createRequire } from 'module';
+
 import { Polly } from '@pollyjs/core';
 import NodeHttpAdapter from '@pollyjs/adapter-node-http';
 import FSPersister from '@pollyjs/persister-fs';
+
 import fetch from 'node-fetch';
+
 import { describe, it, before, after } from 'mocha';
-import assert from 'assert';
-import { createRequire } from "module";
-import { JSDOM } from "jsdom";
-import { marked } from "marked";
-import createDOMPurify from "dompurify";
+
+import { JSDOM } from 'jsdom';
+
+import { marked } from 'marked';
+
+import createDOMPurify from 'dompurify';
 
 // Create a simulated DOM environment for DOMPurify
 const { window } = new JSDOM("<!DOCTYPE html>");
@@ -22,8 +28,8 @@ globalThis.DOMPurify = DOMPurify;
 Polly.register(NodeHttpAdapter);
 Polly.register(FSPersister);
 const require = createRequire(import.meta.url);
+const oldFetch = fetch;
 let polly;
-let oldFetch = fetch;
 
 function hashString(input) {
     return createHash('sha256').update(input).digest('hex');
@@ -33,6 +39,7 @@ before(function () {
     polly = new Polly('fetch test', {
         adapters: ['node-http'],
         persister: 'fs',
+        recordFailedRequests: true,
     });
     globalThis.fetch = async function(url, options = {}) {
         const customHeaders = {
@@ -71,7 +78,7 @@ describe('Glue Script', function () {
 describe('Misskey Implementation', function () {
     const misskey = require("./fedi_script_misskey.js");
 
-    it('should be able to fetch (transfem.social, a58960b3o5ko020v)', async function () {
+    it('should be able to fetch children of (transfem.social, a58960b3o5ko020v)', async function () {
         const instance = 'transfem.social';
         const id = 'a58960b3o5ko020v';
         const comments = await misskey.fetchSubcomments(instance, id);
@@ -79,12 +86,38 @@ describe('Misskey Implementation', function () {
         assert.equal(comments[0].user.host, instance);
         assert.equal(comments[0].replyId, id);
     });
+
+    const emojiToTest = {
+        Fire_Trans: [
+            'transfem.social', '', 'https://cdn.transfem.social/files/c13d2be3-d57c-440e-9158-18ab5337b977.png'
+        ],
+        blobhaj: [
+            'transfem.social', '', 'https://cdn.transfem.social/files/b4a56c87-45f1-4091-b93a-4c59c7039c68.webp'
+        ],
+        spinniercat: [
+            'transfem.social', ' (delay from HTTP 429)',
+            'https://cdn.transfem.social/files/4e422261-1fb5-4cc6-81ec-64b5e2628630.gif'
+        ],
+        axolotl_anger: [
+            'transfem.social', ' (expected failure)', undefined
+        ],
+    };
+
+    for (const shortcode in emojiToTest) {
+        const [instance, note, url] = emojiToTest[shortcode];
+        it(`should be able to fetch emoji (${instance}, ${shortcode})${note}`, async function () {
+            assert.equal(
+                (await misskey.fetchMisskeyEmoji(instance, shortcode))[shortcode],
+                url
+            );
+        });
+    }
 });
 
 describe('Mastodon Implementation', function () {
     const mastodon = require("./fedi_script_mastodon.js");
 
-    it('should be able to fetch (tech.lgbt, 114032235423688612)', async function () {
+    it('should be able to fetch children of (tech.lgbt, 114032235423688612)', async function () {
         const instance = 'tech.lgbt';
         const id = '114032235423688612';
         const comments = await mastodon.fetchSubcomments(instance, id);

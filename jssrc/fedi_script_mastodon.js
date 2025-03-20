@@ -112,7 +112,13 @@ async function fetchSubcomments(fediInstance, commentId) {
     try {
         const response = await fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`);
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) {
+            if (response.status == 429) {
+                await new Promise((resolve) => setTimeout(resolve, 100))
+                return await fetchSubcomments(fediInstance, commentId);
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         const data = await response.json();
         return Promise.all(data.descendants.map(
@@ -131,7 +137,13 @@ async function fetchMeta(fediInstance, postId) {
         // Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
         response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
 
-        if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+        if (!response.ok) {
+            if (response.status == 429) {
+                await new Promise((resolve) => setTimeout(resolve, 100))
+                return await fetchMeta(fediInstance, postId);
+            }
+            throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
         data = await response.json();
         document.getElementById("global-likes").textContent = `${data.favourites_count}`;
