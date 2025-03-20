@@ -41,6 +41,8 @@ before(function () {
         persister: 'fs',
         recordFailedRequests: true,
     });
+    globalThis.document = window.document;
+    globalThis.window = window;
     globalThis.fetch = async function(url, options = {}) {
         const customHeaders = {
             "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:106.0) Gecko/20100101 Firefox/106.0",
@@ -63,15 +65,6 @@ describe('fetch() with PollyJS', function () {
             hashString(await response.text()),
             'ea8fac7c65fb589b0d53560f5251f74f9e9b243478dcb6b3ea79b5e36449c8d9'
         );
-    });
-});
-
-describe('Glue Script', function () {
-    const glue = require("./fedi_script.js");
-
-    it('should be able to change image links', async function () {
-        glue.setImageLink('a');
-        assert.equal(glue.config.boost_link, 'a');
     });
 });
 
@@ -144,5 +137,34 @@ describe('Mastodon Implementation', function () {
         assert.ok(comments.length);
         assert.equal(comments[0].user.host, instance);
         assert.equal(comments[0].replyId, id);
+    });
+});
+
+describe('Glue Script', function () {
+    const glue = require("./fedi_script.js");
+    const misskey = require("./fedi_script_misskey.js");
+
+    before(() => {
+        glue.config.parser = new window.DOMParser();
+    })
+
+    it('should be able to change image links', async function () {
+        glue.setImageLink('a');
+        assert.equal(glue.config.boost_link, 'a');
+    });
+
+    it('should be able to render emoji', async function() {
+        const emoji = await misskey.fetchMisskeyEmoji('transfem.social', 'blobhaj');
+        for (const str of [
+            ':blobhaj:',
+            '::blobhaj::',
+            '<html><body>:blobhaj:</body></html>',
+        ]) {
+            const container = glue.replaceEmoji(str, emoji);
+            assert.equal(
+                container.querySelector('img').src,
+                emoji['blobhaj']
+            );
+        }
     });
 });
