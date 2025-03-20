@@ -146,6 +146,9 @@ officially supported theme, click one of the links below:
 Dependencies
 ~~~~~~~~~~~~
 
+JavaScript
+----------
+
 Note that by using this plugin, you will be including the following in your page:
 
 - `Marked <https://marked.js.org/>`_ for rendering Markdown
@@ -153,3 +156,12 @@ Note that by using this plugin, you will be including the following in your page
 
 We also use `Babel <https://babeljs.io/>`_ to ensure compatibility with most browsers. This is not included directly,
 but is used to pre-process the included javascript before release.
+
+Python
+------
+
+In the Python stack, you will be utilizing the following:
+
+- `Sphinx <https://www.sphinx-doc.org/>`_
+- `docutils <https://docutils.sourceforge.io/>`_
+- one of: `Mastodon.py <https://github.com/halcy/Mastodon.py>`_, `Misskey.py <https://github.com/YuzuRyo61/Misskey.py>`_
