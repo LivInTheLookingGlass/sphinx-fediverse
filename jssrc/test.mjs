@@ -87,6 +87,26 @@ describe('Misskey Implementation', function () {
         assert.equal(comments[0].replyId, id);
     });
 
+    it('should be able to sanitize basic Markdown', function() {
+        const pairs = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '`': '&#96;',
+            '"': '&quot;',
+            '\'': '&#039;',
+            '*': '&#42;',
+            '<script>alert("YoU\'vE bEeN hAcKeD!!1!");</script>':
+                '&lt;script&gt;alert(&quot;YoU&#039;vE bEeN hAcKeD!!1!&quot;);&lt;/script&gt;',
+        };
+        for (const key in pairs) {
+            assert.equal(
+                misskey.escapeHtml(key),
+                pairs[key]
+            )
+        }
+    });
+
     const emojiToTest = {
         Fire_Trans: [
             'transfem.social', '', 'https://cdn.transfem.social/files/c13d2be3-d57c-440e-9158-18ab5337b977.png'

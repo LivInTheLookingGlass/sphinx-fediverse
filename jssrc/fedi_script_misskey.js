@@ -233,6 +233,7 @@ async function fetchMeta(fediInstance, postId) {
 
 if (typeof module !== 'undefined') {
     module.exports = {
+        escapeHtml,
         extractComment,
         fetchMisskeyEmoji,
         fetchSubcomments,
