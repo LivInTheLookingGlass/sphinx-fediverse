@@ -81,21 +81,43 @@ describe('Misskey Implementation', function () {
     });
 
     it('should be able to sanitize basic Markdown', function() {
-        const pairs = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '`': '&#96;',
-            '"': '&quot;',
-            '\'': '&#039;',
-            '*': '&#42;',
-            '<script>alert("YoU\'vE bEeN hAcKeD!!1!");</script>':
-                '&lt;script&gt;alert(&quot;YoU&#039;vE bEeN hAcKeD!!1!&quot;);&lt;/script&gt;',
-        };
-        for (const key in pairs) {
+        const pairs = [
+            ['&', '&amp;'],
+            ['<', '&lt;'],
+            ['>', '&gt;'],
+            ['`', '&#96;'],
+            ['"', '&quot;'],
+            ['\'', '&#039;'],
+            ['*', '&#42;'],
+            ['@', '&#64;'],
+            ['#', '&#35;'],
+            ['<script>alert("YoU\'vE bEeN hAcKeD!!1!");</script>',
+                '&lt;script&gt;alert(&quot;YoU&#039;vE bEeN hAcKeD!!1!&quot;);&lt;/script&gt;'],
+        ];
+        for (const [key, value] of pairs) {
             assert.equal(
                 misskey.escapeHtml(key),
-                pairs[key]
+                value
+            )
+        }
+    });
+
+    it('should be able to transform MFM to Markdown', function() {
+        const pairs = [
+            ['#test',                           '[#test](https://[::1]/tags/test)'],
+            ['<plain>a</plain>',                'a'],
+            ['<plain><plain>a</plain></plain>', '&lt;plain&gt;a&lt;/plain&gt;'],
+            ['<plain>#test</plain>',            '&lt;plain&gt;&#35;test&lt;/plain&gt;'],
+            ['<small>a</small>',                '<sub>a</sub>'],
+            ['<i>test</i>',                     '*test*'],
+            ['<i>\ntest\n</i>',                 '<i>\ntest\n</i>'],
+            // TODO: center, mentions
+            // TODO: combinations of more elements
+        ];
+        for (const [key, value] of pairs) {
+            assert.equal(
+                misskey.transformMFM(key, '[::1]'),
+                value
             )
         }
     });

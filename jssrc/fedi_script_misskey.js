@@ -2,13 +2,47 @@ const emojiCache = {};
 
 function escapeHtml(unsafe) {
     return unsafe
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/`/g, '&#96;')
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;")
-        .replace(/\*/g, "&#42;");
+        .replaceAll(/&/g,  "&amp;")
+        .replaceAll(/</g,  "&lt;")
+        .replaceAll(/>/g,  "&gt;")
+        .replaceAll(/`/g,  '&#96;')
+        .replaceAll(/"/g,  "&quot;")
+        .replaceAll(/'/g,  "&#039;")
+        .replaceAll(/\*/g, "&#42;")
+        .replaceAll(/@/g,  "&#64;")
+        .replaceAll(/#/g,  "&#35;");
+}
+
+function transformMFM(text, fediInstance) {
+    // transforms as much of MFM as possible into standard Markdown
+    // goes in two stages: single transform and multi transform
+    // multi transform means that they are applied repeatedly until no more tokens are found
+    // single transforms are those that would create infinite loops if done that way
+    const multiTransforms = [
+        // gum means global, unicode, multi-line
+        [/<plain>((?:.|\s)*)<\/plain>/gum,              (match, p1) => escapeHtml(p1)],
+        // gus means gobal, unicode, single-line
+        [/@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gus, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
+        [/<center>((?:.|\s)*)<\/center>/gum,            (match, p1) => `<div style="text-align: center;">${p1}</div>`],
+        // <i> tag is single-line because the markdown equivalent doesn't work across multiple lines; falls back to HTML
+        [/<i>([^\r\n]*)<\/i>/gus,                      (match, p1) => `*${p1}*`],
+        [/<small>((?:.|\s)*)<\/small>/gum,              (match, p1) => `<sub>${p1}</sub>`],
+    ];
+    let newText = text;
+    text = '';
+
+    while (text !== newText) {
+        for (const [pattern, func] of multiTransforms) {
+            text = '';
+            while (text !== newText) {
+                text = newText;
+                newText = text.replaceAll(pattern, func);
+            }
+        }
+    }
+    return text.replaceAll(
+        /#([^\d\s][\w\p{L}\p{M}-]*)/gsu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
+    );
 }
 
 async function extractComment(fediInstance, comment) {
@@ -58,21 +92,6 @@ async function extractComment(fediInstance, comment) {
     const reactions = {"❤": 0};
     let commentEmoji = comment.emojis || {};
     let userEmoji = user.emojis || {};
-    // TODO: the non-annying parts of MFM
-    // replace mentions, hashtags with markdown links
-    const text = comment.text.replaceAll(
-        /#([^\d\s][\w\p{L}\p{M}-]*)/gu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
-    ).replaceAll(
-        /@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`
-    ).replaceAll(
-        /<plain>(.*?)<\/plain>/gs, (match, p1) => escapeHtml(p1)
-    ).replaceAll(
-        /<center>(.*?)<\/center>/gs, (match, p1) => `<div style="text-align: center;">${p1}</div>`
-    ).replaceAll(
-        /<i>(.*?)<\/i>/gs, (match, p1) => `*${p1}*`
-    ).replaceAll(
-        /<small>(.*?)<\/small>/gs, (match, p1) => `<sub>${p1}</sub>`
-    );
 
     const cw = (comment.cw && user.mandatoryCW) ? `${user.mandatoryCW} + ${comment.cw}` :
         (user.mandatoryCW ? user.mandatoryCW : comment.cw);
@@ -127,7 +146,7 @@ async function extractComment(fediInstance, comment) {
         boostCount: comment.renoteCount,
         reactions: reactions,
         media: attachments,
-        content: marked.parse(text),
+        content: marked.parse(transformMFM(comment.text)),
         user: {
             host: domain,
             handle: `@${user.username}\u200B@${domain}`,
@@ -233,6 +252,7 @@ async function fetchMeta(fediInstance, postId) {
 
 if (typeof module !== 'undefined') {
     module.exports = {
+        transformMFM,
         escapeHtml,
         extractComment,
         fetchMisskeyEmoji,
