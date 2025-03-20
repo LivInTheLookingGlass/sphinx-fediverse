@@ -46,7 +46,7 @@ help:
 
 .PHONY: html
 html: bundle
-	@$(MAKE) -C docs html
+	$(MAKE) -C docs html
 
 .PHONY: test
 test: js_test py_test
@@ -56,19 +56,19 @@ test_%: js_test_% py_test_%
 
 .PHONY: js_test
 js_test: jssrc/LICENSE js_dependencies
-	@cd jssrc && $(MOCHA)
+	cd jssrc && $(MOCHA)
 
 .PHONY: js_test_%
 js_test_%: jssrc/LICENSE js_dependencies
-	@cd jssrc && $(MOCHA) --parallel -j $*
+	cd jssrc && $(MOCHA) --parallel -j $*
 
 .PHONY: py_test
 py_test: pysrc/LICENSE py_dependencies
-	@$(PY) -m pytest $(pytest_args) $(benchmark_flags)
+	$(PY) -m pytest $(pytest_args) $(benchmark_flags)
 
 .PHONY: py_test_%
 py_test_%: pysrc/LICENSE py_dependencies
-	@$(PY) -m pytest $(pytest_args) -d -n$*
+	$(PY) -m pytest $(pytest_args) -d -n$*
 
 .PHONY: dependencies
 dependencies: js_dependencies py_dependencies
@@ -76,35 +76,36 @@ dependencies: js_dependencies py_dependencies
 .PHONY: js_dependencies
 js_dependencies:
 ifeq ($(COV),true)
-	@cd jssrc && npm install nyc
+	cd jssrc && npm install nyc
 endif
-	@cd jssrc && npm install --include=dev
+	cd jssrc && npm install --include=dev
 
 .PHONY: py_dependencies
 py_dependencies:
 ifeq ($(MYPY),true)
-	@$(PIP) install -r pysrc/requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	$(PIP) install -r pysrc/requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
-	@cat pysrc/requirements-dev.txt | grep -v "mypy" > .requirements.txt
-	@$(PIP) install -r .requirements.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
-	@rm .requirements.txt
+	cat pysrc/requirements-dev.txt | grep -v "mypy" > .requirements.txt
+	$(PIP) install -r .requirements.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
+	rm .requirements.txt
 endif
 
 .PHONY: clean
+clean: SHELL := bash
 clean:
-	@rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} dist build *.egg-info node_modules _static/fedi_script*.js || echo
-	@$(MAKE) -C docs clean
+	rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} pysrc/{_static/*.js,dist,build,*.egg-info} jssrc/node_modules  || echo
+	$(MAKE) -C docs clean
 
 pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
-	@cd jssrc && npx babel ../$< --out-file ../$@ --no-comments
-	@VERSION=$$(npx json version -f jssrc/package.json) && \
-	LICENSE_COMMENT="/*! @license sphinx-fediverse $$VERSION | (c) Olivia Appleton-Crocker & other contributors | Released under the GPLv3 | github.com/LivInTheLookingGlass/sphinx-fediverse/blob/$$VERSION/LICENSE */" && \
+	cd jssrc && npx babel --no-comments ../$< --out-file ../$@
+	VERSION=$$(npx json version -f jssrc/package.json) && \
+	LICENSE_COMMENT="/*! license sphinx-fediverse $$VERSION | (c) Olivia Appleton-Crocker & other contributors | Released under the GPLv3 | github.com/LivInTheLookingGlass/sphinx-fediverse/blob/$$VERSION/LICENSE */" && \
 	sed -i --follow-symlinks "1i$$LICENSE_COMMENT" $@
 
 bundle: SHELL := bash
 bundle: js_dependencies
-	@$(MAKE) -j pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
-	@cd jssrc && npx babel ./node_modules/{dompurify/dist/purify,marked/marked}.min.js -d ../pysrc/_static
+	$(MAKE) -j pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
+	cd jssrc && npx babel ./node_modules/{dompurify/dist/purify,marked/marked}.min.js -d ../pysrc/_static
 
 .PHONY: build
 build: clean dependencies bundle
@@ -116,4 +117,4 @@ publish: build
 
 .PHONY: js_lint
 js_lint: 
-	@cd jssrc && npx eslint *.js *.mjs --ignore-pattern "dist/*"
+	cd jssrc && npx eslint *.js *.mjs --ignore-pattern "dist/*"

@@ -94,7 +94,7 @@
 }
 
 /* Styling for emoji images */
-.comment .emoji {
+.emoji {
     height: 1em;
     vertical-align: middle;
 }
