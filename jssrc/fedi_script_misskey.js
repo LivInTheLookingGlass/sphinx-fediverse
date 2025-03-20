@@ -3,14 +3,14 @@ const emojiCache = {};
 function escapeHtml(unsafe) {
     return unsafe
         .replaceAll(/&/g,  "&amp;")
+        .replaceAll(/#/g,  "&#35;")
         .replaceAll(/</g,  "&lt;")
         .replaceAll(/>/g,  "&gt;")
         .replaceAll(/`/g,  '&#96;')
         .replaceAll(/"/g,  "&quot;")
         .replaceAll(/'/g,  "&#039;")
         .replaceAll(/\*/g, "&#42;")
-        .replaceAll(/@/g,  "&#64;")
-        .replaceAll(/#/g,  "&#35;");
+        .replaceAll(/@/g,  "&#64;");
 }
 
 function transformMFM(text, fediInstance) {
