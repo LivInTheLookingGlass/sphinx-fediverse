@@ -107,7 +107,7 @@ describe('Misskey Implementation', function () {
             ['#test',                           '[#test](https://[::1]/tags/test)'],
             ['<plain>a</plain>',                'a'],
             ['<plain><plain>a</plain></plain>', '&lt;plain&gt;a&lt;/plain&gt;'],
-            ['<plain>#test</plain>',            '&lt;plain&gt;&#35;test&lt;/plain&gt;'],
+            ['<plain>#test</plain>',            '&#35;test'],
             ['<small>a</small>',                '<sub>a</sub>'],
             ['<i>test</i>',                     '*test*'],
             ['<i>\ntest\n</i>',                 '<i>\ntest\n</i>'],
