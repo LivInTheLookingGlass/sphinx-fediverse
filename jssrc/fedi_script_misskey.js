@@ -19,14 +19,17 @@ function transformMFM(text, fediInstance) {
     // multi transform means that they are applied repeatedly until no more tokens are found
     // single transforms are those that would create infinite loops if done that way
     const multiTransforms = [
-        // gum means global, unicode, multi-line
-        [/<plain>((?:.|\s)*)<\/plain>/gum,              (match, p1) => escapeHtml(p1)],
-        // gus means gobal, unicode, single-line
-        [/@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gus, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
-        [/<center>((?:.|\s)*)<\/center>/gum,            (match, p1) => `<div style="text-align: center;">${p1}</div>`],
+        // gums means global, unicode, multi-line, dot-includes-spaces
+        [/<plain>(.*)<\/plain>/gums,        (match, p1) => escapeHtml(p1)],
+        [/<center>(.*)<\/center>/gums,      (match, p1) => `<div style="text-align: center;">${p1}</div>`],
         // <i> tag is single-line because the markdown equivalent doesn't work across multiple lines; falls back to HTML
-        [/<i>([^\r\n]*)<\/i>/gus,                      (match, p1) => `*${p1}*`],
-        [/<small>((?:.|\s)*)<\/small>/gum,              (match, p1) => `<sub>${p1}</sub>`],
+        [/<i>([^\r\n]*)<\/i>/gu,            (match, p1) => `*${p1}*`],
+        [/<small>(.*)<\/small>/gums,        (match, p1) => `<sub>${p1}</sub>`],
+        [/\$\[flip\.(?=.*h)(?=.*v)(?:h|v)(?:,?(?:h|v))* (.+)\]/gus, 
+            (match, p1) => `<span style="transform: scale(-1, -1);">${p1}</span>`],
+        [/\$\[flip\.v(?:,v)* (.+)\]/gu,     (match, p1) => `<span style="transform: scaleY(-1);">${p1}</span>`],
+        [/\$\[flip(?:.h(?:,h)*)? (.+)\]/gu, (match, p1) => `<span style="transform: scaleX(-1);">${p1}</span>`],
+        [/\$\[blur (.+)\]/gu,               (match, p1) => `<span style="filter: blur(3px);">${p1}</span>`],
     ];
     let newText = text;
     text = '';
@@ -41,9 +44,11 @@ function transformMFM(text, fediInstance) {
         }
     }
     return text.replaceAll(
-        /#([^\d\s][\w\p{L}\p{M}-]*)/gsu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
+        /#([^\d\s][\w\p{L}\p{M}-]*)/gu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
     ).replaceAll(
-        /\?\[(.+)\]\((.+)\)/gsu, (match, p1, p2) => `[${p1}](${p2})`
+        /\?\[(.+)\]\((.+)\)/gu, (match, p1, p2) => `[${p1}](${p2})`
+    ).replaceAll(
+        /@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`
     );
 }
 

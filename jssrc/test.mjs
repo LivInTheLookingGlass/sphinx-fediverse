@@ -112,7 +112,22 @@ describe('Misskey Implementation', function () {
             ['<i>test</i>',                     '*test*'],
             ['<i>\ntest\n</i>',                 '<i>\ntest\n</i>'],
             ['?[.](.)',                         '[.](.)'],
-            // TODO: center, mentions
+            ['@test',                           '[@test](https://[::1]/@test)'],
+            ['@test@test',                      '[@test@test](https://[::1]/@test@test)'],
+            ['@1234',                           '[@1234](https://[::1]/@1234)'],
+            ['<center>a</center>',              '<div style="text-align: center;">a</div>'],
+            ['$[flip x]',                       '<span style="transform: scaleX(-1);">x</span>'],
+            ['$[flip.h x]',                     '<span style="transform: scaleX(-1);">x</span>'],
+            ['$[flip.h,h,h,h,h x]',             '<span style="transform: scaleX(-1);">x</span>'],
+            ['$[flip.v y]',                     '<span style="transform: scaleY(-1);">y</span>'],
+            ['$[flip.v,v,v,v,v y]',             '<span style="transform: scaleY(-1);">y</span>'],
+            ['$[flip.h,v xy]',                   '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[flip.v,h xy]',                   '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[flip.h,v,v xy]',                 '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[flip.h,v,v,h xy]',               '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[flip.v,h,h xy]',                 '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[flip.v,h,h,v xy]',               '<span style="transform: scale(-1, -1);">xy</span>'],
+            ['$[blur text]',                     '<span style="filter: blur(3px);">text</span>'],
             // TODO: combinations of more elements
         ];
         for (const [key, value] of pairs) {
