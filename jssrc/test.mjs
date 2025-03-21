@@ -111,6 +111,7 @@ describe('Misskey Implementation', function () {
             ['<small>a</small>',                '<sub>a</sub>'],
             ['<i>test</i>',                     '*test*'],
             ['<i>\ntest\n</i>',                 '<i>\ntest\n</i>'],
+            ['?[.](.)',                         '[.](.)'],
             // TODO: center, mentions
             // TODO: combinations of more elements
         ];

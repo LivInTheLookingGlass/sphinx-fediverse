@@ -42,6 +42,8 @@ function transformMFM(text, fediInstance) {
     }
     return text.replaceAll(
         /#([^\d\s][\w\p{L}\p{M}-]*)/gsu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
+    ).replaceAll(
+        /\?\[(.+)\]\((.+)\)/gsu, (match, p1, p2) => `[${p1}](${p2})`
     );
 }
 
