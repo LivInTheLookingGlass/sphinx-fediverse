@@ -34,9 +34,10 @@ function transformMFM(text, fediInstance) {
             (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
     ];
     let newText = text;
-    text = '';
+    let lastRoundText = '';
 
-    while (text !== newText) {
+    while (newText !== lastRoundText) {
+        lastRoundText = newText;
         for (const [pattern, func] of multiTransforms) {
             text = '';
             while (text !== newText) {
