@@ -15,9 +15,6 @@ function escapeHtml(unsafe) {
 
 function transformMFM(text, fediInstance) {
     // transforms as much of MFM as possible into standard Markdown
-    // goes in two stages: single transform and multi transform
-    // multi transform means that they are applied repeatedly until no more tokens are found
-    // single transforms are those that would create infinite loops if done that way
     const multiTransforms = [
         // gums means global, unicode, multi-line, dot-includes-spaces
         [/<plain>(.*)<\/plain>/gums,        (match, p1) => escapeHtml(p1)],
@@ -30,6 +27,11 @@ function transformMFM(text, fediInstance) {
         [/\$\[flip\.v(?:,v)* (.+)\]/gu,     (match, p1) => `<span style="transform: scaleY(-1);">${p1}</span>`],
         [/\$\[flip(?:.h(?:,h)*)? (.+)\]/gu, (match, p1) => `<span style="transform: scaleX(-1);">${p1}</span>`],
         [/\$\[blur (.+)\]/gu,               (match, p1) => `<span style="filter: blur(3px);">${p1}</span>`],
+        [/(?<![\[/])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
+            (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`],
+        [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
+        [/(?<![\[/]|@[\p{L}\p{M}\w.-]+)@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, 
+            (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
     ];
     let newText = text;
     text = '';
@@ -43,13 +45,7 @@ function transformMFM(text, fediInstance) {
             }
         }
     }
-    return text.replaceAll(
-        /#([^\d\s][\w\p{L}\p{M}-]*)/gu, (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`
-    ).replaceAll(
-        /\?\[(.+)\]\((.+)\)/gu, (match, p1, p2) => `[${p1}](${p2})`
-    ).replaceAll(
-        /@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`
-    );
+    return text;
 }
 
 async function extractComment(fediInstance, comment) {
