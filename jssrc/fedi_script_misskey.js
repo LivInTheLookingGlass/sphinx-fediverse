@@ -30,11 +30,11 @@ function transformMFM(text, fediInstance) {
         [/(?<![\[/])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
             (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`],
         [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
-        [/(?<![\[/]|@[\p{L}\p{M}\w.-]+)@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, 
+        [/(?<![\[/]|@[\p{L}\p{M}\w\._\-]+)@([\p{L}\p{M}\w\._\-]+(?:@[a-zA-Z0-9\._\-]+)?)/gu, 
             (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
-        [/\$\[ruby ([\p{L}\p{M}\w_-]+) ([\p{L}\p{M}\w-_]+)\]/gu,
+        [/\$\[ruby ([\p{L}\p{M}\w_\-]+) +([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2) => `<ruby>${p1} <rp>(</rp><rt>${p2}</rt><rp>)</rp></ruby>`],
-        [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w-_]+)\]/gu,
+        [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
     ];
     let newText = text;
