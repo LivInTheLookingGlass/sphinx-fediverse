@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from json import dump, load
-from os import getenv
+from os import getenv, fsync
 from pathlib import Path
 from shutil import copyfile
 from time import sleep
@@ -19,6 +19,8 @@ if TYPE_CHECKING:  # cov: ignore
 package_json_path = Path(__file__).parent / "package.json"
 if not package_json_path.exists():
     copyfile(Path(__file__).parent.parent / "jssrc" / "package.json", package_json_path)
+    with package_json_path.open('r') as f:
+        fsync(f.fileno())
     for _ in range(10):
         if package_json_path.exists():
             break
