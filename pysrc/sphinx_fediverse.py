@@ -4,6 +4,7 @@ from json import dump, load
 from os import getenv
 from pathlib import Path
 from shutil import copyfile
+from time import sleep
 from typing import TYPE_CHECKING, cast
 
 from docutils import nodes
@@ -18,6 +19,11 @@ if TYPE_CHECKING:  # cov: ignore
 package_json_path = Path(__file__).parent / "package.json"
 if not package_json_path.exists():
     copyfile(Path(__file__).parent.parent / "jssrc" / "package.json", package_json_path)
+    for _ in range(10):
+        if package_json_path.exists():
+            break
+        sleep(0.1)
+
 with package_json_path.open('r') as f:
     version = load(f)['version']
 
