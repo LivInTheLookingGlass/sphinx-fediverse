@@ -27,7 +27,7 @@ function transformMFM(text, fediInstance) {
         [/\$\[flip\.v(?:,v)* (.+)\]/gu,     (match, p1) => `<span style="transform: scaleY(-1);">${p1}</span>`],
         [/\$\[flip(?:.h(?:,h)*)? (.+)\]/gu, (match, p1) => `<span style="transform: scaleX(-1);">${p1}</span>`],
         [/\$\[blur (.+)\]/gu,               (match, p1) => `<span style="filter: blur(3px);">${p1}</span>`],
-        [/(?<![\[/])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
+        [/(?<![\[/=])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
             (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`],
         [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
         [/(?<![\[/]|@[\p{L}\p{M}\w\._\-]+)@([\p{L}\p{M}\w\._\-]+(?:@[a-zA-Z0-9\._\-]+)?)/gu, 
