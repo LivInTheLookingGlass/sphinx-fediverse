@@ -21,7 +21,8 @@ if not package_json_path.exists():
 with package_json_path.open('r') as f:
     version = load(f)['version']
 
-__version__ = tuple(int(x) for x in version.split("."))
+_version_append = version.split("-")[1:]
+__version__ = tuple(int(x) for x in version.split(".")) + (_version_append, )
 
 registered_docs: Set[str] = set()
 
