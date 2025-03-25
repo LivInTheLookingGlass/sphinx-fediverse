@@ -32,7 +32,7 @@ function transformMFM(text, fediInstance) {
         [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
         [/(?<![\[/]|@[\p{L}\p{M}\w.-]+)@([\p{L}\p{M}\w.-]+(?:@[a-zA-Z0-9.-]+)?)/gu, 
             (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
-        [/\$\[ruby ([\p{L}\p{M}\w-_]+) ([\p{L}\p{M}\w-_]+)/gu,
+        [/\$\[ruby ([\p{L}\p{M}\w_-]+) ([\p{L}\p{M}\w-_]+)\]/gu,
             (match, p1, p2) => `<ruby>${p1} <rp>(</rp><rt>${p2}</rt><rp>)</rp></ruby>`],
         [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w-_]+)\]/gu,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
