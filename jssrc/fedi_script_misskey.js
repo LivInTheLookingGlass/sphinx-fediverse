@@ -36,6 +36,8 @@ function transformMFM(text, fediInstance) {
             (match, p1, p2) => `<ruby>${p1} <rp>(</rp><rt>${p2}</rt><rp>)</rp></ruby>`],
         [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
+        [/\$\[(:?scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
+            (match, py1, px, py2, text) => `<span style="transform: scale(${px}, ${py1||py2||px});">${text}</span>`],
     ];
     let newText = text;
     let lastRoundText = '';

@@ -133,6 +133,10 @@ describe('Misskey Implementation', function () {
             ['$[ruby 明日 Ashita]',                '<ruby>明日 <rp>(</rp><rt>Ashita</rt><rp>)</rp></ruby>'],
             ['$[bg.color=f00 foo]',              '<span style="background-color=#f00;">foo</span>'],
             ['$[fg.color=ba1 bar]',              '<span style="color=#ba1;">bar</span>'],
+            ['$[x2 foo]',                        '<span style="transform: scale(2, 2);">foo</span>'],
+            ['$[x4 bar]',                        '<span style="transform: scale(4, 4);">bar</span>'],
+            ['$[scale.x=4,y=2 foobar]',          '<span style="transform: scale(4, 2);">foobar</span>'],
+            ['$[scale.y=4,x=2 foobaz]',          '<span style="transform: scale(2, 4);">foobaz</span>'],
             // TODO: combinations of more elements
         ];
         for (const [key, value] of pairs) {
