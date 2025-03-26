@@ -17,25 +17,36 @@ function transformMFM(text, fediInstance) {
     // transforms as much of MFM as possible into standard Markdown
     const multiTransforms = [
         // gums means global, unicode, multi-line, dot-includes-spaces
+        // escape plain contents
         [/<plain>(.*)<\/plain>/gums,        (match, p1) => escapeHtml(p1)],
+        // wrap centered stuff in div
         [/<center>(.*)<\/center>/gums,      (match, p1) => `<div style="text-align: center;">${p1}</div>`],
         // <i> tag is single-line because the markdown equivalent doesn't work across multiple lines; falls back to HTML
         [/<i>([^\r\n]*)<\/i>/gu,            (match, p1) => `*${p1}*`],
+        // small is roughly the same a sub
         [/<small>(.*)<\/small>/gums,        (match, p1) => `<sub>${p1}</sub>`],
+        // flip needs a block because you can do one or multiple directions. multiple is tricky to parse
         [/\$\[flip\.(?=.*h)(?=.*v)(?:h|v)(?:,?(?:h|v))* (.+)\]/gus, 
             (match, p1) => `<span style="transform: scale(-1, -1);">${p1}</span>`],
         [/\$\[flip\.v(?:,v)* (.+)\]/gu,     (match, p1) => `<span style="transform: scaleY(-1);">${p1}</span>`],
         [/\$\[flip(?:.h(?:,h)*)? (.+)\]/gu, (match, p1) => `<span style="transform: scaleX(-1);">${p1}</span>`],
+        // blur is just a css span
         [/\$\[blur (.+)\]/gu,               (match, p1) => `<span style="filter: blur(3px);">${p1}</span>`],
+        // hashtags outside of links should get transformed
         [/(?<![\[/=])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
             (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`],
+        // links with preview-disabled should get transformed; we don't do previews
         [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
+        // mentions outside of links should be transformed
         [/(?<![\[/]|@[\p{L}\p{M}\w\._\-]+)@([\p{L}\p{M}\w\._\-]+(?:@[a-zA-Z0-9\._\-]+)?)/gu, 
             (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
+        // turn ruby text into the right html tags
         [/\$\[ruby ([\p{L}\p{M}\w_\-]+) +([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2) => `<ruby>${p1} <rp>(</rp><rt>${p2}</rt><rp>)</rp></ruby>`],
+        // color is a css span
         [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
+        // scale is a css span with transform
         [/\$\[(:?scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
             (match, py1, px, py2, text) => `<span style="transform: scale(${px}, ${py1||py2||px});">${text}</span>`],
     ];
