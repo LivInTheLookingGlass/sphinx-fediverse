@@ -1,7 +1,8 @@
 sphinx-fediverse documentation
 ==============================
 
-For more of my work, please see my `home page <https://oliviaappleton.com/>`__.
+For more of my work, please see my `home page <https://oliviaappleton.com/>`__. For a detailed description of how this
+works, see `this blog post <https://blog.oliviaappleton.com/posts/0005-sphinx-fediverse>`__
 
 .. |downloads| image:: https://img.shields.io/pepy/dt/sphinx-fediverse?label=Downloads
    :alt: PyPI Total Downloads
