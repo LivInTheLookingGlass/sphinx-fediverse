@@ -233,19 +233,14 @@ describe('Glue Script', function () {
 
     describe('Renderer', function() {
 
-        it('should render handles with an nbsp', async function() {
+        it('should render handles inside a link', async function() {
             const comment = structuredClone(minimalRenderableComment);
             comment['user']['handle'] = '@test@example.com';
             const parsed = glue.renderComment(comment);
             const handle = parsed.querySelector('.comment .author a .handle');
             assert.equal(
-                JSON.stringify(handle.innerText.replace('\u200B', '')),
-                JSON.stringify(comment.user.handle)
-            );
-            const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
-            assert.equal(
-                JSON.stringify(handle.innerText),
-                JSON.stringify(comment.user.handle.slice(0, sliceAt) + '\u200B' + comment.user.handle.slice(sliceAt))
+                handle.innerText,
+                comment.user.handle
             );
         });
 
