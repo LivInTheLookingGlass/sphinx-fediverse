@@ -231,19 +231,25 @@ describe('Glue Script', function () {
         }
     });
 
-    it('should render handles with an nbsp', async function() {
-        const comment = structuredClone(minimalRenderableComment);
-        comment['user']['handle'] = '@test@example.com';
-        const parsed = glue.renderComment(comment);
-        const handle = parsed.querySelector('.comment .author a .handle');
-        assert.equal(
-            handle.innerText.replace('\u200B', ''),
-            comment.user.handle
-        );
-        const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
-        assert.equal(
-            handle.innerText,
-            comment.user.handle.slice(0, sliceAt) + '\u200B' + comment.user.handle.slice(sliceAt)
-        );
-    })
+    describe('Renderer', function() {
+
+        it('should render handles with an nbsp', async function() {
+            const comment = structuredClone(minimalRenderableComment);
+            comment['user']['handle'] = '@test@example.com';
+            const parsed = glue.renderComment(comment);
+            const handle = parsed.querySelector('.comment .author a .handle');
+            assert.equal(
+                Buffer.from(handle.innerText.replace('\u200B', ''), 'utf-8'),
+                Buffer.from(comment.user.handle, 'utf-8')
+            );
+            const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
+            assert.equal(
+                Buffer.from(handle.innerText, 'utf-8'),
+                Buffer.from(comment.user.handle.slice(0, sliceAt) + '\u200B' + 
+                    comment.user.handle.slice(sliceAt), 'utf-8')
+            );
+        });
+
+    });
+
 });
