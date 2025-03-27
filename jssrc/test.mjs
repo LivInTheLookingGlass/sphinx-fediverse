@@ -31,6 +31,16 @@ const require = createRequire(import.meta.url);
 const oldFetch = fetch;
 let polly;
 
+const minimalRenderableComment = {
+    'user': {
+        'emoji': {},
+    },
+    'media': [],
+    'reactions': {},
+    'emoji': {},
+    'reactionEmoji': {},
+};
+
 function hashString(input) {
     return createHash('sha256').update(input).digest('hex');
 }
@@ -222,12 +232,8 @@ describe('Glue Script', function () {
     });
 
     it('should render handles with an nbsp', async function() {
-        const comment = {
-            'user': {
-                'handle': '@test@example.com',
-            },
-            'media': [],
-        };
+        const comment = structuredClone(minimalRenderableComment);
+        comment['user']['handle'] = '@test@example.com';
         const parsed = glue.renderComment(comment);
         const handle = parsed.querySelector('.comment .author .handle');
         assert.equal(
