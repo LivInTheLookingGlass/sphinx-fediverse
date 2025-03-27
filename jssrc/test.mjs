@@ -137,6 +137,12 @@ describe('Misskey Implementation', function () {
             ['$[x4 bar]',                        '<span style="transform: scale(4, 4);">bar</span>'],
             ['$[scale.x=4,y=2 foobar]',          '<span style="transform: scale(4, 2);">foobar</span>'],
             ['$[scale.y=4,x=2 foobaz]',          '<span style="transform: scale(2, 4);">foobaz</span>'],
+            ['$[font.sans-serif test]',          '<span style="font-family: sans-serif;">test</span>'],
+            ['$[font.serif test]',               '<span style="font-family: serif;">test</span>'],
+            ['$[font.monospace test]',           '<span style="font-family: monospace;">test</span>'],
+            ['$[font.cursive test]',             '<span style="font-family: cursive;">test</span>'],
+            ['$[font.fantasy test]',             '<span style="font-family: fantasy;">test</span>'],
+            ['$[font.unknown test]',             '$[font.unknown test]'],
             // TODO: combinations of more elements
         ];
         for (const [key, value] of pairs) {

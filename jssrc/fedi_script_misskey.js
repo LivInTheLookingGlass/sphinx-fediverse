@@ -26,7 +26,7 @@ function transformMFM(text, fediInstance) {
         // small is roughly the same a sub
         [/<small>(.*)<\/small>/gums,        (match, p1) => `<sub>${p1}</sub>`],
         // flip needs a block because you can do one or multiple directions. multiple is tricky to parse
-        [/\$\[flip\.(?=.*h)(?=.*v)(?:h|v)(?:,?(?:h|v))* (.+)\]/gus, 
+        [/\$\[flip\.(?=[,hv]*h)(?=[,hv]*v)(?:h|v)(?:,?(?:h|v))* (.+)\]/gus, 
             (match, p1) => `<span style="transform: scale(-1, -1);">${p1}</span>`],
         [/\$\[flip\.v(?:,v)* (.+)\]/gu,     (match, p1) => `<span style="transform: scaleY(-1);">${p1}</span>`],
         [/\$\[flip(?:.h(?:,h)*)? (.+)\]/gu, (match, p1) => `<span style="transform: scaleX(-1);">${p1}</span>`],
@@ -49,6 +49,9 @@ function transformMFM(text, fediInstance) {
         // scale is a css span with transform
         [/\$\[(:?scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
             (match, py1, px, py2, text) => `<span style="transform: scale(${px}, ${py1||py2||px});">${text}</span>`],
+        // font is surprisingly easy
+        [/\$\[font\.((?:sans-)?serif|monospace|fantasy|cursive) (.+)\]/gu,
+            (match, p1, p2) => `<span style="font-family: ${p1};">${p2}</span>`],
     ];
     let newText = text;
     let lastRoundText = '';
