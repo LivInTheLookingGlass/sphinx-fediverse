@@ -243,7 +243,7 @@ describe('Glue Script', function () {
         const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
         assert.equal(
             handle.innerText,
-            comment.user.handle.slice(0, sliceAt) + '@' + comment.user.handle.slice(sliceAt)
+            comment.user.handle.slice(0, sliceAt) + '\u200B' + comment.user.handle.slice(sliceAt)
         );
     })
 });
