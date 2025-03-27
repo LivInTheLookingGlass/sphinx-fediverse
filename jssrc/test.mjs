@@ -236,6 +236,8 @@ describe('Glue Script', function () {
         comment['user']['handle'] = '@test@example.com';
         const parsed = glue.renderComment(comment);
         const handle = parsed.querySelector('.comment .author a .handle');
+        console.log(parsed);
+        console.log(handle);
         assert.equal(
             handle.textContent.replace('\u200B', ''),
             comment.user.handle
