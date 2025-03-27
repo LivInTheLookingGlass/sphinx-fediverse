@@ -249,8 +249,8 @@ describe('Glue Script', function () {
             let parsed = glue.renderComment(comment);
             let cw = parsed.querySelector('.comment details summary');
             assert.equal(
-                cw.innerText,
-                comment.cw
+                cw,
+                null
             );
             comment['cw'] = 'This is a test';
             parsed = glue.renderComment(comment);
