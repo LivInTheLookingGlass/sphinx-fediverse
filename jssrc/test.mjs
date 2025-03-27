@@ -239,14 +239,13 @@ describe('Glue Script', function () {
             const parsed = glue.renderComment(comment);
             const handle = parsed.querySelector('.comment .author a .handle');
             assert.equal(
-                Buffer.from(handle.innerText.replace('\u200B', ''), 'utf-8'),
-                Buffer.from(comment.user.handle, 'utf-8')
+                JSON.stringify(handle.innerText.replace('\u200B', '')),
+                JSON.stringify(comment.user.handle)
             );
             const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
             assert.equal(
-                Buffer.from(handle.innerText, 'utf-8'),
-                Buffer.from(comment.user.handle.slice(0, sliceAt) + '\u200B' + 
-                    comment.user.handle.slice(sliceAt), 'utf-8')
+                JSON.stringify(handle.innerText),
+                JSON.stringify(comment.user.handle.slice(0, sliceAt) + '\u200B' + comment.user.handle.slice(sliceAt))
             );
         });
 
