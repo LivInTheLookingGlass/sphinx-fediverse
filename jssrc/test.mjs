@@ -236,15 +236,13 @@ describe('Glue Script', function () {
         comment['user']['handle'] = '@test@example.com';
         const parsed = glue.renderComment(comment);
         const handle = parsed.querySelector('.comment .author a .handle');
-        console.log(parsed);
-        console.log(handle);
         assert.equal(
-            handle.textContent.replace('\u200B', ''),
+            handle.innerText.replace('\u200B', ''),
             comment.user.handle
         );
         const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
         assert.equal(
-            handle.textContent,
+            handle.innerText,
             comment.user.handle.slice(0, sliceAt) + '@' + comment.user.handle.slice(sliceAt)
         );
     })
