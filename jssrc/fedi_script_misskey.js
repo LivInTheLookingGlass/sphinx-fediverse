@@ -47,7 +47,7 @@ function transformMFM(text, fediInstance) {
         [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w_\-]+)\]/gu,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
         // scale is a css span with transform
-        [/\$\[(:?scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
+        [/\$\[(?:scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
             (match, py1, px, py2, text) =>
                 `<span style="transform: scale(${px || py1}, ${py1 || py2 || px});">${text}</span>`],
         // font is surprisingly easy

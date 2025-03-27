@@ -226,6 +226,7 @@ describe('Glue Script', function () {
             'user': {
                 'handle': '@test@example.com',
             },
+            'media': [],
         };
         const parsed = glue.renderComment(comment);
         const handle = parsed.querySelector('.comment .author .handle');
