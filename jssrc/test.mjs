@@ -220,4 +220,23 @@ describe('Glue Script', function () {
             );
         }
     });
+
+    it('should render handles with an nbsp', async function() {
+        const comment = {
+            'user': {
+                'handle': '@test@example.com',
+            },
+        };
+        const parsed = glue.renderComment(comment);
+        const handle = parsed.querySelector('.comment .author .handle');
+        assert.equal(
+            handle.textContent.replace('\u200B', ''),
+            comment.user.handle
+        );
+        const sliceAt = comment.user.handle.indexOf('@', 1 + comment.user.handle.indexOf('@'));
+        assert.equal(
+            handle.textContent,
+            comment.user.handle.slice(0, sliceAt) + '@' + comment.user.handle.slice(sliceAt)
+        );
+    })
 });

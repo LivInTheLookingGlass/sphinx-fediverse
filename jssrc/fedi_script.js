@@ -157,8 +157,7 @@ function renderCommentsBatch(comments) {
 async function fetchComments(fediInstance, postId, maxDepth) {
     try {
         fetchMeta(fediInstance, postId);
-        while (maxDepth) {
-            maxDepth--;
+        while (maxDepth--) {
             const replies = await fetchSubcomments(fediInstance, postId);
             renderCommentsBatch(replies);
             await Promise.all(replies.map(reply => fetchSubcomments(fediInstance, reply.id)));
