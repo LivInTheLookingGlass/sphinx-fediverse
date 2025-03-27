@@ -244,6 +244,23 @@ describe('Glue Script', function () {
             );
         });
 
+        it('should recognize content warnings', async function() {
+            const comment = structuredClone(minimalRenderableComment);
+            let parsed = glue.renderComment(comment);
+            let cw = parsed.querySelector('.comment details summary');
+            assert.equal(
+                cw.innerText,
+                comment.cw
+            );
+            comment['cw'] = 'This is a test';
+            parsed = glue.renderComment(comment);
+            cw = parsed.querySelector('.comment details summary');
+            assert.equal(
+                cw.innerText,
+                comment.cw
+            );
+        });
+
     });
 
 });
