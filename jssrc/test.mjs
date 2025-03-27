@@ -235,7 +235,7 @@ describe('Glue Script', function () {
         const comment = structuredClone(minimalRenderableComment);
         comment['user']['handle'] = '@test@example.com';
         const parsed = glue.renderComment(comment);
-        const handle = parsed.querySelector('.comment .author .handle');
+        const handle = parsed.querySelector('.comment .author a .handle');
         assert.equal(
             handle.textContent.replace('\u200B', ''),
             comment.user.handle
