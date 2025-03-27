@@ -255,6 +255,7 @@ describe('Glue Script', function () {
             comment['cw'] = 'This is a test';
             parsed = glue.renderComment(comment);
             cw = parsed.querySelector('.comment details summary');
+            console.log(cw);
             assert.equal(
                 cw.innerText,
                 comment.cw
