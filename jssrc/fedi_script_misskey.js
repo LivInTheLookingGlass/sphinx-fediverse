@@ -13,6 +13,28 @@ function escapeHtml(unsafe) {
         .replaceAll(/@/g,  "&#64;");
 }
 
+function parseBorders(_, style, text) {
+    const p = {
+        // defaults
+        'color': '86b300',
+        'radius': '0',
+        'width': '1',
+        'style': 'solid',
+        'clip': 1,
+    };
+    for (const pair of style.split(',')) {
+        if (pair === 'noclip') {
+            p['clip'] = 0;
+        } else {
+            const [key, value] = pair.split('=');
+            p[key] = value;
+        }
+    }
+    const border = `${p.width}px ${p.style} #${p.color}`;
+    const clip = ' overflow: clip;' * p.clip;
+    return `<span style="border: ${border}; border-radius: ${p.radius}px;${clip}">${text}</span>`;
+}
+
 function transformMFM(text, fediInstance) {
     // transforms as much of MFM as possible into standard Markdown
     const multiTransforms = [
@@ -41,18 +63,23 @@ function transformMFM(text, fediInstance) {
         [/(?<![\[/]|@[\p{L}\p{M}\w\._\-]+)@([\p{L}\p{M}\w\._\-]+(?:@[a-zA-Z0-9\._\-]+)?)/gu, 
             (match, p1) => `[@${p1}](https://${fediInstance}/@${p1})`],
         // turn ruby text into the right html tags
-        [/\$\[ruby ([\p{L}\p{M}\w_\-]+) +([\p{L}\p{M}\w_\-]+)\]/gu,
+        [/\$\[ruby ([\p{L}\p{M}\w_\-]+) +([\p{L}\p{M}\w_\-]+)\]/gums,
             (match, p1, p2) => `<ruby>${p1} <rp>(</rp><rt>${p2}</rt><rp>)</rp></ruby>`],
         // color is a css span
-        [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) ([\p{L}\p{M}\w_\-]+)\]/gu,
+        [/\$\[(f|b)g.color=([\da-fA-F]{3,4}|[\da-fA-F]{6}) (.+)\]/gums,
             (match, p1, p2, p3) => `<span style="${p1 === 'b' ? 'background-' : ''}color=#${p2};">${p3}</span>`],
         // scale is a css span with transform
-        [/\$\[(?:scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gu,
+        [/\$\[(?:scale\.)?(?:y=(\d+),)?x=?(\d+)(?:,y=(\d+))? (.+)\]/gums,
             (match, py1, px, py2, text) =>
                 `<span style="transform: scale(${px || py1}, ${py1 || py2 || px});">${text}</span>`],
         // font is surprisingly easy
-        [/\$\[font\.((?:sans-)?serif|monospace|fantasy|cursive) (.+)\]/gu,
+        [/\$\[font\.((?:sans-)?serif|monospace|fantasy|cursive) (.+)\]/gums,
             (match, p1, p2) => `<span style="font-family: ${p1};">${p2}</span>`],
+        // border parsing is really complicated
+        // eslint-disable-next-line max-len
+        [/\$\[border\.((?:(?:style|width|color|radius)=(?:\w)+|noclip)(?:,(?:(?:style|width|color|radius)=(?:\w)+|noclip))*) +(.+?)\]/gums,
+            parseBorders
+        ]
     ];
     let newText = text;
     let lastRoundText = '';
