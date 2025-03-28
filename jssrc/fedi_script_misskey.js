@@ -55,7 +55,7 @@ function transformMFM(text, fediInstance) {
         // blur is just a css span
         [/\$\[blur (.+)\]/gu,               (match, p1) => `<span style="filter: blur(3px);">${p1}</span>`],
         // hashtags outside of links should get transformed
-        [/(?<![\[/=])#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
+        [/(?<![\[/=]|style="border:[\w ]+)#([^\d\s][\w\p{L}\p{M}-]*)/gu, 
             (match, p1) => `[#${p1}](https://${fediInstance}/tags/${p1})`],
         // links with preview-disabled should get transformed; we don't do previews
         [/\?\[(.+)\]\((.+)\)/gu,            (match, p1, p2) => `[${p1}](${p2})`],
