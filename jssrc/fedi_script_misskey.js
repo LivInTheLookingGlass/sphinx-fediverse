@@ -20,18 +20,18 @@ function parseBorders(_, style, text) {
         'radius': '0',
         'width': '1',
         'style': 'solid',
-        'clip': 1,
+        'clip': true,
     };
     for (const pair of style.split(',')) {
         if (pair === 'noclip') {
-            p['clip'] = 0;
+            p['clip'] = false;
         } else {
             const [key, value] = pair.split('=');
             p[key] = value;
         }
     }
     const border = `${p.width}px ${p.style} #${p.color}`;
-    const clip = ' overflow: clip;' * p.clip;
+    const clip = p.clip ? ' overflow: clip;' : '';
     return `<span style="border: ${border}; border-radius: ${p.radius}px;${clip}">${text}</span>`;
 }
 
