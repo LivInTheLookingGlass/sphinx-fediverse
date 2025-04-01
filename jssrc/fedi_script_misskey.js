@@ -273,32 +273,60 @@ async function fetchSubcomments(fediInstance, commentId) {
 }
 
 async function fetchMeta(fediInstance, postId) {
-    let response;
-    let data;
+    await Promise.all([
+        fetchMeta1(fediInstance, postId),
+        fetchMeta2(fediInstance, postId)
+    ]);
+}
 
+async function fetchMeta1(fediInstance, postId) {
     try {
         // Misskey has a different endpoint for fetching a post's details
-        response = await fetch(`https://${fediInstance}/api/notes/show`, {
+        const likeRequest = fetch(`https://${fediInstance}/api/notes/show`, {
             method: 'POST',
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ noteId: postId }),
-        });
-
-        if (!response.ok) {
-            if (response.status == 429) {
-                await new Promise((resolve) => setTimeout(resolve, 100))
-                return await fetchMeta(fediInstance, postId);
+        }).then(async function onLikesReturned(response) {
+            if (!response.ok) {
+                if (response.status == 429) {
+                    await new Promise((resolve) => setTimeout(resolve, 100))
+                    return await fetchMeta1(fediInstance, postId);
+                }
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-            throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        data = await response.json();
-        document.getElementById("global-likes").textContent = `${data.reactionCount}`;
-        document.getElementById("global-reblogs").textContent = `${data.renoteCount}`;
+            const data = await response.json();
+            document.getElementById("global-likes").textContent = `${data.reactionCount}`;
+        });
+        await likeRequest;
     } catch (error) {
-        console.error("Error fetching post meta:", error);
+        console.error("Error fetching post meta (reactions):", error);
+    }
+}
+
+async function fetchMeta2(fediInstance, postId) {
+    try {
+        const renoteRequest = fetch(`https://${fediInstance}/api/notes/renotes`, {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ noteId: postId, limit: 100 }),
+        }).then(async function onLikesReturned(response) {
+            if (!response.ok) {
+                if (response.status == 429) {
+                    await new Promise((resolve) => setTimeout(resolve, 100))
+                    return await fetchMeta(fediInstance, postId);
+                }
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            document.getElementById("global-reblogs").textContent = `${data.length}`;
+        });
+        await renoteRequest;
+    } catch (error) {
+        console.error("Error fetching post meta (renotes):", error);
     }
 }
 
