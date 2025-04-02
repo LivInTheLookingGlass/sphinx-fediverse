@@ -95,7 +95,7 @@
 
 /* Styling for emoji images */
 .emoji {
-	height: 1em;
+	height: 1em !important;
 	vertical-align: middle;
 }
 
