@@ -291,7 +291,7 @@ async function fetchMeta1(fediInstance, postId) {
         });
         if (!response.ok) {
             if (response.status == 429) {
-                await new Promise((resolve) => setTimeout(resolve, 100))
+                await new Promise((resolve) => setTimeout(resolve, 100));
                 return await fetchMeta1(fediInstance, postId);
             }
             throw new Error(`HTTP error! Status: ${response.status}`);
@@ -314,8 +314,8 @@ async function fetchMeta2(fediInstance, postId) {
         });
         if (!response.ok) {
             if (response.status == 429) {
-                await new Promise((resolve) => setTimeout(resolve, 100))
-                return await fetchMeta(fediInstance, postId);
+                await new Promise((resolve) => setTimeout(resolve, 100));
+                return await fetchMeta2(fediInstance, postId);
             }
             throw new Error(`HTTP error! Status: ${response.status}`);
         }
