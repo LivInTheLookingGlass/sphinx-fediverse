@@ -97,7 +97,7 @@ function transformMFM(text, fediInstance) {
 	return text;
 }
 
-async function extractComment(fediInstance, comment) {
+async function extractCommentMisskey(fediInstance, comment) {
 	/* Return spec:
 	{
 		id: "string",
@@ -242,7 +242,7 @@ async function fetchMisskeyEmoji(fediInstance, name) {
 	return ret;
 }
 
-async function fetchSubcomments(fediInstance, commentId) {
+async function fetchSubcommentsMisskey(fediInstance, commentId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/notes/children`, {
 			method: 'POST',
@@ -258,31 +258,30 @@ async function fetchSubcomments(fediInstance, commentId) {
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100))
-				return await fetchSubcomments(fediInstance, commentId);
+				return await fetchSubcommentsMisskey(fediInstance, commentId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
 		const data = await response.json();
 		return Promise.all(data.map(
-			comment => extractComment(fediInstance, comment)
+			comment => extractCommentMisskey(fediInstance, comment)
 		));
 	} catch (error) {
 		console.error(`Error fetching subcomments for ${commentId}:`, error);
 	}
 }
 
-async function fetchMeta(fediInstance, postId) {
+async function fetchMetaMisskey(fediInstance, postId) {
 	await Promise.all([
-		fetchMeta1(fediInstance, postId),
-		fetchMeta2(fediInstance, postId)
+		fetchMeta1Misskey(fediInstance, postId),
+		fetchMeta2Misskey(fediInstance, postId)
 	]);
 }
 
-async function fetchMeta1(fediInstance, postId) {
+async function fetchMeta1Misskey(fediInstance, postId) {
 	try {
-		// Misskey has a different endpoint for fetching a post's details
-		const likeRequest = fetch(`https://${fediInstance}/api/notes/show`, {
+		const response = await fetch(`https://${fediInstance}/api/notes/show`, {
 			method: 'POST',
 			headers: {
 				"Content-Type": "application/json",
@@ -292,7 +291,7 @@ async function fetchMeta1(fediInstance, postId) {
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100));
-				return await fetchMeta1(fediInstance, postId);
+				return await fetchMeta1Misskey(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
@@ -303,7 +302,7 @@ async function fetchMeta1(fediInstance, postId) {
 	}
 }
 
-async function fetchMeta2(fediInstance, postId) {
+async function fetchMeta2Misskey(fediInstance, postId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/notes/renotes`, {
 			method: 'POST',
@@ -315,7 +314,7 @@ async function fetchMeta2(fediInstance, postId) {
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100));
-				return await fetchMeta2(fediInstance, postId);
+				return await fetchMeta2Misskey(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
@@ -330,9 +329,9 @@ if (typeof module !== 'undefined') {
 	module.exports = {
 		transformMFM,
 		escapeHtml,
-		extractComment,
+		extractCommentMisskey,
 		fetchMisskeyEmoji,
-		fetchSubcomments,
-		fetchMeta,
+		fetchSubcommentsMisskey,
+		fetchMetaMisskey,
 	};
 }

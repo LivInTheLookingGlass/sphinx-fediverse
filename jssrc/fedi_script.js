@@ -7,6 +7,28 @@ function setImageLink(new_boost_link) {
 	config.boost_link = new_boost_link;
 }
 
+async function fetchMeta(fediFlavor, fediInstance, postId) {
+	switch (fediFlavor) {
+	case 'mastodon':
+		return await fetchMetaMastodon(fediInstance, postId);
+	case 'misskey':
+		return await fetchMetaMisskey(fediInstance, postId);
+	default:
+		console.error(`Unknown fedi flavor: ${fediFlavor}`);
+	}
+}
+
+async function fetchSubcomments(fediFlavor, fediInstance, postId) {
+	switch (fediFlavor) {
+	case 'mastodon':
+		return await fetchSubcommentsMastodon(fediInstance, postId);
+	case 'misskey':
+		return await fetchSubcommentsMisskey(fediInstance, postId);
+	default:
+		console.error(`Unknown fedi flavor: ${fediFlavor}`);
+	}
+}
+
 function replaceEmoji(string, emojis) {
 	for (const shortcode in emojis) {
 		const static_url = DOMPurify.sanitize(emojis[shortcode]);
@@ -154,13 +176,13 @@ function renderCommentsBatch(comments) {
 	});
 }
 
-async function fetchComments(fediInstance, postId, maxDepth) {
+async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 	try {
-		fetchMeta(fediInstance, postId);
+		fetchMeta(fediFlavor, fediInstance, postId);
 		while (maxDepth--) {
-			const replies = await fetchSubcomments(fediInstance, postId);
+			const replies = await fetchSubcomments(fediFlavor, fediInstance, postId);
 			renderCommentsBatch(replies);
-			await Promise.all(replies.map(reply => fetchSubcomments(fediInstance, reply.id)));
+			await Promise.all(replies.map(reply => fetchSubcomments(fediFlavor, fediInstance, reply.id)));
 		}
 	} catch (error) {
 		console.error("Error fetching comments:", error);

@@ -14,9 +14,7 @@ export default defineConfig([
 			"max-len": ["error", {
 				code: 120,
 			}],
-	
-			indent: ["error", 4],
-	
+			indent: ["error", "tab"],
 			"no-unused-vars": ["error", {
 				varsIgnorePattern: ignoreUnusedPatterns.join("|"),
 			}],

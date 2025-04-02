@@ -1,4 +1,4 @@
-async function extractComment(fediInstance, comment) {
+async function extractCommentMastodon(fediInstance, comment) {
 	/* Return spec:
 	{
 		id: "string",
@@ -108,7 +108,7 @@ async function extractComment(fediInstance, comment) {
 	};
 }
 
-async function fetchSubcomments(fediInstance, commentId) {
+async function fetchSubcommentsMastodon(fediInstance, commentId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`);
 
@@ -122,14 +122,14 @@ async function fetchSubcomments(fediInstance, commentId) {
 
 		const data = await response.json();
 		return Promise.all(data.descendants.map(
-			comment => extractComment(fediInstance, comment)
+			comment => extractCommentMastodon(fediInstance, comment)
 		));
 	} catch (error) {
 		console.error(`Error fetching subcomments for ${commentId}:`, error);
 	}
 }
 
-async function fetchMeta(fediInstance, postId) {
+async function fetchMetaMastodon(fediInstance, postId) {
 	let response;
 	let data;
 
@@ -140,7 +140,7 @@ async function fetchMeta(fediInstance, postId) {
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100))
-				return await fetchMeta(fediInstance, postId);
+				return await fetchMetaMastodon(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
@@ -156,8 +156,8 @@ async function fetchMeta(fediInstance, postId) {
 
 if (typeof module !== 'undefined') {
 	module.exports = {
-		extractComment,
-		fetchSubcomments,
-		fetchMeta,
+		extractCommentMastodon,
+		fetchSubcommentsMastodon,
+		fetchMetaMastodon,
 	};
 }

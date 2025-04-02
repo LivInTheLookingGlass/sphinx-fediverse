@@ -8,7 +8,7 @@ from time import sleep
 from typing import TYPE_CHECKING, cast
 
 from docutils import nodes
-from sphinx.util.docutils import SphinxDirective
+from sphinx.util.docutils import SphinxDirective, flag
 
 if TYPE_CHECKING:  # cov: ignore
 	from typing import Any, Dict, List, Set, Union
@@ -30,46 +30,86 @@ with package_json_path.open('r') as f:
 _version_numbers, *_version_append = version.split("-")
 __version__ = tuple(int(x) for x in _version_numbers.split(".")) + (*_version_append, )
 
+SUPPORTED_FLAVORS: Set[str] = {'mastodon', 'misskey'}
 registered_docs: Set[str] = set()
+registered_flavors: Set[str] = set()
 
 
 class FediverseCommentDirective(SphinxDirective):
 	has_content = True
+	optional_arguments = 8
+	option_spec = {
+		'enable_post_creation': flag,
+		'raise_error_if_no_post': flag,
+		'replace_index_with_slash': flag,
+		'token_names': str,
+		'fedi_flavor': str,
+		'fedi_username': str,
+		'fedi_instance': str,
+		'comments_mapping_file': str,
+	}
 
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
 		self.post_id = None
+		self.enable_post_creation = self.options.get('enable_post_creation', self.env.config.enable_post_creation)
+		self.raise_error_if_no_post = self.options.get(
+			'raise_error_if_no_post',
+			self.env.config.raise_error_if_no_post
+		)
+		self.replace_index_with_slash = self.options.get(
+			'replace_index_with_slash',
+			self.env.config.replace_index_with_slash
+		)
+		self.fedi_flavor = self.options.get(
+			'fedi_flavor',
+			self.env.config.fedi_flavor
+		)
+		self.fedi_username = self.options.get(
+			'fedi_username',
+			self.env.config.fedi_username
+		)
+		self.fedi_instance = self.options.get(
+			'fedi_instance',
+			self.env.config.fedi_instance
+		)
+		self.comments_mapping_file = self.options.get(
+			'comments_mapping_file',
+			self.env.config.comments_mapping_file
+		)
+		self.token_names = self.options.get(
+			'token_names'.split(','),
+			['MISSKEY_ACCESS_TOKEN']
+			if self.fedi_flavor == 'misskey' else
+			['MASTODON_CLIENT_ID', 'MASTODON_CLIENT_SECRET', 'MASTODON_ACCESS_TOKEN']
+		)
 
 	def process_post(self, post_url: str, title: str) -> str:
 		"""Post a new comment on Mastodon and return the post ID."""
-		if not self.config.enable_post_creation:
-			if not self.config.raise_error_if_no_post:
+		if not self.enable_post_creation:
+			if not self.raise_error_if_no_post:
 				return ''
 			elif input('Would you like to create the post yourself, and provide the ID? (y/N) ').lower()[0] == 'y':
 				return input("Enter the ID and NOTHING ELSE: ")
 			else:
 				raise RuntimeError(f"Post creation is disabled. Cannot create a post for {post_url}")
-		elif self.env.config.fedi_flavor == 'mastodon':
+		elif self.fedi_flavor == 'mastodon':
 			return self.process_mastodon(post_url, title)
-		elif self.env.config.fedi_flavor == 'misskey':
+		elif self.fedi_flavor == 'misskey':
 			return self.process_misskey(post_url, title)
-		raise EnvironmentError("Unknown fediverse flavor selected")
+		raise EnvironmentError(f"Unknown fediverse flavor selected. Supported: {SUPPORTED_FLAVORS}")
 
 	def process_mastodon(self, post_url: str, title: str) -> str:
 		from mastodon import Mastodon
 
-		if not all((
-			getenv('MASTODON_CLIENT_ID'),
-			getenv('MASTODON_CLIENT_SECRET'),
-			getenv('MASTODON_ACCESS_TOKEN')
-		)):
+		if not all(getenv(token) for token in self.token_names):
 			raise EnvironmentError("Must provide all 3 mastodon access tokens")
 		else:
 			api = Mastodon(
-				api_base_url=self.env.config.fedi_instance,
-				client_id=getenv('MASTODON_CLIENT_ID'),
-				client_secret=getenv('MASTODON_CLIENT_SECRET'),
-				access_token=getenv('MASTODON_ACCESS_TOKEN'),
+				api_base_url=self.fedi_instance,
+				client_id=getenv(self.token_names[0]),
+				client_secret=getenv(self.token_names[1]),
+				access_token=getenv(self.token_names[2]),
 				user_agent=f'Sphinx-Fediverse v{".".join(str(x) for x in __version__)}',
 			)
 			message = f"Discussion post for {title}\n\n{self.env.config.html_baseurl}"
@@ -84,12 +124,12 @@ class FediverseCommentDirective(SphinxDirective):
 	def process_misskey(self, post_url: str, title: str) -> str:
 		from misskey import Misskey
 
-		if not getenv('MISSKEY_ACCESS_TOKEN'):
+		if not getenv(*self.token_names):
 			raise EnvironmentError("Must provide misskey access token")
 		else:
 			api = Misskey(
-				self.env.config.fedi_instance,
-				i=getenv('MISSKEY_ACCESS_TOKEN'),
+				self.fedi_instance,
+				i=getenv(*self.token_names),
 				# user_agent=f'Sphinx-Fediverse v{'.'.join(str(x) for x in __version__)}',
 			)
 			escaped_url = post_url.replace(')', r'\)')
@@ -103,7 +143,7 @@ class FediverseCommentDirective(SphinxDirective):
 	def create_post_if_needed(self, post_url: str) -> str:
 		"""Check if a post exists for this URL. If not, create one."""
 		# Read the mapping file
-		mapping_file_path = Path(self.config.comments_mapping_file)
+		mapping_file_path = Path(self.comments_mapping_file)
 		if not mapping_file_path.exists():
 			# File doesn't exist, create an empty mapping
 			mapping: Dict[str, str] = {}
@@ -147,7 +187,7 @@ class FediverseCommentDirective(SphinxDirective):
 
 		# Handle special case for index.html and use configurable URL format
 		if docname == "index":
-			if self.config.replace_index_with_slash:
+			if self.replace_index_with_slash:
 				post_url = "/"  # Replace index.html with just a slash
 			else:
 				post_url = "index.html"  # Keep the index.html
@@ -160,12 +200,17 @@ class FediverseCommentDirective(SphinxDirective):
 		if post_id is None:
 			return []
 
+		# Add scripts
+		self.state.document.settings.env.app.add_js_file(f'fedi_script_{self.fedi_flavor}.min.js')
+		if self.fedi_flavor == 'misskey':
+			self.state.document.settings.env.app.add_js_file('marked.min.js')
+
 		# Create the DOM element to store the post ID
 		post_id_node = nodes.raw('', f"""
 			<div style="display:none;">
 				<span id="fedi-post-id">{post_id}</span>
-				<span id="fedi-instance">{self.env.config.fedi_instance}</span>
-				<span id="fedi-flavor">{self.env.config.fedi_flavor}</span>
+				<span id="fedi-instance">{self.fedi_instance}</span>
+				<span id="fedi-flavor">{self.fedi_flavor}</span>
 			</div>
 			<h2>
 				Comments
@@ -189,11 +234,11 @@ class FediverseCommentDirective(SphinxDirective):
 							"{self.env.config.html_baseurl}/_static/boost.svg"
 						)
 						// Trigger the comment-fetching logic on page load
-						fetchComments(fediInstance, postId, 5); // Adjust depth as needed
+						fetchComments({self.fedi_flavor}, fediInstance, postId, 5); // Adjust depth as needed
 					}}
 				}}
 			}});
-		  </script>
+			</script>
 		""", format='html')
 
 		# Add the post ID element to the document
@@ -216,12 +261,6 @@ def on_builder_inited(app: Sphinx) -> None:
 		)
 
 
-def on_config_inited(app: Sphinx, config: Config) -> None:
-	app.config.html_js_files.append(f'fedi_script_{app.config.fedi_flavor}.min.js')
-	if app.config.fedi_flavor == 'misskey':
-		app.config.html_js_files.append('marked.min.js')
-
-
 def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
 	# Register custom configuration options
 	app.add_config_value('fedi_flavor', '', 'env')
@@ -234,7 +273,6 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
 
 	app.add_directive('fedi-comments', FediverseCommentDirective)
 	app.connect('builder-inited', on_builder_inited)
-	app.connect('config-inited', on_config_inited)
 
 	app.config.html_js_files.append('purify.min.js')
 	app.config.html_js_files.append('fedi_script.min.js')

@@ -84,7 +84,7 @@ describe('Misskey Implementation', function () {
 	it('should be able to fetch children of (transfem.social, a58960b3o5ko020v)', async function () {
 		const instance = 'transfem.social';
 		const id = 'a58960b3o5ko020v';
-		const comments = await misskey.fetchSubcomments(instance, id);
+		const comments = await misskey.fetchSubcommentsMisskey(instance, id);
 		assert.ok(comments.length);
 		assert.equal(comments[0].user.host, instance);
 		assert.equal(comments[0].replyId, id);
@@ -221,7 +221,7 @@ describe('Mastodon Implementation', function () {
 	it('should be able to fetch children of (tech.lgbt, 114032235423688612)', async function () {
 		const instance = 'tech.lgbt';
 		const id = '114032235423688612';
-		const comments = await mastodon.fetchSubcomments(instance, id);
+		const comments = await mastodon.fetchSubcommentsMastodon(instance, id);
 		assert.ok(comments.length);
 		assert.equal(comments[0].user.host, instance);
 		assert.equal(comments[0].replyId, id);
