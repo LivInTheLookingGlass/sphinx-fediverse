@@ -86,11 +86,11 @@ class FediverseCommentDirective(SphinxDirective):
 			self.env.config.comments_mapping_file
 		)
 		self.token_names = self.options.get(
-			'token_names'.split(','),
-			['MISSKEY_ACCESS_TOKEN']
+			'token_names',
+			'MISSKEY_ACCESS_TOKEN'
 			if self.fedi_flavor == 'misskey' else
-			['MASTODON_CLIENT_ID', 'MASTODON_CLIENT_SECRET', 'MASTODON_ACCESS_TOKEN']
-		)
+			'MASTODON_CLIENT_ID,MASTODON_CLIENT_SECRET,MASTODON_ACCESS_TOKEN'
+		).split(',')
 
 	def process_post(self, post_url: str, title: str) -> str:
 		"""Post a new comment on Mastodon and return the post ID."""
