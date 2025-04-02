@@ -8,10 +8,10 @@ from time import sleep
 from typing import TYPE_CHECKING, cast
 
 from docutils import nodes
-from sphinx.util.docutils import SphinxDirective, flag
+from sphinx.util.docutils import SphinxDirective
 
 if TYPE_CHECKING:  # cov: ignore
-	from typing import Any, Dict, List, Set, Union
+	from typing import Any, Dict, List, Optional, Set, Union
 
 	from sphinx.application import Sphinx
 	from sphinx.config import Config
@@ -35,13 +35,21 @@ registered_docs: Set[str] = set()
 registered_flavors: Set[str] = set()
 
 
+def bool_or_none(value: str) -> Optional[bool]:
+	if value.lower() == 'true':
+		return True
+	elif value.lower() == 'false':
+		return False
+	return None
+
+
 class FediverseCommentDirective(SphinxDirective):
 	has_content = True
 	optional_arguments = 8
 	option_spec = {
-		'enable_post_creation': flag,
-		'raise_error_if_no_post': flag,
-		'replace_index_with_slash': flag,
+		'enable_post_creation': bool_or_none,
+		'raise_error_if_no_post': bool_or_none,
+		'replace_index_with_slash': bool_or_none,
 		'token_names': str,
 		'fedi_flavor': str,
 		'fedi_username': str,
