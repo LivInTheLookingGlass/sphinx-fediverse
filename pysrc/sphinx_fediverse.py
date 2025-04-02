@@ -242,7 +242,7 @@ class FediverseCommentDirective(SphinxDirective):
 							"{self.env.config.html_baseurl}/_static/boost.svg"
 						)
 						// Trigger the comment-fetching logic on page load
-						fetchComments({self.fedi_flavor}, fediInstance, postId, 5); // Adjust depth as needed
+						fetchComments('{self.fedi_flavor}', fediInstance, postId, 5); // Adjust depth as needed
 					}}
 				}}
 			}});
