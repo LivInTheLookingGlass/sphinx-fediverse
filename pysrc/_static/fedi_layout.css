@@ -1,127 +1,127 @@
 /* Base styles for the comment container */
 #comments-section {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    padding: 0;
-    list-style: none;
-    display: block;
+	font-family: Arial, sans-serif;
+	margin: 20px;
+	padding: 0;
+	list-style: none;
+	display: block;
 }
 
 /* Styling each comment block */
 .comment {
-    background-color: var(--sd-color-card-background,var(--sy-c-background,#f9f9f9));
-    border: 1px solid var(--sd-color-card-border,#e0e0e0);
-    border-radius: 5px;
-    margin-bottom: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    font-variant-emoji: emoji;
+	background-color: var(--sd-color-card-background,var(--sy-c-background,#f9f9f9));
+	border: 1px solid var(--sd-color-card-border,#e0e0e0);
+	border-radius: 5px;
+	margin-bottom: 10px;
+	padding: 10px;
+	display: flex;
+	flex-direction: column;
+	font-variant-emoji: emoji;
 }
 
 /* Avatar styling */
 .comment .avatar {
-    display: inline-block;
-    margin-right: 10px;
+	display: inline-block;
+	margin-right: 10px;
 }
 
 /* Author section (name and date) */
 .comment .author {
-    display: flex;
-    align-items: center;
-    margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	margin-bottom: 8px;
 }
 
 .comment .author a {
-    text-decoration: none;
-    color: var(--sd-color-primary-highlight,#0077cc);
-    font-weight: bold;
+	text-decoration: none;
+	color: var(--sd-color-primary-highlight,#0077cc);
+	font-weight: bold;
 }
 
 .comment .author a .handle {
-    text-decoration: none;
-    color: var(--sy-c-link-hover,var(--sd-color-muted,#888));
-    font-weight: bold;
-    font-size: 0.8em;
-    white-space: normal;
-    word-wrap: break-word;
-    text-wrap: balance;
+	text-decoration: none;
+	color: var(--sy-c-link-hover,var(--sd-color-muted,#888));
+	font-weight: bold;
+	font-size: 0.8em;
+	white-space: normal;
+	word-wrap: break-word;
+	text-wrap: balance;
 }
 
 .comment .author .date {
-    font-size: 0.9em;
-    text-wrap: balance;
-    color: var(--sy-c-background-contrast,var(--sd-color-dark,#555));
-    margin-left: 10px;
-    margin-right: 10px;
+	font-size: 0.9em;
+	text-wrap: balance;
+	color: var(--sy-c-background-contrast,var(--sd-color-dark,#555));
+	margin-left: 10px;
+	margin-right: 10px;
 }
 
 /* Content area */
 .comment .content {
-    margin-top: 5px;
+	margin-top: 5px;
 }
 
 .comment .content .invisible {
-    display: none;
+	display: none;
 }
 
 /* For nested/replied-to comments, we apply indentation */
 .comment.reply {
-    margin-left: 30px;
-    border-left: 3px solid var(--sd-color-primary-highlight,#0077cc);
-    padding-left: 10px;
+	margin-left: 30px;
+	border-left: 3px solid var(--sd-color-primary-highlight,#0077cc);
+	padding-left: 10px;
 }
 
 /* Sensitive content handling with details */
 .comment details {
-    background-color: var(--sd-color-danger,#f8d7da);
-    border: 1px solid var(--sd-color-card-border,#f5c6cb);
-    border-radius: 5px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    padding: 5px;
+	background-color: var(--sd-color-danger,#f8d7da);
+	border: 1px solid var(--sd-color-card-border,#f5c6cb);
+	border-radius: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding: 5px;
 }
 
 .comment details summary {
-    cursor: pointer;
-    font-weight: bold;
-    color: #721c24;
+	cursor: pointer;
+	font-weight: bold;
+	color: #721c24;
 }
 
 .comment details p {
-    color: #721c24;
-    margin: 5px 0;
+	color: #721c24;
+	margin: 5px 0;
 }
 
 /* Styling for emoji images */
 .emoji {
-    height: 1em;
-    vertical-align: middle;
+	height: 1em;
+	vertical-align: middle;
 }
 
 .comment .content .attachment {
-    max-width: 100%;
+	max-width: 100%;
 }
 
 /* Hide comment content if no subcomments */
 .comment.no-subcomments {
-    background-color: #e9ecef;
-    border: 1px solid #d6d8db;
+	background-color: #e9ecef;
+	border: 1px solid #d6d8db;
 }
 
 /* Optional: hover effect for comments */
 .comment:hover {
-    filter: invert(0.04);
+	filter: invert(0.04);
 }
 
 .fediIcon {
-    height: 1em;
-    filter: invert(1);
-    mix-blend-mode: difference;
-    vertical-align: middle;
+	height: 1em;
+	filter: invert(1);
+	mix-blend-mode: difference;
+	vertical-align: middle;
 }
 
 .reaction {
-    border: 2px solid var(--sy-c-background-contrast,var(--sd-color-dark,#555));
-    border-radius: 5px;
+	border: 2px solid var(--sy-c-background-contrast,var(--sd-color-dark,#555));
+	border-radius: 5px;
 }
