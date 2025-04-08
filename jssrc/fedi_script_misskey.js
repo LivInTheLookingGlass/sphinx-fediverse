@@ -327,7 +327,7 @@ async function fetchMeta2Misskey(fediInstance, postId) {
 
 async function queryUserMisskey(fediInstance, handle) {
 	try {
-		const [username, domain] = handle.split("@");
+		const [_, username, domain] = handle.split("@");
 		const response = await fetch(`https://${fediInstance}/api/users/show`, {
 			method: 'POST',
 			headers: {
