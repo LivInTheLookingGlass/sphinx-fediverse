@@ -62,7 +62,6 @@ class FediverseCommentDirective(SphinxDirective):
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        self.post_id = None
         self.enable_post_creation: Optional[bool] = self.options.get(
             'enable_post_creation',
             self.env.config.enable_post_creation
@@ -101,7 +100,7 @@ class FediverseCommentDirective(SphinxDirective):
             'fetch_depth',
             self.env.config.comment_fetch_depth
         )
-        self.section_level: str = self.options.get(
+        self.section_level: int = self.options.get(
             'section_level',
             self.env.config.comment_section_level
         )
@@ -109,7 +108,7 @@ class FediverseCommentDirective(SphinxDirective):
             'section_title',
             self.env.config.comment_section_title
         )
-        self.post_id: str = self.options.get('post_id')
+        self.post_id: Optional[str] = self.options.get('post_id')
         if not (1 <= self.section_level <= 6):
             raise ValueError(f"Section level out of bounds: {self.section_level} not in range(1, 7)")
 
