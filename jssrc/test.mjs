@@ -220,6 +220,7 @@ describe('Misskey Implementation', function () {
 	]) {
 		it(`should be able to query a user (${instance}, ${handle})`, async function() {
 			const userInfo = await misskey.queryUserMisskey(instance, handle);
+			assert.ok(userInfo);
 			assert.ok(userInfo.url);
 			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
 		});
@@ -244,6 +245,7 @@ describe('Mastodon Implementation', function () {
 	]) {
 		it(`should be able to query a user (${instance}, ${handle})`, async function() {
 			const userInfo = await mastodon.queryUserMastodon(instance, handle);
+			assert.ok(userInfo);
 			assert.ok(userInfo.url);
 			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
 		});

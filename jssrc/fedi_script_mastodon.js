@@ -151,14 +151,14 @@ async function fetchMetaMastodon(fediInstance, postId) {
 	}
 }
 
-async function fetchUserMastodon(fediInstance, handle) {
+async function queryUserMastodon(fediInstance, handle) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/v1/accounts/lookup?acct=${handle}`);
 
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100))
-				return await fetchUserMastodon(fediInstance, handle);
+				return await queryUserMastodon(fediInstance, handle);
 			}
 			throw new Error(`HTTP error on user fetch! Status: ${response.status}`);
 		}
@@ -183,6 +183,6 @@ if (typeof module !== 'undefined') {
 		extractCommentMastodon,
 		fetchSubcommentsMastodon,
 		fetchMetaMastodon,
-		fetchUserMastodon,
+		queryUserMastodon,
 	};
 }
