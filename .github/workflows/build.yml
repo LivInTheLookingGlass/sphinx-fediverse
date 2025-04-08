@@ -35,8 +35,8 @@ jobs:
       id: version
       run: |
         version=$(npx json version -f jssrc/package.json)
-        artifact_name="build-${version}-${{ github.sha }}"
-        echo "artifact_name=$artifact_name" >> $GITHUB_ENV
+        artifact_name="build-${version}"
+        echo "artifact_name=$artifact_name" >> $GITHUB_OUTPUT
 
     - uses: actions/upload-artifact@v4
       with:
