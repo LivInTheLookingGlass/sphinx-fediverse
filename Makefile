@@ -93,7 +93,7 @@ endif
 .PHONY: clean
 clean: SHELL := bash
 clean:
-	rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} pysrc/{_static/*.js,dist,build,*.egg-info} jssrc/node_modules  || echo
+	rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} pysrc/{_static/*.js,package.json,dist,build,*.egg-info} jssrc/node_modules  || echo
 	$(MAKE) -C docs clean
 
 pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
