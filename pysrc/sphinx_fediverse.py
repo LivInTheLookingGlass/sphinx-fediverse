@@ -26,8 +26,9 @@ if not package_json_path.exists():
 with package_json_path.open('r') as f:
     version = load(f)['version']
 
-_version_numbers, *_version_append = version.split("-")
-__version__ = tuple(int(x) for x in _version_numbers.split(".")) + (*_version_append, )
+_version_numbers, *_version_suffix = version.split("+")
+_version_numbers, *_version_append = _version_numbers.split("-")
+__version__ = tuple(int(x) for x in _version_numbers.split(".")) + (*_version_append, *_version_suffix)
 
 SUPPORTED_FLAVORS: Set[str] = {'mastodon', 'misskey'}
 registered_docs: Set[str] = set()

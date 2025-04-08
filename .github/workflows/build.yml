@@ -26,7 +26,7 @@ jobs:
 
     - name: Edit package.json
       run: |
-        sed -i 's/\("version": *"[^"]*\)\("\)/\1-${{ github.sha }}\2/' jssrc/package.json
+        sed -i 's/\("version": *"[^"]*\)\("\)/\1+${{ github.sha }}\2/' jssrc/package.json
 
     - name: Build package
       run: make dependencies build
