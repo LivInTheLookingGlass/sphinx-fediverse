@@ -34,7 +34,7 @@
 
 .comment .author a {
 	text-decoration: none;
-	color: var(--sd-color-primary-highlight,#0077cc);
+	color: var(--sd-color-primary-highlight,#07c);
 	font-weight: bold;
 }
 
@@ -68,7 +68,7 @@
 /* For nested/replied-to comments, we apply indentation */
 .comment.reply {
 	margin-left: 30px;
-	border-left: 3px solid var(--sd-color-primary-highlight,#0077cc);
+	border-left: 3px solid var(--sd-color-primary-highlight,#07c);
 	padding-left: 10px;
 }
 
@@ -114,7 +114,7 @@
 	filter: invert(0.04);
 }
 
-.fediIcon {
+.fedi-icon {
 	height: 1em;
 	filter: invert(1);
 	mix-blend-mode: difference;

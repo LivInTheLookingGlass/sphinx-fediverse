@@ -133,7 +133,7 @@ function renderComment(comment) {
 	const boostIconImage = document.createElement("img");
 	boostIconImage.setAttribute("src", config.boost_link);
 	boostIconImage.setAttribute("alt", "Boosts");
-	boostIconImage.classList.add("fediIcon");
+	boostIconImage.classList.add("fedi-icon");
 	boostIcon.appendChild(boostIconImage);
 	boostIcon.appendChild(document.createTextNode(comment.boostCount + ' '));
 	infoNode.appendChild(boostIcon);

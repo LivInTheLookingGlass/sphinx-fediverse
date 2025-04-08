@@ -244,9 +244,9 @@ class FediverseCommentDirective(SphinxDirective):
             <h{self.section_level}>
                 {self.section_title}
                 <span class="comments-info">
-                    <img class="fediIcon" src="{self.env.config.html_baseurl}/_static/boost.svg" alt="Boosts">
+                    <img class="fedi-icon" src="{self.env.config.html_baseurl}/_static/boost.svg" alt="Boosts">
                     <span id="global-reblogs"></span>,
-                    <img class="fediIcon" src="{self.env.config.html_baseurl}/_static/like.svg" alt="Likes">
+                    <img class="fedi-icon" src="{self.env.config.html_baseurl}/_static/like.svg" alt="Likes">
                     <span id="global-likes"></span>
                 </span>
             </h{self.section_level}>
