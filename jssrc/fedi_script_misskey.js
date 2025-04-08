@@ -344,7 +344,7 @@ async function queryUserMisskey(fediInstance, handle) {
 		}
 		const data = await response.json();
 		return {
-			'flavor': data.instance.softwareName || 'misskey',
+			'flavor': (data.instance || {}).softwareName || 'misskey',
 			'url': data.url || `https://${domain}/@${username}`,
 		};
 	} catch (error) {

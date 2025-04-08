@@ -165,7 +165,7 @@ async function queryUserMastodon(fediInstance, handle) {
 
 		const data = await response.json();
 		const domain = data.url.split('/')[2];
-		const nodeinfo = await fetch(`${domain}/nodeinfo/2.0`);
+		const nodeinfo = await fetch(`https://${domain}/nodeinfo/2.0`);
 		if (!nodeinfo.ok) {
 			throw new Error(`HTTP error on nodeinfo! Status: ${response.status}`);
 		}
