@@ -325,6 +325,33 @@ async function fetchMeta2Misskey(fediInstance, postId) {
 	}
 }
 
+async function queryUserMisskey(fediInstance, handle) {
+	try {
+		const [username, domain] = handle.split("@");
+		const response = await fetch(`https://${fediInstance}/api/users/show`, {
+			method: 'POST',
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ username: username, host: domain }),
+		});
+		if (!response.ok) {
+			if (response.status == 429) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
+				return await queryUserMisskey(fediInstance, handle);
+			}
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		const data = await response.json();
+		return {
+			'flavor': data.instance.softwareName || 'misskey',
+			'url': data.url || `https://${domain}/@${username}`,
+		};
+	} catch (error) {
+		console.error("Error fetching user info:", error);
+	}
+}
+
 if (typeof module !== 'undefined') {
 	module.exports = {
 		transformMFM,
@@ -333,5 +360,6 @@ if (typeof module !== 'undefined') {
 		fetchMisskeyEmoji,
 		fetchSubcommentsMisskey,
 		fetchMetaMisskey,
+		queryUserMisskey,
 	};
 }

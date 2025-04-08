@@ -130,12 +130,9 @@ async function fetchSubcommentsMastodon(fediInstance, commentId) {
 }
 
 async function fetchMetaMastodon(fediInstance, postId) {
-	let response;
-	let data;
-
 	try {
 		// Mastodon fetches a post's details using a GET request to /api/v1/statuses/:id
-		response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
+		const response = await fetch(`https://${fediInstance}/api/v1/statuses/${postId}`);
 
 		if (!response.ok) {
 			if (response.status == 429) {
@@ -145,10 +142,37 @@ async function fetchMetaMastodon(fediInstance, postId) {
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
 
-		data = await response.json();
+		const data = await response.json();
 		document.getElementById("global-likes").textContent = `${data.favourites_count}`;
 		document.getElementById("global-reblogs").textContent = `${data.reblogs_count}`;
 
+	} catch (error) {
+		console.error("Error fetching post meta:", error);
+	}
+}
+
+async function fetchUserMastodon(fediInstance, handle) {
+	try {
+		const response = await fetch(`https://${fediInstance}/api/v1/accounts/lookup?acct=${handle}`);
+
+		if (!response.ok) {
+			if (response.status == 429) {
+				await new Promise((resolve) => setTimeout(resolve, 100))
+				return await fetchUserMastodon(fediInstance, handle);
+			}
+			throw new Error(`HTTP error on user fetch! Status: ${response.status}`);
+		}
+
+		const data = await response.json();
+		const domain = data.url.split('/')[0];
+		const nodeinfo = await fetch(`${domain}/nodeinfo/2.0`);
+		if (!nodeinfo.ok) {
+			throw new Error(`HTTP error on nodeinfo! Status: ${response.status}`);
+		}
+		return {
+			'url': data.url,
+			'flavor': (await nodeinfo.json()).software.name,
+		}
 	} catch (error) {
 		console.error("Error fetching post meta:", error);
 	}
@@ -159,5 +183,6 @@ if (typeof module !== 'undefined') {
 		extractCommentMastodon,
 		fetchSubcommentsMastodon,
 		fetchMetaMastodon,
+		fetchUserMastodon,
 	};
 }

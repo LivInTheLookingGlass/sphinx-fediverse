@@ -213,6 +213,17 @@ describe('Misskey Implementation', function () {
 			);
 		});
 	}
+
+	for (const [instance, handle] of [
+		['transfem.social', '@LivInTheLookingGlass@tech.lgbt'],
+		['transfem.social', '@LivInTheLookingGlass@transfem.social']
+	]) {
+		it(`should be able to query a user (${instance}, ${handle})`, async function() {
+			const userInfo = await misskey.queryUserMisskey(instance, handle);
+			assert.ok(userInfo.url);
+			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
+		});
+	}
 });
 
 describe('Mastodon Implementation', function () {
@@ -226,6 +237,17 @@ describe('Mastodon Implementation', function () {
 		assert.equal(comments[0].user.host, instance);
 		assert.equal(comments[0].replyId, id);
 	});
+
+	for (const [instance, handle] of [
+		['tech.lgbt', '@LivInTheLookingGlass@tech.lgbt'],
+		['tech.lgbt', '@LivInTheLookingGlass@transfem.social']
+	]) {
+		it(`should be able to query a user (${instance}, ${handle})`, async function() {
+			const userInfo = await mastodon.queryUserMastodon(instance, handle);
+			assert.ok(userInfo.url);
+			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
+		});
+	}
 });
 
 describe('Glue Script', function () {
