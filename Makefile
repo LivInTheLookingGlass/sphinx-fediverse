@@ -82,6 +82,7 @@ endif
 
 .PHONY: py_dependencies
 py_dependencies:
+	cp jssrc/package.json pysrc/package.json
 ifeq ($(MYPY),true)
 	$(PIP) install -r pysrc/requirements-dev.txt -r docs/requirements.txt $(USER_FLAG) $(PROXY_ARG)
 else
@@ -104,7 +105,7 @@ pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
 
 bundle: SHELL := bash
 bundle: js_dependencies
-	$(MAKE) -j pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
+	$(MAKE) pysrc/_static/fedi_script{,_{mastodon,misskey}}.min.js
 	cd jssrc && npx babel ./node_modules/{dompurify/dist/purify,marked/marked}.min.js -d ../pysrc/_static
 
 .PHONY: build
