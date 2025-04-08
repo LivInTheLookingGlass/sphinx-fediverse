@@ -4,9 +4,9 @@ on:
   push:
     paths:
       - '**/*.css'
-  pull_request:
-    paths:
-      - '**/*.css'
+  workflow_dispatch:
+  schedule:
+  - cron: "0 0 * * 1"
 
 jobs:
   lint:
