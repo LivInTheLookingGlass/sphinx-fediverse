@@ -93,7 +93,7 @@ endif
 .PHONY: clean
 clean: SHELL := bash
 clean:
-	rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} pysrc/{_static/*.js,package.json,dist,build,*.egg-info} jssrc/node_modules  || echo
+	rm -rf {.,*,*/*}/{*.pyc,__pycache__,.mypy_cache,.pytest_cache,.benchmarks} pysrc/{_static/*.js,README.rst,package.json,dist,build,*.egg-info} jssrc/node_modules  || echo
 	$(MAKE) -C docs clean
 
 pysrc/_static/fedi_scrip%.min.js: jssrc/fedi_scrip%.js dependencies
@@ -109,6 +109,7 @@ bundle: js_dependencies
 
 .PHONY: build
 build: clean dependencies bundle
+	cp README.rst pysrc/README.rst --reflink=auto
 	$(PY) -m build -sw pysrc
 
 .PHONY: publish

@@ -175,3 +175,4 @@ pysrc/_static/*.js
 pysrc/package.json
 jssrc/.nyc_output
 jssrc/coverage
+pysrc/README.rst
