@@ -45,7 +45,6 @@ def bool_or_none(value: str) -> Optional[bool]:
 
 class FediverseCommentDirective(SphinxDirective):
 	has_content = True
-	optional_arguments = 8
 	option_spec = {
 		'enable_post_creation': bool_or_none,
 		'raise_error_if_no_post': bool_or_none,
@@ -55,7 +54,12 @@ class FediverseCommentDirective(SphinxDirective):
 		'fedi_username': str,
 		'fedi_instance': str,
 		'comments_mapping_file': str,
+		'fetch_depth': int,
+		'section_title': str,
+		'section_level': int,
+		'comment_id': str,
 	}
+	optional_arguments = len(option_spec)
 
 	def __init__(self, *args: Any, **kwargs: Any) -> None:
 		super().__init__(*args, **kwargs)
@@ -91,6 +95,21 @@ class FediverseCommentDirective(SphinxDirective):
 			if self.fedi_flavor == 'misskey' else
 			'MASTODON_CLIENT_ID,MASTODON_CLIENT_SECRET,MASTODON_ACCESS_TOKEN'
 		).split(',')
+		self.fetch_depth = self.options.get(
+			'fetch_depth',
+			self.env.config.comment_fetch_depth
+		)
+		self.section_level = self.options.get(
+			'section_level',
+			self.env.config.comment_section_level
+		)
+		self.section_title = self.options.get(
+			'section_title',
+			self.env.config.comment_section_title
+		)
+		self.post_id = self.options.get('post_id')
+		if not (1 <= self.section_level <= 6):
+			raise ValueError(f"Section level out of bounds: {self.section_level} not in range(1, 7)")
 
 	def process_post(self, post_url: str, title: str) -> str:
 		"""Post a new comment on Mastodon and return the post ID."""
@@ -150,6 +169,9 @@ class FediverseCommentDirective(SphinxDirective):
 
 	def create_post_if_needed(self, post_url: str) -> str:
 		"""Check if a post exists for this URL. If not, create one."""
+		if self.post_id is not None:
+			return self.post_id
+
 		# Read the mapping file
 		mapping_file_path = Path(self.comments_mapping_file)
 		if not mapping_file_path.exists():
@@ -183,8 +205,7 @@ class FediverseCommentDirective(SphinxDirective):
 		if self.env.app.builder.name != 'html':
 			raise EnvironmentError("Cannot function outside of html build")
 
-		base_url = self.config.html_baseurl
-		if not base_url:
+		if not self.config.html_baseurl:
 			raise ValueError("html_baseurl must be set in conf.py for Fediverse comments to work.")
 
 		# Get the final output document URL using base_url + docname
@@ -220,15 +241,15 @@ class FediverseCommentDirective(SphinxDirective):
 				<span id="fedi-instance">{self.fedi_instance}</span>
 				<span id="fedi-flavor">{self.fedi_flavor}</span>
 			</div>
-			<h2>
-				Comments
+			<h{self.section_level}>
+				{self.section_title}
 				<span class="comments-info">
 					<img class="fediIcon" src="{self.env.config.html_baseurl}/_static/boost.svg" alt="Boosts">
 					<span id="global-reblogs"></span>,
 					<img class="fediIcon" src="{self.env.config.html_baseurl}/_static/like.svg" alt="Likes">
 					<span id="global-likes"></span>
 				</span>
-			</h2>
+			</h{self.section_level}>
 			<div id="comments-section"></div>
 			<script>
 			document.addEventListener("DOMContentLoaded", function () {{
@@ -236,13 +257,10 @@ class FediverseCommentDirective(SphinxDirective):
 				const fediInstanceElement = document.getElementById('fedi-instance');
 				if (postIdElement && fediInstanceElement) {{
 					const postId = postIdElement.textContent || postIdElement.innerText;
-					const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
 					if (postId) {{
-						setImageLink(
-							"{self.env.config.html_baseurl}/_static/boost.svg"
-						)
-						// Trigger the comment-fetching logic on page load
-						fetchComments('{self.fedi_flavor}', fediInstance, postId, 5); // Adjust depth as needed
+						const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
+						setImageLink("{self.env.config.html_baseurl}/_static/boost.svg")
+						fetchComments('{self.fedi_flavor}', fediInstance, postId, {self.fetch_depth});
 					}}
 				}}
 			}});
@@ -278,6 +296,9 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
 	app.add_config_value('comments_mapping_file', 'comments_mapping.json', 'env')
 	app.add_config_value('replace_index_with_slash', True, 'env')
 	app.add_config_value('raise_error_if_no_post', True, 'env')
+	app.add_config_value('comment_fetch_depth', 5, 'env')
+	app.add_config_value('comment_section_level', 2, 'env')
+	app.add_config_value('comment_section_title', 'Comments', 'env')
 
 	app.add_directive('fedi-comments', FediverseCommentDirective)
 	app.connect('builder-inited', on_builder_inited)

@@ -67,7 +67,7 @@ Installation
 Configuration
 -------------
 
-There are a few necessary values that you must provide:
+There are a several values that you may provide:
 
 .. table::
 
@@ -82,9 +82,12 @@ There are a few necessary values that you must provide:
    replace_index_with_slash  True to replace ``/index.html`` with ``/``    True (default)
    enable_post_creation      True to automatically post, False for manual  True (default)
    raise_error_if_no_post    True to raise an error if not post is made    True (default)
+   comment_fetch_depth       The number of recursive fetches to make       5 (default)
+   comment_section_level     The header level of the comments section      2 (default)
+   comment_section_title     The title of the comments section             Comments (default)
    ========================  ============================================  ===============================
 
-We also rely on some environment variables.
+We also rely on environment variables for authentication.
 
 For Mastodon instances we require: ``MASTODON_CLIENT_ID``, ``MASTODON_CLIENT_SECRET``, ``MASTODON_ACCESS_TOKEN``.
 
@@ -125,6 +128,33 @@ output documents, and used to retrieve comments.
 
          .. fedi-comments::
 
+Directive Options
+-----------------
+
+.. note::
+
+   This feature is a work in progress
+
+In addition to the above configuration values, you can modify most of them on a per-directive basis!
+
+.. table::
+
+   ========================  ============================================  ==================================
+   Option                    Description                                   Example(s)
+   ========================  ============================================  ==================================
+   fedi_flavor               (See Above)                                   (See Above)
+   fedi_username             (See Above)                                   (See Above)
+   fedi_instance             (See Above)                                   (See Above)
+   comments_mapping_file     (See Above)                                   (See Above)
+   replace_index_with_slash  (See Above)                                   (See Above)
+   enable_post_creation      (See Above)                                   (See Above)
+   raise_error_if_no_post    (See Above)                                   (See Above)
+   fetch_depth               (See comment_fetch_depth Above)               (See Above)
+   section_level             (See comment_section_level Above)             (See Above)
+   section_title             (See comment_section_title Above)             (See Above)
+   post_id                   A hardcoded post ID to use for comments       None (default), 114032235423688612
+   ========================  ============================================  ==================================
+
 Supported Themes
 ~~~~~~~~~~~~~~~~
 
@@ -152,7 +182,7 @@ JavaScript
 
 Note that by using this plugin, you will be including the following in your page:
 
-- `Marked <https://marked.js.org/>`_ for rendering Markdown
+- `Marked <https://marked.js.org/>`_ for rendering Markdown (Misskey only)
 - `DOMPurify <https://github.com/cure53/DOMPurify>`_ for HTML sanitization
 
 We also use `Babel <https://babeljs.io/>`_ to ensure compatibility with most browsers. This is not included directly,
@@ -165,4 +195,4 @@ In the Python stack, you will be utilizing the following:
 
 - `Sphinx <https://www.sphinx-doc.org/>`_
 - `docutils <https://docutils.sourceforge.io/>`_
-- one of: `Mastodon.py <https://github.com/halcy/Mastodon.py>`_, `Misskey.py <https://github.com/YuzuRyo61/Misskey.py>`_
+- At least one of: `Mastodon.py <https://github.com/halcy/Mastodon.py>`_, `Misskey.py <https://github.com/YuzuRyo61/Misskey.py>`_
