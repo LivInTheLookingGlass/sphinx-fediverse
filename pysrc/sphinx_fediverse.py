@@ -14,7 +14,6 @@ if TYPE_CHECKING:  # cov: ignore
     from typing import Any, Dict, List, Optional, Set, Union
 
     from sphinx.application import Sphinx
-    from sphinx.config import Config
 
 package_json_path = Path(__file__).parent / "package.json"
 if not package_json_path.exists():
@@ -64,50 +63,53 @@ class FediverseCommentDirective(SphinxDirective):
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         self.post_id = None
-        self.enable_post_creation = self.options.get('enable_post_creation', self.env.config.enable_post_creation)
-        self.raise_error_if_no_post = self.options.get(
+        self.enable_post_creation: Optional[bool] = self.options.get(
+            'enable_post_creation',
+            self.env.config.enable_post_creation
+        )
+        self.raise_error_if_no_post: Optional[bool] = self.options.get(
             'raise_error_if_no_post',
             self.env.config.raise_error_if_no_post
         )
-        self.replace_index_with_slash = self.options.get(
+        self.replace_index_with_slash: Optional[bool] = self.options.get(
             'replace_index_with_slash',
             self.env.config.replace_index_with_slash
         )
-        self.fedi_flavor = self.options.get(
+        self.fedi_flavor: str = self.options.get(
             'fedi_flavor',
             self.env.config.fedi_flavor
         )
-        self.fedi_username = self.options.get(
+        self.fedi_username: str = self.options.get(
             'fedi_username',
             self.env.config.fedi_username
         )
-        self.fedi_instance = self.options.get(
+        self.fedi_instance: str = self.options.get(
             'fedi_instance',
             self.env.config.fedi_instance
         )
-        self.comments_mapping_file = self.options.get(
+        self.comments_mapping_file: str = self.options.get(
             'comments_mapping_file',
             self.env.config.comments_mapping_file
         )
-        self.token_names = self.options.get(
+        self.token_names: List[str] = self.options.get(
             'token_names',
             'MISSKEY_ACCESS_TOKEN'
             if self.fedi_flavor == 'misskey' else
             'MASTODON_CLIENT_ID,MASTODON_CLIENT_SECRET,MASTODON_ACCESS_TOKEN'
         ).split(',')
-        self.fetch_depth = self.options.get(
+        self.fetch_depth: int = self.options.get(
             'fetch_depth',
             self.env.config.comment_fetch_depth
         )
-        self.section_level = self.options.get(
+        self.section_level: str = self.options.get(
             'section_level',
             self.env.config.comment_section_level
         )
-        self.section_title = self.options.get(
+        self.section_title: int = self.options.get(
             'section_title',
             self.env.config.comment_section_title
         )
-        self.post_id = self.options.get('post_id')
+        self.post_id: str = self.options.get('post_id')
         if not (1 <= self.section_level <= 6):
             raise ValueError(f"Section level out of bounds: {self.section_level} not in range(1, 7)")
 
