@@ -222,7 +222,7 @@ describe('Misskey Implementation', function () {
 			const userInfo = await misskey.queryUserMisskey(instance, handle);
 			assert.ok(userInfo);
 			assert.ok(userInfo.url);
-			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
+			assert.ok(userInfo.flavor.endsWith(handle.includes('tech.lgbt') ? 'mastodon' : 'key'));
 		});
 	}
 });
@@ -247,7 +247,7 @@ describe('Mastodon Implementation', function () {
 			const userInfo = await mastodon.queryUserMastodon(instance, handle);
 			assert.ok(userInfo);
 			assert.ok(userInfo.url);
-			assert.ok(userInfo.flavor.endsWith(handle.contains('tech.lgbt') ? 'mastodon' : 'key'));
+			assert.ok(userInfo.flavor.endsWith(handle.includes('tech.lgbt') ? 'mastodon' : 'key'));
 		});
 	}
 });
