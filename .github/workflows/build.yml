@@ -31,7 +31,14 @@ jobs:
     - name: Build package
       run: make dependencies build
 
+    - name: Pull version from JSON
+      id: version
+      run: |
+        version=$(npx json version -f jssrc/package.json)
+        artifact_name="build-${version}-${{ github.sha }}"
+        echo "artifact_name=$artifact_name" >> $GITHUB_ENV
+
     - uses: actions/upload-artifact@v4
       with:
-        name: dist-${{ github.head_ref }}-${{ github.sha }}
+        name: ${{ steps.version.outputs.artifact_name }}
         path: pysrc/dist/
