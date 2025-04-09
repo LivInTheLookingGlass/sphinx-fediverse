@@ -1,12 +1,69 @@
+/**
+ * A mapping of names to URLs. All properties involved are strings.
+ * @typedef {Object} EmojiDescriber
+ */
+/**
+ * A string matching one of the supported fediverse implementations: `'mastodon'` or `'misskey'`
+ * @typedef {String} FediverseFlavor
+ */
+
+/**
+ * @typedef {Object} MediaAttachment
+ * @property {String} url - The link to the full size image
+ * @property {boolean} sensitive - A marker of image sensitivity (Misskey can set this individually)
+ * @property {String} description - The alt text of the image
+ */
+
+/**
+ * @typedef {Object} User
+ * @property {String} url - The link to the user's profile
+ * @property {String} host - The user's instance domain
+ * @property {String} handle - The user's fediverse handle
+ * @property {String} name - The user's name (often with embedded emoji)
+ * @property {EmojiDescriber} emoji - Emoji used in the user's name/description
+ */
+
+/**
+ * The common comment return type
+ * @typedef {Object} Comment
+ * @property {String} id - The comment ID
+ * @property {String} replyId - The parent comment ID
+ * @property {String} url - The link to the comment (either on your instance or remote host)
+ * @property {String} date - The original post date (not accounting for edits)
+ * @property {String|null} cw - Either text containing a content warning, or null
+ * @property {Number} reactionCount - The number of reactions on the comment
+ * @property {Number} boostCount - The number of times the comment was boosted or quoted
+ * @property {String} content - The unsanitized HTML content of the comment (may change to DOM fragment)
+ * @property {EmojiDescriber} emoji - Emoji used in the post
+ * @property {EmojiDescriber} reactionEmoji - Emoji used in reactions (mix of unicode emoji and custom names)
+ * @property {User} user - Information about the posting user
+ * @property {MediaAttachment[]} media - An array of media attachments
+ */
+
 const config = {
 	parser: (typeof DOMParser === 'undefined') ? undefined : new DOMParser(),
 	boost_link: "_static/boost.svg",
 };
 
+/**
+ * Setter for the internal image link used to include the "boost" icon.
+ *
+ * .. warning::
+ *   Call this function before any other, or your boost icon may not work in subdirectories
+ *
+ * @param {String} new_boost_link - Link to the boost svg in your site structure
+ */
 function setImageLink(new_boost_link) {
 	config.boost_link = new_boost_link;
 }
 
+/**
+ * A redirect function that will call the relevant plugin's implementation. This will update the global comment stats.
+ *
+ * @param {FediverseFlavor} fediFlavor
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ */
 async function fetchMeta(fediFlavor, fediInstance, postId) {
 	switch (fediFlavor) {
 	case 'mastodon':
@@ -18,6 +75,15 @@ async function fetchMeta(fediFlavor, fediInstance, postId) {
 	}
 }
 
+/**
+ * A redirect function that will call the relevant plugin's implementation. This will return a comment object following
+ * the common return spec.
+ *
+ * @param {FediverseFlavor} fediFlavor
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ * @returns {Comment[]} The resulting subcomments
+ */
 async function fetchSubcomments(fediFlavor, fediInstance, postId) {
 	switch (fediFlavor) {
 	case 'mastodon':
@@ -29,6 +95,14 @@ async function fetchSubcomments(fediFlavor, fediInstance, postId) {
 	}
 }
 
+/**
+ * Takes in an HTML string with embedded custom emoji, and returns a sanitized, parsed DOM fragment incuding the images
+ * those emoji shortcodes reference.
+ *
+ * @param {String} string - The HTML string to parse
+ * @param {EmojiDescriber} emojis - The shortcodes you expect to see
+ * @returns {DOMFragment} The sanitized, parsed document fragment
+ */
 function replaceEmoji(string, emojis) {
 	for (const shortcode in emojis) {
 		const static_url = DOMPurify.sanitize(emojis[shortcode]);
@@ -49,6 +123,10 @@ function replaceEmoji(string, emojis) {
 	return container;
 }
 
+/**
+ * @param {Comment} comment 
+ * @returns {DOMFragment} The rendered version of the comment
+ */
 function renderComment(comment) {
 	if (document.getElementById(comment.id)) {
 		return;
@@ -155,6 +233,10 @@ function renderComment(comment) {
 	return fragment;
 }
 
+/**
+ * Renders a batch of comments, in chronological order including nesting
+ * @param {Comment[]} comments
+ */
 function renderCommentsBatch(comments) {
 	if (!comments || comments.length === 0) return;
 
@@ -176,6 +258,13 @@ function renderCommentsBatch(comments) {
 	});
 }
 
+/**
+ * This function kicks off the whole comment fetching process
+ * @param {FediverseFlavor} fediFlavor 
+ * @param {String} fediInstance 
+ * @param {String} postId 
+ * @param {Number} maxDepth 
+ */
 async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 	try {
 		fetchMeta(fediFlavor, fediInstance, postId);
@@ -197,5 +286,6 @@ if (typeof module !== 'undefined') {
 		renderComment,
 		renderCommentsBatch,
 		fetchComments,
+		fetchMeta,
 	};
 }

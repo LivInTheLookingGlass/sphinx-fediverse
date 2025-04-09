@@ -1,6 +1,7 @@
 import sys
 from pathlib import Path
 
+basedir = Path(__file__).parent.parent
 sys.path.append(str(Path(__file__).parent.parent / "pysrc"))
 
 from sphinx_fediverse import __version__  # isort: skip  # noqa: E402
@@ -36,11 +37,19 @@ rst_prolog = """
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    'sphinx.ext.extlinks',
     'sphinx_fediverse',
+    'sphinxcontrib.mermaid',
+    'sphinx_js',
+    'sphinxcontrib.makedomain',
 ]
 
 templates_path = ['_templates']
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+
+extlinks = {
+    'source': ('https://github.com/LivInTheLookingGlass/sphinx-fediverse/blob/main/%s', 'here on GitHub!%.0s'),
+}
 
 
 # -- Options for HTML output -------------------------------------------------
@@ -60,3 +69,9 @@ html_baseurl = "https://sphinx-fediverse.oliviaappleton.com/"  # Set the base UR
 replace_index_with_slash = True  # Set to True to replace index.html with a trailing slash
 enable_post_creation = True  # Set to False to disable post creation and raise an error if needed
 raise_error_if_no_post = True    # Set to True to enable errors if posts are not given
+
+# -- Options for sphinx-js extension -----------------------------------------
+# https://github.com/mozilla/sphinx-js
+
+root_for_relative_js_paths = basedir / 'jssrc'
+js_source_path = [root_for_relative_js_paths]

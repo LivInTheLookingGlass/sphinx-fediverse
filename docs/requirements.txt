@@ -1,4 +1,8 @@
 docutils
 sphinx
+sphinx-js
+sphinx-tags
 sphinx_rtd_theme
+sphinxcontrib-makedomain
+sphinxcontrib-mermaid
 shibuya
