@@ -178,6 +178,14 @@ async function extractCommentMisskey(fediInstance, comment) {
 	};
 }
 
+/**
+ * A subcomponenet of :js:func:`~fedi_script_misskey.extractCommentMisskey`. Because emoji information is not included
+ * in the comment information returned by the API, it needs to be fetched separately. This is done in parallel and
+ * handles any rate-limit feedback.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} name - The emoji shortcode you are trying to fetch
+ */
 async function fetchMisskeyEmoji(fediInstance, name) {
 	const ret = {};
 	if (emojiCache[name]) {
@@ -261,6 +269,12 @@ async function fetchMetaMisskey(fediInstance, postId) {
 	]);
 }
 
+/**
+ * A subcomponenet of :js:func:`~fedi_script_misskey.fetchMetaMisskey`. This portion handles the global reaction count.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ */
 async function fetchMeta1Misskey(fediInstance, postId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/notes/show`, {
@@ -284,6 +298,13 @@ async function fetchMeta1Misskey(fediInstance, postId) {
 	}
 }
 
+/**
+ * A subcomponenet of :js:func:`~fedi_script_misskey.fetchMetaMisskey`. This portion handles the global boost/renote
+ * count.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ */
 async function fetchMeta2Misskey(fediInstance, postId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/notes/renotes`, {

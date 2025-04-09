@@ -1,7 +1,7 @@
 JavaScript API
 ##############
 
-In this section we talk about the JavaScript API, bundling process, and how to repackage these files for your project
+In this section we talk about the JavaScript API and how to repackage these files for your project
 
 Division of Files
 =================
@@ -34,6 +34,9 @@ View source code :source:`jssrc/fedi_script.js`
 
 Mastodon Plugin
 ~~~~~~~~~~~~~~~
+
+View source code :source:`jssrc/fedi_script_mstodon.js`
+
 .. js:autofunction:: fedi_script_mastodon.extractCommentMastodon
 .. js:autofunction:: fedi_script_mastodon.fetchMetaMastodon
 .. js:autofunction:: fedi_script_mastodon.fetchSubcommentsMastodon
@@ -42,14 +45,19 @@ Mastodon Plugin
 Misskey Plugin
 ~~~~~~~~~~~~~~
 
-.. js:autofunction:: fedi_script_misskey.extractCommentMisskey
-.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey
-.. js:autofunction:: fedi_script_misskey.fetchSubcommentsMisskey
-.. js:autofunction:: fedi_script_misskey.queryUserMisskey
+View source code :source:`jssrc/fedi_script_misskey.js`
 
 .. note::
 
     This plugin requires ``marked.js`` as a dependency
+
+.. js:autofunction:: fedi_script_misskey.extractCommentMisskey
+.. js:autofunction:: fedi_script_misskey.fetchMisskeyEmoji
+.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey
+.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey1
+.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey2
+.. js:autofunction:: fedi_script_misskey.fetchSubcommentsMisskey
+.. js:autofunction:: fedi_script_misskey.queryUserMisskey
 
 Minimal Page Infrastructure
 ===========================

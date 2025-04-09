@@ -82,7 +82,7 @@ async function fetchMeta(fediFlavor, fediInstance, postId) {
  * @param {fedi_script.FediverseFlavor} fediFlavor
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
- * @returns {fedi_script.Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
+ * @returns {Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
  */
 async function fetchSubcomments(fediFlavor, fediInstance, postId) {
 	switch (fediFlavor) {
