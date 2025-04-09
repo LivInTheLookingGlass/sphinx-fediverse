@@ -37,7 +37,9 @@ rst_prolog = """
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
 extensions = [
+    'sphinx.ext.autodoc',
     'sphinx.ext.extlinks',
+    'sphinx.ext.intersphinx',
     'sphinx_fediverse',
     'sphinxcontrib.mermaid',
     'sphinx_js',
