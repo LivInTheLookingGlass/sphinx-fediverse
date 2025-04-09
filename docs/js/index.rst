@@ -34,9 +34,14 @@ View source code :source:`jssrc/fedi_script.js`
 
 Mastodon Plugin
 ~~~~~~~~~~~~~~~
+.. js:autofunction:: fedi_script_mastodon.extractCommentMastodon
+.. js:autofunction:: fedi_script_mastodon.fetchMetaMastodon
 
 Misskey Plugin
 ~~~~~~~~~~~~~~
+
+.. js:autofunction:: fedi_script_misskey.extractCommentMisskey
+.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey
 
 .. note::
 

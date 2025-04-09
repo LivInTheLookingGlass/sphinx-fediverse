@@ -97,46 +97,14 @@ function transformMFM(text, fediInstance) {
 	return text;
 }
 
+/**
+ * This will transform the information returned by the Misskey API into the common comment structure.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} comment - The ID of the comment you are fetching metadata for
+ * @returns {Comment}
+ */
 async function extractCommentMisskey(fediInstance, comment) {
-	/* Return spec:
-	{
-		id: "string",
-		replyId: "string",
-		url: "url",
-		date: "string",
-		cw: "null | string",
-		emoji: {
-			name1: "url",
-			name2: "url",
-			...
-		},
-		reactionEmoji: {
-			name1: "url",
-			name2: "url",
-			...
-		},
-		reactionCount: "int",
-		boostCount: "int",
-		media: [{
-			url: "url",
-			sensitive: "bool",
-			description: "string",
-		}],
-		content: "string?", (maybe it should be a DOM element?)
-		user: {
-			host: "string",
-			handle: "string",
-			url: "url",
-			name: "string",
-			avatar: "url",
-			emoji: {
-				name1: "url",
-				name2: "url",
-				...
-			},
-		},
-	}
-	*/
 	const user = comment.user;
 	const domain = user.host || fediInstance;
 	const handle = `@${user.username}@${domain}`;
@@ -272,6 +240,12 @@ async function fetchSubcommentsMisskey(fediInstance, commentId) {
 	}
 }
 
+/**
+ * This Misskey implementation of :js:func:`fetchMeta`. This will update the global comment stats.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ */
 async function fetchMetaMisskey(fediInstance, postId) {
 	await Promise.all([
 		fetchMeta1Misskey(fediInstance, postId),
