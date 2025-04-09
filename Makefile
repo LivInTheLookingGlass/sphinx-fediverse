@@ -46,6 +46,7 @@ help:
 
 .PHONY: html
 html: bundle
+	npm install -g jsdoc
 	$(MAKE) -C docs html
 
 .PHONY: test
