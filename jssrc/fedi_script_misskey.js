@@ -102,7 +102,7 @@ function transformMFM(text, fediInstance) {
  *
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} comment - The ID of the comment you are fetching metadata for
- * @returns {Comment}
+ * @returns {fedi_script.Comment}
  */
 async function extractCommentMisskey(fediInstance, comment) {
 	const user = comment.user;
@@ -210,6 +210,14 @@ async function fetchMisskeyEmoji(fediInstance, name) {
 	return ret;
 }
 
+/**
+ * The Misskey implementation of :js:func:`~fedi_script.fetchSubcomments`\ . This will return comment objects
+ * following the common comment return spec.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ * @returns {Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
+ */
 async function fetchSubcommentsMisskey(fediInstance, commentId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/notes/children`, {
@@ -241,7 +249,7 @@ async function fetchSubcommentsMisskey(fediInstance, commentId) {
 }
 
 /**
- * This Misskey implementation of :js:func:`fetchMeta`. This will update the global comment stats.
+ * The Misskey implementation of :js:func:`~fedi_script.fetchMeta`. This will update the global comment stats.
  *
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
@@ -299,6 +307,16 @@ async function fetchMeta2Misskey(fediInstance, postId) {
 	}
 }
 
+/**
+ * This function returns the URL and instance type of a given Fedi user
+ *
+ * .. warning::
+ *   This function is under construction and should be considered unstable
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} handle - The user handle you're looking for
+ * @return {{url: String, flavor: String}}
+ */
 async function queryUserMisskey(fediInstance, handle) {
 	try {
 		const [_, username, domain] = handle.split("@");

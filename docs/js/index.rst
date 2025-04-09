@@ -36,12 +36,16 @@ Mastodon Plugin
 ~~~~~~~~~~~~~~~
 .. js:autofunction:: fedi_script_mastodon.extractCommentMastodon
 .. js:autofunction:: fedi_script_mastodon.fetchMetaMastodon
+.. js:autofunction:: fedi_script_mastodon.fetchSubcommentsMastodon
+.. js:autofunction:: fedi_script_mastodon.queryUserMastodon
 
 Misskey Plugin
 ~~~~~~~~~~~~~~
 
 .. js:autofunction:: fedi_script_misskey.extractCommentMisskey
 .. js:autofunction:: fedi_script_misskey.fetchMetaMisskey
+.. js:autofunction:: fedi_script_misskey.fetchSubcommentsMisskey
+.. js:autofunction:: fedi_script_misskey.queryUserMisskey
 
 .. note::
 

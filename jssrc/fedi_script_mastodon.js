@@ -4,7 +4,7 @@
  *
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} comment - The ID of the comment you are fetching metadata for
- * @returns {Comment}
+ * @returns {fedi_script.Comment}
  */
 async function extractCommentMastodon(fediInstance, comment) {
 	const user = comment.account;
@@ -77,6 +77,14 @@ async function extractCommentMastodon(fediInstance, comment) {
 	};
 }
 
+/**
+ * The Mastodon implementation of :js:func:`~fedi_script.fetchSubcomments`\ . This will return comment objects
+ * following the common comment return spec.
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} postId - The ID of the post you are fetching metadata for
+ * @returns {Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
+ */
 async function fetchSubcommentsMastodon(fediInstance, commentId) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/v1/statuses/${commentId}/context`);
@@ -99,7 +107,7 @@ async function fetchSubcommentsMastodon(fediInstance, commentId) {
 }
 
 /**
- * This Mastodon implementation of :js:func:`fetchMeta`. This will update the global comment stats.
+ * The Mastodon implementation of :js:func:`~fedi_script.fetchMeta`. This will update the global comment stats.
  *
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
@@ -126,6 +134,16 @@ async function fetchMetaMastodon(fediInstance, postId) {
 	}
 }
 
+/**
+ * This function returns the URL and instance type of a given Fedi user
+ *
+ * .. warning::
+ *   This function is under construction and should be considered unstable
+ *
+ * @param {String} fediInstance - The domain name of your fedi instance
+ * @param {String} handle - The user handle you're looking for
+ * @return {{url: String, flavor: String}}
+ */
 async function queryUserMastodon(fediInstance, handle) {
 	try {
 		const response = await fetch(`https://${fediInstance}/api/v1/accounts/lookup?acct=${handle}`);

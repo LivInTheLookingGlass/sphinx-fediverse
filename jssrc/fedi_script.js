@@ -20,7 +20,7 @@
  * @property {String} host - The user's instance domain
  * @property {String} handle - The user's fediverse handle
  * @property {String} name - The user's name (often with embedded emoji)
- * @property {EmojiDescriber} emoji - Emoji used in the user's name/description
+ * @property {fedi_script.EmojiDescriber} emoji - Emoji used in the user's name/description
  */
 
 /**
@@ -34,10 +34,10 @@
  * @property {Number} reactionCount - The number of reactions on the comment
  * @property {Number} boostCount - The number of times the comment was boosted or quoted
  * @property {String} content - The unsanitized HTML content of the comment (may change to DOM fragment)
- * @property {EmojiDescriber} emoji - Emoji used in the post
- * @property {EmojiDescriber} reactionEmoji - Emoji used in reactions (mix of unicode emoji and custom names)
- * @property {User} user - Information about the posting user
- * @property {MediaAttachment[]} media - An array of media attachments
+ * @property {fedi_script.EmojiDescriber} emoji - Emoji used in the post
+ * @property {fedi_script.EmojiDescriber} reactionEmoji - Emoji used in reactions (mix of unicode emoji & custom names)
+ * @property {fedi_script.User} user - Information about the posting user
+ * @property {MediaAttachment[]} media - An array of :js:class:`~fedi_script.MediaAttachment`\ s
  */
 
 const config = {
@@ -60,7 +60,7 @@ function setImageLink(new_boost_link) {
 /**
  * A redirect function that will call the relevant plugin's implementation. This will update the global comment stats.
  *
- * @param {FediverseFlavor} fediFlavor
+ * @param {fedi_script.FediverseFlavor} fediFlavor
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
  */
@@ -76,13 +76,13 @@ async function fetchMeta(fediFlavor, fediInstance, postId) {
 }
 
 /**
- * A redirect function that will call the relevant plugin's implementation. This will return a comment object following
- * the common return spec.
+ * A redirect function that will call the relevant plugin's implementation. This will return comment objects following
+ * the common comment return spec.
  *
- * @param {FediverseFlavor} fediFlavor
+ * @param {fedi_script.FediverseFlavor} fediFlavor
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
- * @returns {Comment[]} The resulting subcomments
+ * @returns {fedi_script.Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
  */
 async function fetchSubcomments(fediFlavor, fediInstance, postId) {
 	switch (fediFlavor) {
@@ -100,7 +100,7 @@ async function fetchSubcomments(fediFlavor, fediInstance, postId) {
  * those emoji shortcodes reference.
  *
  * @param {String} string - The HTML string to parse
- * @param {EmojiDescriber} emojis - The shortcodes you expect to see
+ * @param {fedi_script.EmojiDescriber} emojis - The shortcodes you expect to see
  * @returns {DOMFragment} The sanitized, parsed document fragment
  */
 function replaceEmoji(string, emojis) {
@@ -124,7 +124,7 @@ function replaceEmoji(string, emojis) {
 }
 
 /**
- * @param {Comment} comment 
+ * @param {fedi_script.Comment} comment 
  * @returns {DOMFragment} The rendered version of the comment
  */
 function renderComment(comment) {
@@ -235,7 +235,7 @@ function renderComment(comment) {
 
 /**
  * Renders a batch of comments, in chronological order including nesting
- * @param {Comment[]} comments
+ * @param {Comment[]} comments - An array of :js:class:`~fedi_script.Comment`\ s
  */
 function renderCommentsBatch(comments) {
 	if (!comments || comments.length === 0) return;
@@ -260,7 +260,7 @@ function renderCommentsBatch(comments) {
 
 /**
  * This function kicks off the whole comment fetching process
- * @param {FediverseFlavor} fediFlavor 
+ * @param {fedi_script.FediverseFlavor} fediFlavor 
  * @param {String} fediInstance 
  * @param {String} postId 
  * @param {Number} maxDepth 
