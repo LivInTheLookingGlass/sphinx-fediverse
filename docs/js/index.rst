@@ -49,15 +49,46 @@ View source code :source:`jssrc/fedi_script_misskey.js`
 
 .. note::
 
-    This plugin requires ``marked.js`` as a dependency
+    This plugin requires ``marked.js`` to be loaded on your site
 
 .. js:autofunction:: fedi_script_misskey.extractCommentMisskey
 .. js:autofunction:: fedi_script_misskey.fetchMisskeyEmoji
 .. js:autofunction:: fedi_script_misskey.fetchMetaMisskey
-.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey1
-.. js:autofunction:: fedi_script_misskey.fetchMetaMisskey2
+.. js:autofunction:: fedi_script_misskey.fetchMeta1Misskey
+.. js:autofunction:: fedi_script_misskey.fetchMeta2Misskey
 .. js:autofunction:: fedi_script_misskey.fetchSubcommentsMisskey
+.. js:autofunction:: fedi_script_misskey.transformMFM
+.. js:autofunction:: fedi_script_misskey.escapeHtml
+.. js:autofunction:: fedi_script_misskey.parseBorders
 .. js:autofunction:: fedi_script_misskey.queryUserMisskey
 
 Minimal Page Infrastructure
 ===========================
+
+These scripts require a small number of elements on your page in order to function. The minimal structure is:
+
+.. code:: HTML+Jinja
+
+    <h{{ section_level }}>
+        {{ section_title }}
+        <span class="comments-info">
+            <img class="fedi-icon" src="{{ html_baseurl }}/_static/boost.svg" alt="Boosts">
+            <span id="global-reblogs"></span>,
+            <img class="fedi-icon" src="{{ html_baseurl }}/_static/like.svg" alt="Likes">
+            <span id="global-likes"></span>
+        </span>
+    </h{{ section_level }}>
+    <div id="comments-section"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setImageLink("{{ html_baseurl }}/_static/boost.svg");
+            fetchComments(
+                '{{ fedi_flavor }}', '{{ fedi_instance }}', '{{ post_id }}', {{ fetch_depth }}
+            );
+        });
+    </script>
+
+.. note::
+
+    This structure is *mostly* stable, but it may be subject to change in later versions if (for example) we want to
+    add support for hosting on multiple instances simultaneously

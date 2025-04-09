@@ -60,6 +60,16 @@ function setImageLink(new_boost_link) {
 /**
  * A redirect function that will call the relevant plugin's implementation. This will update the global comment stats.
  *
+ * Calls:
+ *
+ * - :js:func:`fedi_script_mastodon.fetchMetaMastodon`
+ * - :js:func:`fedi_script_misskey.fetchMetaMisskey`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script.fetchComments`
+ *
+ * @async
  * @param {fedi_script.FediverseFlavor} fediFlavor
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
@@ -79,6 +89,15 @@ async function fetchMeta(fediFlavor, fediInstance, postId) {
  * A redirect function that will call the relevant plugin's implementation. This will return comment objects following
  * the common comment return spec.
  *
+ * Calls:
+ *
+ * - :js:func:`fedi_script_mastodon.fetchSubcommentsMastodon`
+ * - :js:func:`fedi_script_misskey.fetchSubcommentsMisskey`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script.fetchComments`
+ * @async
  * @param {fedi_script.FediverseFlavor} fediFlavor
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
@@ -98,6 +117,14 @@ async function fetchSubcomments(fediFlavor, fediInstance, postId) {
 /**
  * Takes in an HTML string with embedded custom emoji, and returns a sanitized, parsed DOM fragment incuding the images
  * those emoji shortcodes reference.
+ *
+ * Calls:
+ *
+ * - :js:func:`DOMPurify.sanitize`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script.renderComment`
  *
  * @param {String} string - The HTML string to parse
  * @param {fedi_script.EmojiDescriber} emojis - The shortcodes you expect to see
@@ -124,6 +151,14 @@ function replaceEmoji(string, emojis) {
 }
 
 /**
+ * Calls:
+ *
+ * - :js:func:`~fedi_script.replaceEmoji`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script.renderCommentsBatch`
+ *
  * @param {fedi_script.Comment} comment 
  * @returns {DOMFragment} The rendered version of the comment
  */
@@ -235,6 +270,15 @@ function renderComment(comment) {
 
 /**
  * Renders a batch of comments, in chronological order including nesting
+ *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script.renderComment`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script.fetchComments`
+ *
  * @param {Comment[]} comments - An array of :js:class:`~fedi_script.Comment`\ s
  */
 function renderCommentsBatch(comments) {
@@ -260,6 +304,14 @@ function renderCommentsBatch(comments) {
 
 /**
  * This function kicks off the whole comment fetching process
+ *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script.fetchMeta`
+ * - :js:func:`~fedi_script.fetchSubcomments`
+ * - :js:func:`~fedi_script.renderCommentsBatch`
+ *
+ * @async
  * @param {fedi_script.FediverseFlavor} fediFlavor 
  * @param {String} fediInstance 
  * @param {String} postId 

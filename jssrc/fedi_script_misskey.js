@@ -1,5 +1,15 @@
 const emojiCache = {};
 
+/**
+ * A basic HTML escape function for the ``<plain>`` element (not intended to sanitize)
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.transformMFM`
+ *
+ * @param {String} unsafe 
+ * @returns {String}
+ */
 function escapeHtml(unsafe) {
 	return unsafe
 		.replaceAll(/&/g,  "&amp;")
@@ -13,6 +23,18 @@ function escapeHtml(unsafe) {
 		.replaceAll(/@/g,  "&#64;");
 }
 
+/**
+ * A helper function to parse the border markup in Misskey Flavored Markdown
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.transformMFM`
+ *
+ * @param {String} _ 
+ * @param {String} style 
+ * @param {String} text 
+ * @returns {String}
+ */
 function parseBorders(_, style, text) {
 	const p = {
 		// defaults
@@ -35,8 +57,28 @@ function parseBorders(_, style, text) {
 	return `<span style="border: ${border}; border-radius: ${p.radius}px;${clip}">${text}</span>`;
 }
 
+/**
+ * Transforms as much of MFM as possible into standard Markdown through regular expressions
+ *
+ * .. note::
+ *
+ *   This is very much not a full implementation of Misskey Flavored Markdown, but it supports a wide enough subset
+ *   that it should work for >95% of comments
+ *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script_misskey.escapeHtml`
+ * - :js:func:`~fedi_script_misskey.parseBorders`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.extractCommentMisskey`
+ *
+ * @param {String} text 
+ * @param {String} fediInstance 
+ * @returns {String} An unsanitized Markdown string to be parsed later
+ */
 function transformMFM(text, fediInstance) {
-	// transforms as much of MFM as possible into standard Markdown
 	const multiTransforms = [
 		// gums means global, unicode, multi-line, dot-includes-spaces
 		// escape plain contents
@@ -100,6 +142,17 @@ function transformMFM(text, fediInstance) {
 /**
  * This will transform the information returned by the Misskey API into the common comment structure.
  *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script_misskey.transformMFM`
+ * - :js:func:`marked.parse`
+ *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.fetchSubcommentsMisskey`
+ *
+ * @async
+ * @requires marked#parse
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} comment - The ID of the comment you are fetching metadata for
  * @returns {fedi_script.Comment}
@@ -183,6 +236,11 @@ async function extractCommentMisskey(fediInstance, comment) {
  * in the comment information returned by the API, it needs to be fetched separately. This is done in parallel and
  * handles any rate-limit feedback.
  *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.extractCommentMisskey`
+ *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} name - The emoji shortcode you are trying to fetch
  */
@@ -222,6 +280,11 @@ async function fetchMisskeyEmoji(fediInstance, name) {
  * The Misskey implementation of :js:func:`~fedi_script.fetchSubcomments`\ . This will return comment objects
  * following the common comment return spec.
  *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script_misskey.extractCommentMisskey`
+ *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
  * @returns {Comment[]} The resulting sub\ :js:func:`~fedi_script.Comment`\ s
@@ -259,6 +322,16 @@ async function fetchSubcommentsMisskey(fediInstance, commentId) {
 /**
  * The Misskey implementation of :js:func:`~fedi_script.fetchMeta`. This will update the global comment stats.
  *
+ * Calls:
+ *
+ * - :js:func:`~fedi_script_misskey.fetchMeta1Misskey`
+ * - :js:func:`~fedi_script_misskey.fetchMeta2Misskey`
+ *
+ * Callers:
+ *
+ * - :js:func:`fedi_script.fetchMeta`
+ *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
  */
@@ -272,6 +345,11 @@ async function fetchMetaMisskey(fediInstance, postId) {
 /**
  * A subcomponenet of :js:func:`~fedi_script_misskey.fetchMetaMisskey`. This portion handles the global reaction count.
  *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.fetchMetaMisskey`
+ *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
  */
@@ -302,6 +380,11 @@ async function fetchMeta1Misskey(fediInstance, postId) {
  * A subcomponenet of :js:func:`~fedi_script_misskey.fetchMetaMisskey`. This portion handles the global boost/renote
  * count.
  *
+ * Callers:
+ *
+ * - :js:func:`~fedi_script_misskey.fetchMetaMisskey`
+ *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} postId - The ID of the post you are fetching metadata for
  */
@@ -334,6 +417,7 @@ async function fetchMeta2Misskey(fediInstance, postId) {
  * .. warning::
  *   This function is under construction and should be considered unstable
  *
+ * @async
  * @param {String} fediInstance - The domain name of your fedi instance
  * @param {String} handle - The user handle you're looking for
  * @return {{url: String, flavor: String}}

@@ -261,7 +261,7 @@ class FediverseCommentDirective(SphinxDirective):
                     const postId = postIdElement.textContent || postIdElement.innerText;
                     if (postId) {{
                         const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
-                        setImageLink("{self.env.config.html_baseurl}/_static/boost.svg")
+                        setImageLink("{self.env.config.html_baseurl}/_static/boost.svg");
                         fetchComments('{self.fedi_flavor}', fediInstance, postId, {self.fetch_depth});
                     }}
                 }}
