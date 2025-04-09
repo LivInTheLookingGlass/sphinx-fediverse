@@ -28,9 +28,10 @@ with package_json_path.open('r') as f:
 
 _version_numbers, *_version_suffix = version.split("+")
 _version_numbers, *_version_append = _version_numbers.split("-")
-__version__: Tuple[int, int, int, Unpack[Tuple[Union[int, str], ...]]] = tuple(
+__version__: Tuple[int, int, int, Unpack[Tuple[Union[int, str], ...]]]  #: The package version as a parsed tuple
+__version__ = tuple(
     int(x) for x in _version_numbers.split(".")
-) + (*_version_append, *_version_suffix)  #: The package version as a parsed tuple
+) + (*_version_append, *_version_suffix)  # type: ignore
 
 SUPPORTED_FLAVORS: Set[str] = {'mastodon', 'misskey'}  #: The set of supported fediverse implementations
 registered_docs: Set[str] = set()  #: The set of docs currently registered
@@ -237,9 +238,9 @@ class FediverseCommentDirective(SphinxDirective):
 
     def process_mastodon(self, post_url: str, title: str) -> str:
         """Implementation of :py:func:`~FediverseCommentDirective.process_post` for Mastodon.
-        
+
         .. warning::
-        
+
             Hard depends on Mastodon.py
         """
         from mastodon import Mastodon
@@ -265,9 +266,9 @@ class FediverseCommentDirective(SphinxDirective):
 
     def process_misskey(self, post_url: str, title: str) -> str:
         """Implementation of :py:func:`~FediverseCommentDirective.process_post` for Mastodon.
-        
+
         .. warning::
-        
+
             Hard depends on Misskey.py
         """
         from misskey import Misskey
