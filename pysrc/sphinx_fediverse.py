@@ -154,11 +154,6 @@ class FediverseCommentDirective(SphinxDirective):
 
         # Create the DOM element to store the post ID
         post_id_node = nodes.raw('', f"""
-            <div style="display:none;">
-                <span id="fedi-post-id">{post_id}</span>
-                <span id="fedi-instance">{self.fedi_instance}</span>
-                <span id="fedi-flavor">{self.fedi_flavor}</span>
-            </div>
             <h{self.section_level}>
                 {self.section_title}
                 <span class="comments-info">
@@ -170,18 +165,10 @@ class FediverseCommentDirective(SphinxDirective):
             </h{self.section_level}>
             <div id="comments-section"></div>
             <script>
-            document.addEventListener("DOMContentLoaded", function () {{
-                const postIdElement = document.getElementById('fedi-post-id');
-                const fediInstanceElement = document.getElementById('fedi-instance');
-                if (postIdElement && fediInstanceElement) {{
-                    const postId = postIdElement.textContent || postIdElement.innerText;
-                    if (postId) {{
-                        const fediInstance = fediInstanceElement.textContent || fediInstanceElement.innerText;
-                        setImageLink("{self.env.config.html_baseurl}/_static/boost.svg");
-                        fetchComments('{self.fedi_flavor}', fediInstance, postId, {self.fetch_depth});
-                    }}
-                }}
-            }});
+                document.addEventListener("DOMContentLoaded", function () {{
+                    setImageLink("{self.env.config.html_baseurl}/_static/boost.svg");
+                    fetchComments({self.fedi_flavor!r}, {self.fedi_instance!r}, '{post_id}', {self.fetch_depth});
+                }});
             </script>
         """, format='html')
 
