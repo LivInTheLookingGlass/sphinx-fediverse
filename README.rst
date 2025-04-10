@@ -254,35 +254,47 @@ Build
 
    Removes any stray build files, and also javascript dependencies.
 
-.. make:target:: html
+.. make:target:: dependencies: js_dependencies py_dependencies
+
+   Grab all project dependencies.
+
+.. make:target:: py_dependencies
+
+   Grab python project dependencies.
+
+.. make:target:: js_dependencies
+
+   Grab javascript project dependencies.
+
+.. make:target:: html: bundle
 
    Generates the HTML documentation
 
-.. make:target:: pysrc/_static/fedi_scrip%.min.js
+.. make:target:: pysrc/_static/fedi_scrip%.min.js: dependencies
 
    This should not be called individually, but these recipes process the javascript found in ``jssrc`` through Babel
    and prepend the license to them.
 
-.. make:target:: bundle
+.. make:target:: bundle: js_dependencies
 
    Moves all javascript and dependencies into the python static directory for use and packaging purposes
 
-.. make:target:: build
+.. make:target:: build: clean dependencies bundle
 
    Builds a distribution version of the python package.
 
-.. make:target:: publish
+.. make:target:: publish: build
 
    Provided you have the proper token, uploads the built package to PyPi.
 
 Tests
 -----
 
-.. make:target:: test
+.. make:target:: test: js_test py_test
 
    Run through all tests in sequence. Utilizes the pytest and mocha test runner infrastructures
    
-.. make:target:: test_%
+.. make:target:: test_%: js_test_% py_test_%
 
    Run through all tests in parallel with the given number of threads. Use auto to allow the test runner to determine
    it. Utilizes the pytest and mocha runners.
