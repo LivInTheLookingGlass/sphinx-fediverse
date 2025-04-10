@@ -53,6 +53,9 @@ class FediverseCommentDirective(SphinxDirective):
         'enable_post_creation': _bool_or_none,
         'raise_error_if_no_post': _bool_or_none,
         'replace_index_with_slash': _bool_or_none,
+        'allow_sensitive_emoji': _bool_or_none,
+        'allow_custom_emoji': _bool_or_none,
+        'allow_media_attachments': _bool_or_none,
         'token_names': str,
         'fedi_flavor': str,
         'fedi_username': str,
@@ -78,6 +81,18 @@ class FediverseCommentDirective(SphinxDirective):
         self.replace_index_with_slash: Optional[bool] = self.options.get(
             'replace_index_with_slash',
             self.env.config.replace_index_with_slash
+        )
+        self.allow_sensitive_emoji: Optional[bool] = self.options.get(
+            'allow_sensitive_emoji',
+            self.env.config.allow_sensitive_emoji
+        )
+        self.allow_custom_emoji: Optional[bool] = self.options.get(
+            'allow_custom_emoji',
+            self.env.config.allow_custom_emoji
+        )
+        self.allow_media_attachments: Optional[bool] = self.options.get(
+            'allow_media_attachments',
+            self.env.config.allow_media_attachments
         )
         self.fedi_flavor: str = self.options.get(
             'fedi_flavor',
@@ -166,7 +181,12 @@ class FediverseCommentDirective(SphinxDirective):
             <div id="comments-section"></div>
             <script>
                 document.addEventListener("DOMContentLoaded", function () {{
-                    setImageLink("{self.env.config.html_baseurl}/_static/boost.svg");
+                    setConfig({{
+                        boost_link: "{self.env.config.html_baseurl}/_static/boost.svg",
+                        allow_sensitive_emoji: {str(self.allow_sensitive_emoji).lower()},
+                        allow_custom_emoji: {str(self.allow_custom_emoji).lower()},
+                        allow_media_attachments: {str(self.allow_media_attachments).lower()},
+                    }});
                     fetchComments({self.fedi_flavor!r}, {self.fedi_instance!r}, '{post_id}', {self.fetch_depth});
                 }});
             </script>
@@ -306,6 +326,8 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     app.add_config_value('comment_fetch_depth', 5, 'env')
     app.add_config_value('comment_section_level', 2, 'env')
     app.add_config_value('comment_section_title', 'Comments', 'env')
+    app.add_config_value('allow_sensitive_emoji', False, 'env')
+    app.add_config_value('allow_custom_emoji', True, 'env')
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)

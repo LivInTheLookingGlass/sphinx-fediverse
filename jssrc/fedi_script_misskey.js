@@ -265,7 +265,7 @@ async function fetchMisskeyEmoji(fediInstance, name) {
 			}
 		} else {
 			const data = await response.json();
-			if (!data.isSensitive) {
+			if (!data.isSensitive || fedi_config.allow_sensitive_emoji) {
 				ret[name] = data.url;
 				emojiCache[name] = data.url;
 			}

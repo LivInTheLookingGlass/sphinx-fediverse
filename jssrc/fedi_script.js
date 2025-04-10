@@ -40,21 +40,33 @@
  * @property {MediaAttachment[]} media - An array of :js:class:`~fedi_script.MediaAttachment`\ s
  */
 
-const config = {
+const fedi_config = {
 	parser: (typeof DOMParser === 'undefined') ? undefined : new DOMParser(),
 	boost_link: "_static/boost.svg",
+	allow_sensitive_emoji: false,
+	allow_custom_emoji: true,
+	allow_media_attachments: true,
 };
 
 /**
- * Setter for the internal image link used to include the "boost" icon.
+ * Setter for internal configuration properties
  *
  * .. warning::
- *   Call this function before any other, or your boost icon may not work in subdirectories
+ *   Call this function before any other with the value ``'boost_link'`` as a key, or your boost icon may not work in
+ *   subdirectories
+ * 
+ * Available properties to set:
  *
- * @param {String} new_boost_link - Link to the boost svg in your site structure
+ * - ``boost_link`` - The URL corresponding to the boost SVG
+ * - ``allow_custom_emoji`` - Allow custom emoji to be included in comment contents
+ * - ``allow_sensitive_emoji`` - Allow sensitive emoji to be included in comment contents
+ * - ``allow_media_attachments`` - Allow media attachments to be incuded in comment contents
+ * - ``parser`` - In testing, allows you to replace the DOMParser
+ *
+ * @param {Object} newValues
  */
-function setImageLink(new_boost_link) {
-	config.boost_link = new_boost_link;
+function setConfig(newValues) {
+	Object.assign(fedi_config, newValues);
 }
 
 /**
@@ -131,15 +143,17 @@ async function fetchSubcomments(fediFlavor, fediInstance, postId) {
  * @returns {DOMFragment} The sanitized, parsed document fragment
  */
 function replaceEmoji(string, emojis) {
-	for (const shortcode in emojis) {
-		const static_url = DOMPurify.sanitize(emojis[shortcode]);
-		string = string.replaceAll(
-			`:${shortcode}:`,
-			`<img src="${static_url}" class="emoji" alt="Custom emoji: ${DOMPurify.sanitize(shortcode)}">`
-		)
-	};
+	if (fedi_config.allow_custom_emoji) {
+		for (const shortcode in emojis) {
+			const static_url = DOMPurify.sanitize(emojis[shortcode]);
+			string = string.replaceAll(
+				`:${shortcode}:`,
+				`<img src="${static_url}" class="emoji" alt="Custom emoji: ${DOMPurify.sanitize(shortcode)}">`
+			)
+		};
+	}
 	const container = document.createDocumentFragment();
-	const newBody = config.parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
+	const newBody = fedi_config.parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
 	if (newBody.body.children.length) {
 		Array.from(newBody.body.children).forEach(child => container.appendChild(child));
 	} else {
@@ -221,20 +235,22 @@ function renderComment(comment) {
 	contentText.appendChild(replaceEmoji(comment.content, comment.emoji));
 	content.appendChild(contentText);
 
-	for (const attachment of comment.media) {
-		const attachmentNode = document.createElement("img");
-		attachmentNode.setAttribute("src", attachment.url);
-		attachmentNode.setAttribute("alt", attachment.description);
-		attachmentNode.classList.add("attachment");
-		if (attachment.sensitive && !comment.cw) {
-			const attachmentContainer = document.createElement("details");
-			const summary = document.createElement("summary");
-			summary.textContent = "Media marked as sensitive, click to expand";
-			attachmentContainer.appendChild(summary);
-			attachmentContainer.appendChild(attachmentNode);
-			content.appendChild(attachmentContainer)
-		} else {
-			content.appendChild(attachmentNode);
+	if (fedi_config.allow_media_attachments) {
+		for (const attachment of comment.media) {
+			const attachmentNode = document.createElement("img");
+			attachmentNode.setAttribute("src", attachment.url);
+			attachmentNode.setAttribute("alt", attachment.description);
+			attachmentNode.classList.add("attachment");
+			if (attachment.sensitive && !comment.cw) {
+				const attachmentContainer = document.createElement("details");
+				const summary = document.createElement("summary");
+				summary.textContent = "Media marked as sensitive, click to expand";
+				attachmentContainer.appendChild(summary);
+				attachmentContainer.appendChild(attachmentNode);
+				content.appendChild(attachmentContainer)
+			} else {
+				content.appendChild(attachmentNode);
+			}
 		}
 	}
 
@@ -244,7 +260,7 @@ function renderComment(comment) {
 	const boostIcon = document.createElement("span");
 	boostIcon.classList.add("reaction");
 	const boostIconImage = document.createElement("img");
-	boostIconImage.setAttribute("src", config.boost_link);
+	boostIconImage.setAttribute("src", fedi_config.boost_link);
 	boostIconImage.setAttribute("alt", "Boosts");
 	boostIconImage.classList.add("fedi-icon");
 	boostIcon.appendChild(boostIconImage);
@@ -333,7 +349,7 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 if (typeof module !== 'undefined') {
 	module.exports = {
 		config,
-		setImageLink,
+		setConfig,
 		replaceEmoji,
 		renderComment,
 		renderCommentsBatch,

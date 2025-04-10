@@ -19,7 +19,7 @@ View source code :source:`jssrc/fedi_script.js`
 
     This requires ``DOMPurify`` to be loaded on your site
 
-.. js:autofunction:: fedi_script.setImageLink
+.. js:autofunction:: fedi_script.setConfig
 .. js:autofunction:: fedi_script.fetchComments
 .. js:autofunction:: fedi_script.fetchMeta
 .. js:autofunction:: fedi_script.fetchSubcomments
@@ -81,7 +81,9 @@ These scripts require a small number of elements on your page in order to functi
     <div id="comments-section"></div>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            setImageLink("{{ html_baseurl }}/_static/boost.svg");
+            setFediConfig({
+                boost_link: "{{ html_baseurl }}/_static/boost.svg",
+            });
             fetchComments(
                 '{{ fedi_flavor }}', '{{ fedi_instance }}', '{{ post_id }}', {{ fetch_depth }}
             );

@@ -71,21 +71,24 @@ There are a several values that you may provide:
 
 .. table::
 
-   ========================  ============================================  ===============================
-   Option                    Description                                   Example
-   ========================  ============================================  ===============================
-   html_baseurl              The host your documentation will be on        https://www.sphinx-doc.org/
-   fedi_flavor               The API your server implements                ``'mastodon'`` or ``'misskey'``
-   fedi_username             The username of the account to make posts on  xkcd
-   fedi_instance             The host you're making comments on            botsin.space
-   comments_mapping_file     The name of the comments map file             comments_mapping.json (default)
-   replace_index_with_slash  True to replace ``/index.html`` with ``/``    True (default)
-   enable_post_creation      True to automatically post, False for manual  True (default)
-   raise_error_if_no_post    True to raise an error if not post is made    True (default)
-   comment_fetch_depth       The number of recursive fetches to make       5 (default)
-   comment_section_level     The header level of the comments section      2 (default)
-   comment_section_title     The title of the comments section             Comments (default)
-   ========================  ============================================  ===============================
+   ========================  ===============================================  ===============================
+   Option                    Description                                      Example
+   ========================  ===============================================  ===============================
+   html_baseurl              The host your documentation will be on           https://www.sphinx-doc.org/
+   fedi_flavor               The API your server implements                   ``'mastodon'`` or ``'misskey'``
+   fedi_username             The username of the account to make posts on     xkcd
+   fedi_instance             The host you're making comments on               botsin.space
+   comments_mapping_file     The name of the comments map file                comments_mapping.json (default)
+   replace_index_with_slash  True to replace ``/index.html`` with ``/``       True (default)
+   enable_post_creation      True to automatically post, False for manual     True (default)
+   raise_error_if_no_post    True to raise an error if not post is made       True (default)
+   comment_fetch_depth       The number of recursive fetches to make          5 (default)
+   comment_section_level     The header level of the comments section         2 (default)
+   comment_section_title     The title of the comments section                Comments (default)
+   allow_custom_emoji        Whether to replace emoji shortcodes with images  True (default)
+   allow_sensitive_emoji     Whether to parse sensitive custom emoji          False (default)
+   allow_media_attachments   Whether to include attached images               True (default)
+   ========================  ===============================================  ===============================
 
 We also rely on environment variables for authentication.
 
@@ -153,6 +156,9 @@ In addition to the above configuration values, you can modify most of them on a 
    section_level             (See comment_section_level Above)             (See Above)
    section_title             (See comment_section_title Above)             (See Above)
    post_id                   A hardcoded post ID to use for comments       None (default), 114032235423688612
+   allow_custom_emoji        (See Above)                                   (See Above)
+   allow_sensitive_emoji     (See Above)                                   (See Above)
+   allow_media_attachments   (See Above)                                   (See Above)
    ========================  ============================================  ==================================
 
 Supported Themes
@@ -167,7 +173,6 @@ officially supported theme, click one of the links below:
 - `agogo <https://sphinx-fediverse.oliviaappleton.com/agogo/>`_
 - `bizstyle <https://sphinx-fediverse.oliviaappleton.com/bizstyle/>`_
 - `classic <https://sphinx-fediverse.oliviaappleton.com/classic/>`_
-- `haiku <https://sphinx-fediverse.oliviaappleton.com/haiku/>`_
 - `nature <https://sphinx-fediverse.oliviaappleton.com/nature/>`_
 - `pyramid <https://sphinx-fediverse.oliviaappleton.com/pyramid/>`_
 - `scrolls <https://sphinx-fediverse.oliviaappleton.com/scrolls/>`_

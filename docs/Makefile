@@ -7,7 +7,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
-THEMES = alabaster agogo bizstyle classic haiku nature pyramid scrolls sphinxdoc traditional sphinx_rtd_theme shibuya
+THEMES = alabaster agogo bizstyle classic nature pyramid scrolls sphinxdoc traditional sphinx_rtd_theme shibuya
 
 # Put it first so that "make" without argument is like "make help".
 help:
