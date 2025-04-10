@@ -56,6 +56,7 @@ class FediverseCommentDirective(SphinxDirective):
         'allow_sensitive_emoji': _bool_or_none,
         'allow_custom_emoji': _bool_or_none,
         'allow_media_attachments': _bool_or_none,
+        'delay_comment_load': _bool_or_none,
         'token_names': str,
         'fedi_flavor': str,
         'fedi_username': str,
@@ -93,6 +94,10 @@ class FediverseCommentDirective(SphinxDirective):
         self.allow_media_attachments: Optional[bool] = self.options.get(
             'allow_media_attachments',
             self.env.config.allow_media_attachments
+        )
+        self.delay_comment_load: Optional[bool] = self.options.get(
+            'delay_comment_load',
+            self.env.config.delay_comment_load
         )
         self.fedi_flavor: str = self.options.get(
             'fedi_flavor',
@@ -186,6 +191,7 @@ class FediverseCommentDirective(SphinxDirective):
                         allow_sensitive_emoji: {str(self.allow_sensitive_emoji).lower()},
                         allow_custom_emoji: {str(self.allow_custom_emoji).lower()},
                         allow_media_attachments: {str(self.allow_media_attachments).lower()},
+                        delay_comment_load: {str(self.delay_comment_load).lower()},
                     }});
                     fetchComments({self.fedi_flavor!r}, {self.fedi_instance!r}, '{post_id}', {self.fetch_depth});
                 }});
@@ -329,6 +335,7 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     app.add_config_value('allow_sensitive_emoji', False, 'env')
     app.add_config_value('allow_custom_emoji', True, 'env')
     app.add_config_value('allow_media_attachments', True, 'env')
+    app.add_config_value('delay_comment_load', True, 'env')
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)

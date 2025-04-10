@@ -46,6 +46,7 @@ const fedi_config = {
 	allow_sensitive_emoji: false,
 	allow_custom_emoji: true,
 	allow_media_attachments: true,
+	delay_comments: true,
 };
 
 /**
@@ -61,6 +62,7 @@ const fedi_config = {
  * - ``allow_custom_emoji`` - Allow custom emoji to be included in comment contents
  * - ``allow_sensitive_emoji`` - Allow sensitive emoji to be included in comment contents
  * - ``allow_media_attachments`` - Allow media attachments to be incuded in comment contents
+ * - ``delay_comment_load`` - Defers loading of comments section until user brings it into view
  * - ``parser`` - In testing, allows you to replace the DOMParser
  *
  * @param {Object} newValues
@@ -334,15 +336,35 @@ function renderCommentsBatch(comments) {
  * @param {Number} maxDepth 
  */
 async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
-	try {
-		fetchMeta(fediFlavor, fediInstance, postId);
-		while (maxDepth--) {
-			const replies = await fetchSubcomments(fediFlavor, fediInstance, postId);
-			renderCommentsBatch(replies);
-			await Promise.all(replies.map(reply => fetchSubcomments(fediFlavor, fediInstance, reply.id)));
+
+	async function _fetchComments() {
+		try {
+			fetchMeta(fediFlavor, fediInstance, postId);
+			while (maxDepth--) {
+				const replies = await fetchSubcomments(fediFlavor, fediInstance, postId);
+				renderCommentsBatch(replies);
+				await Promise.all(replies.map(reply => fetchSubcomments(fediFlavor, fediInstance, reply.id)));
+			}
+		} catch (error) {
+			console.error("Error fetching comments:", error);
 		}
-	} catch (error) {
-		console.error("Error fetching comments:", error);
+	}
+
+	const targetElement = document.querySelector(".comments-info");
+	if (fedi_config.delay_comments && typeof IntersectionObserver !== 'undefined' && targetElement) {
+		console.log("Delaying comment load until they come into view");
+		const observer = new IntersectionObserver(function onInView(entries, observer) {
+			for (const entry of entries) {
+				if (entry.isIntersecting) {
+					console.log("Loading comments after coming into view");
+					_fetchComments();
+					observer.disconnect();
+				}
+			}
+		}, { threshold: 0.01 });
+		observer.observe(targetElement);
+	} else {
+		_fetchComments();
 	}
 }
 

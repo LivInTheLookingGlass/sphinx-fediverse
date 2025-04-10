@@ -88,6 +88,7 @@ There are a several values that you may provide:
    allow_custom_emoji        Whether to replace emoji shortcodes with images  True (default)
    allow_sensitive_emoji     Whether to parse sensitive custom emoji          False (default)
    allow_media_attachments   Whether to include attached images               True (default)
+   delay_comment_load        Delay loading comments until they are in view    True (default)
    ========================  ===============================================  ===============================
 
 We also rely on environment variables for authentication.
@@ -159,6 +160,7 @@ In addition to the above configuration values, you can modify most of them on a 
    allow_custom_emoji        (See Above)                                   (See Above)
    allow_sensitive_emoji     (See Above)                                   (See Above)
    allow_media_attachments   (See Above)                                   (See Above)
+   delay_comment_load        (See Above)                                   (See Above)
    ========================  ============================================  ==================================
 
 Supported Themes
