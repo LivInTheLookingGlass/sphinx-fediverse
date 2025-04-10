@@ -328,6 +328,7 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     app.add_config_value('comment_section_title', 'Comments', 'env')
     app.add_config_value('allow_sensitive_emoji', False, 'env')
     app.add_config_value('allow_custom_emoji', True, 'env')
+    app.add_config_value('allow_media_attachments', True, 'env')
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)

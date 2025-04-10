@@ -348,7 +348,7 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 
 if (typeof module !== 'undefined') {
 	module.exports = {
-		config,
+		fedi_config,
 		setConfig,
 		replaceEmoji,
 		renderComment,
