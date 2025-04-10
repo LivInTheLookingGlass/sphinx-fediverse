@@ -2,12 +2,11 @@
    :end-before: .. first-cut
 
 .. toctree::
-   :maxdepth: 2
    :caption: Contents:
    :hidden:
+   :glob:
 
-   javascript
-   python
+   *
 
 .. include:: ../README.rst
    :start-after: .. first-cut
