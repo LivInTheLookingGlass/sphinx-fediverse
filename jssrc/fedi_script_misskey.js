@@ -170,7 +170,7 @@ async function extractCommentMisskey(fediInstance, comment) {
 		(user.mandatoryCW ? user.mandatoryCW : comment.cw);
 
 	for (const attachment of comment.files) {
-		if (attachment.type.substring('image') !== -1) {
+		if (attachment.type.includes('image')) {
 			attachments.push({
 				url: attachment.url,
 				sensitive: attachment.isSensitive,
@@ -214,7 +214,6 @@ async function extractCommentMisskey(fediInstance, comment) {
 		date: comment.createdAt,
 		cw: cw,
 		emoji: commentEmoji,
-		reactionEmoji: comment.reactionEmojis,
 		reactionCount: comment.reactionCount,
 		boostCount: comment.renoteCount,
 		reactions: reactions,

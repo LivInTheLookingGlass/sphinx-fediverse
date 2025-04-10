@@ -20,6 +20,7 @@
  * @property {String} host - The user's instance domain
  * @property {String} handle - The user's fediverse handle
  * @property {String} name - The user's name (often with embedded emoji)
+ * @property {String} avatar - The user's profile picture
  * @property {fedi_script.EmojiDescriber} emoji - Emoji used in the user's name/description
  */
 
@@ -34,6 +35,7 @@
  * @property {Number} reactionCount - The number of reactions on the comment
  * @property {Number} boostCount - The number of times the comment was boosted or quoted
  * @property {String} content - The unsanitized HTML content of the comment (may change to DOM fragment)
+ * @property {Object} reactions - A mapping of emoji (unicode or custom) to the number of reactions on a comment
  * @property {fedi_script.EmojiDescriber} emoji - Emoji used in the post
  * @property {fedi_script.EmojiDescriber} reactionEmoji - Emoji used in reactions (mix of unicode emoji & custom names)
  * @property {fedi_script.User} user - Information about the posting user
@@ -46,7 +48,7 @@ const fedi_config = {
 	allow_sensitive_emoji: false,
 	allow_custom_emoji: true,
 	allow_media_attachments: true,
-	delay_comments: true,
+	delay_comment_load: true,
 };
 
 /**
@@ -61,7 +63,7 @@ const fedi_config = {
  * - ``boost_link`` - The URL corresponding to the boost SVG
  * - ``allow_custom_emoji`` - Allow custom emoji to be included in comment contents
  * - ``allow_sensitive_emoji`` - Allow sensitive emoji to be included in comment contents
- * - ``allow_media_attachments`` - Allow media attachments to be incuded in comment contents
+ * - ``allow_media_attachments`` - Allow media attachments to be included in comment contents
  * - ``delay_comment_load`` - Defers loading of comments section until user brings it into view
  * - ``parser`` - In testing, allows you to replace the DOMParser
  *
@@ -233,7 +235,6 @@ function renderComment(comment) {
 	const content = document.createElement("div");
 	content.classList.add("content");
 	const contentText = document.createElement("div");
-	// We're assuming sanitized strings here. On Mastodon that's true, but on Misskey it's not. TODO.
 	contentText.appendChild(replaceEmoji(comment.content, comment.emoji));
 	content.appendChild(contentText);
 
@@ -271,7 +272,7 @@ function renderComment(comment) {
 	commentDiv.appendChild(infoNode);
 
 	const reactionKeys = Object.keys(comment.reactions);
-	reactionKeys.sort((a, b) => comment.reactions[a] < comment.reactions[b]);
+	reactionKeys.sort((a, b) => comment.reactions[b] - comment.reactions[a]);
 	for (const reaction of reactionKeys) {
 		const reactionNode = document.createElement("span");
 		reactionNode.classList.add("reaction");
@@ -339,7 +340,7 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 
 	async function _fetchComments() {
 		try {
-			fetchMeta(fediFlavor, fediInstance, postId);
+			fetchMeta(fediFlavor, fediInstance, postId);  // fire-and-forget is intentional
 			while (maxDepth--) {
 				const replies = await fetchSubcomments(fediFlavor, fediInstance, postId);
 				renderCommentsBatch(replies);
@@ -351,20 +352,20 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 	}
 
 	const targetElement = document.querySelector(".comments-info");
-	if (fedi_config.delay_comments && typeof IntersectionObserver !== 'undefined' && targetElement) {
+	if (fedi_config.delay_comment_load && typeof IntersectionObserver !== 'undefined' && targetElement) {
 		console.log("Delaying comment load until they come into view");
 		const observer = new IntersectionObserver(function onInView(entries, observer) {
 			for (const entry of entries) {
 				if (entry.isIntersecting) {
 					console.log("Loading comments after coming into view");
-					_fetchComments();
+					_fetchComments();  // fire-and-forget is intentional
 					observer.disconnect();
 				}
 			}
 		}, { threshold: 0.01 });
 		observer.observe(targetElement);
 	} else {
-		_fetchComments();
+		_fetchComments();  // fire-and-forget is intentional
 	}
 }
 

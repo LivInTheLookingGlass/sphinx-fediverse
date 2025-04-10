@@ -102,7 +102,7 @@ async function fetchSubcommentsMastodon(fediInstance, commentId) {
 		if (!response.ok) {
 			if (response.status == 429) {
 				await new Promise((resolve) => setTimeout(resolve, 100))
-				return await fetchSubcomments(fediInstance, commentId);
+				return await fetchSubcommentsMastodon(fediInstance, commentId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
 		}
