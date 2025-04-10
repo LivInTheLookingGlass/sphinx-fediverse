@@ -6,8 +6,8 @@
    :caption: Contents:
    :hidden:
 
-   js/index
-   py/index
+   javascript
+   python
 
 .. include:: ../README.rst
    :start-after: .. first-cut
