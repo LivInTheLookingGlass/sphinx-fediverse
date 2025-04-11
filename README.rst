@@ -91,6 +91,7 @@ There are a several values that you may provide:
    allow_avatars             Whether to include user avatar images            True (default)
    delay_comment_load        Delay loading comments until they are in view    True (default)
    default_reaction_emoji    The default reaction to use when unsupported     ❤ (default)
+   fedi_retry_delay          The amount of time to wait on rate-limit error   100 (default, in ms)
    ========================  ===============================================  ===============================
 
 We also rely on environment variables for authentication.
@@ -137,10 +138,6 @@ output documents, and used to retrieve comments.
 Directive Options
 -----------------
 
-.. note::
-
-   This feature is a work in progress
-
 In addition to the above configuration values, you can modify most of them on a per-directive basis!
 
 .. table::
@@ -165,6 +162,7 @@ In addition to the above configuration values, you can modify most of them on a 
    allow_avatars             (See Above)                                   (See Above)
    delay_comment_load        (See Above)                                   (See Above)
    default_reaction_emoji    (See Above)                                   (See Above)
+   fedi_retry_delay          (See Above)                                   (See Above)
    ========================  ============================================  ==================================
 
 Supported Themes

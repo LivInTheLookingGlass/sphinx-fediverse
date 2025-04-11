@@ -259,7 +259,7 @@ async function fetchMisskeyEmoji(fediInstance, name) {
 		});
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100))
+				await new Promise((resolve) => setTimeout(resolve, retryDelay))
 				return await fetchMisskeyEmoji(fediInstance, name);
 			}
 		} else {
@@ -303,7 +303,7 @@ async function fetchSubcommentsMisskey(fediInstance, commentId) {
 
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100))
+				await new Promise((resolve) => setTimeout(resolve, retryDelay))
 				return await fetchSubcommentsMisskey(fediInstance, commentId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -363,7 +363,7 @@ async function fetchMeta1Misskey(fediInstance, postId) {
 		});
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, retryDelay));
 				return await fetchMeta1Misskey(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -398,7 +398,7 @@ async function fetchMeta2Misskey(fediInstance, postId) {
 		});
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, retryDelay));
 				return await fetchMeta2Misskey(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -433,7 +433,7 @@ async function queryUserMisskey(fediInstance, handle) {
 		});
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, retryDelay));
 				return await queryUserMisskey(fediInstance, handle);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);

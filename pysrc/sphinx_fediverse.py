@@ -347,6 +347,7 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     app.add_config_value('allow_avatars', True, 'env')
     app.add_config_value('delay_comment_load', True, 'env')
     app.add_config_value('default_reaction_emoji', '❤', 'env')
+    app.add_config_value('fedi_retry_delay', 100, 'env')
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)

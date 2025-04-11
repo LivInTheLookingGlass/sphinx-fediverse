@@ -51,8 +51,8 @@ const fediConfig = {
 	allowAvatars: true,
 	delayCommentLoad: true,
 	defaultReactionEmoji: "❤",
+	retryDelay: 100,
 	// TODO: max reply depth
-	// TODO: retry delay
 	// TODO: disable reactions
 	// TODO: threshold for comment lazy loading
 };
@@ -73,6 +73,7 @@ const fediConfig = {
  * - ``allowAvatars`` - Force avatars to not be loaded (privacy)
  * - ``delayCommentLoad`` - Defers loading of comments section until user brings it into view
  * - ``defaultReactionEmoji`` - The reaction to use when it is not supported or undefined
+ * - ``retryDelay`` - The amount of time to wait upon rate-limit error (in ms)
  * - ``parser`` - In testing, allows you to replace the DOMParser
  *
  * @param {Object} newValues

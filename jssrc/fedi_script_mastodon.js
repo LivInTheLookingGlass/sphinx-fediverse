@@ -101,7 +101,7 @@ async function fetchSubcommentsMastodon(fediInstance, commentId) {
 
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100))
+				await new Promise((resolve) => setTimeout(resolve, retryDelay))
 				return await fetchSubcommentsMastodon(fediInstance, commentId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -134,7 +134,7 @@ async function fetchMetaMastodon(fediInstance, postId) {
 
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100))
+				await new Promise((resolve) => setTimeout(resolve, retryDelay))
 				return await fetchMetaMastodon(fediInstance, postId);
 			}
 			throw new Error(`HTTP error! Status: ${response.status}`);
@@ -166,7 +166,7 @@ async function queryUserMastodon(fediInstance, handle) {
 
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, 100))
+				await new Promise((resolve) => setTimeout(resolve, retryDelay))
 				return await queryUserMastodon(fediInstance, handle);
 			}
 			throw new Error(`HTTP error on user fetch! Status: ${response.status}`);
