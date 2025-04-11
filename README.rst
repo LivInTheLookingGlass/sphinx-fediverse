@@ -88,6 +88,7 @@ There are a several values that you may provide:
    allow_custom_emoji        Whether to replace emoji shortcodes with images  True (default)
    allow_sensitive_emoji     Whether to parse sensitive custom emoji          False (default)
    allow_media_attachments   Whether to include attached images               True (default)
+   allow_avatars             Whether to include user avatar images            True (default)
    delay_comment_load        Delay loading comments until they are in view    True (default)
    ========================  ===============================================  ===============================
 
@@ -160,6 +161,7 @@ In addition to the above configuration values, you can modify most of them on a 
    allow_custom_emoji        (See Above)                                   (See Above)
    allow_sensitive_emoji     (See Above)                                   (See Above)
    allow_media_attachments   (See Above)                                   (See Above)
+   allow_avatars             (See Above)                                   (See Above)
    delay_comment_load        (See Above)                                   (See Above)
    ========================  ============================================  ==================================
 
@@ -214,6 +216,6 @@ requests to those instances, which can include their IP address and user agent.
 This extension performs no tracking, remote logging, or cookie storage. All data is fetched live in the browser at page
 load and is never persisted or sent to third parties by the extension itself.
 
-If you are concerned about data exposure to remote domains, you may disable media attachments using directive options
-such as ``:allow_media_attachments: false``. More such options are currently in the works. Any help in ensuring full
-GDPR (and similar) compliance would be greatly appreciated.
+If you are concerned about data exposure to remote domains, you may disable media attachments, custom emoji, or avatars
+using directive options such as ``allow_media_attachments``, ``allow_custom_emoji``, ``allow_avatars``. Any help in
+ensuring full GDPR (and similar) compliance would be greatly appreciated.

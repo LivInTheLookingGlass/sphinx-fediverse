@@ -42,13 +42,14 @@
  * @property {MediaAttachment[]} media - An array of :js:class:`~fedi_script.MediaAttachment`\ s
  */
 
-const fedi_config = {
+const fediConfig = {
 	parser: (typeof DOMParser === 'undefined') ? undefined : new DOMParser(),
-	boost_link: "_static/boost.svg",
-	allow_sensitive_emoji: false,
-	allow_custom_emoji: true,
-	allow_media_attachments: true,
-	delay_comment_load: true,
+	boostLink: "_static/boost.svg",
+	allowSensitiveEmoji: false,
+	allowCustomEmoji: true,
+	allowMediaAttachments: true,
+	allowAvatars: true,
+	delayCommentLoad: true,
 	// TODO: default reaction emoji
 	// TODO: max reply depth
 	// TODO: retry delay
@@ -60,22 +61,23 @@ const fedi_config = {
  * Setter for internal configuration properties
  *
  * .. warning::
- *   Call this function before any other with the value ``'boost_link'`` as a key, or your boost icon may not work in
+ *   Call this function before any other with the value ``'boostLink'`` as a key, or your boost icon may not work in
  *   subdirectories
  * 
  * Available properties to set:
  *
- * - ``boost_link`` - The URL corresponding to the boost SVG
- * - ``allow_custom_emoji`` - Allow custom emoji to be included in comment contents
- * - ``allow_sensitive_emoji`` - Allow sensitive emoji to be included in comment contents
- * - ``allow_media_attachments`` - Allow media attachments to be included in comment contents
- * - ``delay_comment_load`` - Defers loading of comments section until user brings it into view
+ * - ``boostLink`` - The URL corresponding to the boost SVG
+ * - ``allowCustomEmoji`` - Allow custom emoji to be included in comment contents (privacy)
+ * - ``allowSensitiveEmoji`` - Allow sensitive emoji to be included in comment contents
+ * - ``allowMediaAttachments`` - Allow media attachments to be included in comment contents (privacy)
+ * - ``allowAvatars`` - Force avatars to not be loaded (privacy)
+ * - ``delayCommentLoad`` - Defers loading of comments section until user brings it into view
  * - ``parser`` - In testing, allows you to replace the DOMParser
  *
  * @param {Object} newValues
  */
 function setConfig(newValues) {
-	Object.assign(fedi_config, newValues);
+	Object.assign(fediConfig, newValues);
 }
 
 /**
@@ -152,7 +154,7 @@ async function fetchSubcomments(fediFlavor, fediInstance, postId) {
  * @returns {DOMFragment} The sanitized, parsed document fragment
  */
 function replaceEmoji(string, emojis) {
-	if (fedi_config.allow_custom_emoji) {
+	if (fediConfig.allowCustomEmoji) {
 		for (const shortcode in emojis) {
 			const static_url = DOMPurify.sanitize(emojis[shortcode]);
 			string = string.replaceAll(
@@ -162,7 +164,7 @@ function replaceEmoji(string, emojis) {
 		};
 	}
 	const container = document.createDocumentFragment();
-	const newBody = fedi_config.parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
+	const newBody = fediConfig.parser.parseFromString(DOMPurify.sanitize(string), 'text/html');
 	if (newBody.body.children.length) {
 		Array.from(newBody.body.children).forEach(child => container.appendChild(child));
 	} else {
@@ -198,12 +200,14 @@ function renderComment(comment) {
 	authorDiv.classList.add("author");
 	commentDiv.appendChild(authorDiv);
 
-	const avatar = document.createElement("img");
-	avatar.setAttribute("src", comment.user.avatar);
-	avatar.setAttribute("alt", `Avatar for ${DOMPurify.sanitize(comment.user.name)}`);
-	avatar.setAttribute("height", 30);
-	avatar.setAttribute("width", 30);
-	authorDiv.appendChild(avatar);
+	if (fediConfig.allowAvatars) {
+		const avatar = document.createElement("img");
+		avatar.setAttribute("src", comment.user.avatar);
+		avatar.setAttribute("alt", `Avatar for ${DOMPurify.sanitize(comment.user.name)}`);
+		avatar.setAttribute("height", 30);
+		avatar.setAttribute("width", 30);
+		authorDiv.appendChild(avatar);
+	}
 
 	const commentDate = document.createElement("a");
 	commentDate.setAttribute("target", "_blank");
@@ -243,7 +247,7 @@ function renderComment(comment) {
 	contentText.appendChild(replaceEmoji(comment.content, comment.emoji));
 	content.appendChild(contentText);
 
-	if (fedi_config.allow_media_attachments) {
+	if (fediConfig.allowMediaAttachments) {
 		for (const attachment of comment.media) {
 			const attachmentNode = document.createElement("img");
 			attachmentNode.setAttribute("src", attachment.url);
@@ -268,7 +272,7 @@ function renderComment(comment) {
 	const boostIcon = document.createElement("span");
 	boostIcon.classList.add("reaction");
 	const boostIconImage = document.createElement("img");
-	boostIconImage.setAttribute("src", fedi_config.boost_link);
+	boostIconImage.setAttribute("src", fediConfig.boostLink);
 	boostIconImage.setAttribute("alt", "Boosts");
 	boostIconImage.classList.add("fedi-icon");
 	boostIcon.appendChild(boostIconImage);
@@ -357,7 +361,7 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 	}
 
 	const targetElement = document.querySelector(".comments-info");
-	if (fedi_config.delay_comment_load && typeof IntersectionObserver !== 'undefined' && targetElement) {
+	if (fediConfig.delayCommentLoad && typeof IntersectionObserver !== 'undefined' && targetElement) {
 		console.log("Delaying comment load until they come into view");
 		const observer = new IntersectionObserver(function onInView(entries, observer) {
 			for (const entry of entries) {
@@ -376,7 +380,7 @@ async function fetchComments(fediFlavor, fediInstance, postId, maxDepth) {
 
 if (typeof module !== 'undefined') {
 	module.exports = {
-		fedi_config,
+		fediConfig,
 		setConfig,
 		replaceEmoji,
 		renderComment,

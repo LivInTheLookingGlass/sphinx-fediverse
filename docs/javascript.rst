@@ -82,7 +82,7 @@ These scripts require a small number of elements on your page in order to functi
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             setFediConfig({
-                boost_link: "{{ html_baseurl }}/_static/boost.svg",
+                boostLink: "{{ html_baseurl }}/_static/boost.svg",
             });
             fetchComments(
                 '{{ fedi_flavor }}', '{{ fedi_instance }}', '{{ post_id }}', {{ fetch_depth }}

@@ -257,12 +257,12 @@ describe('Glue Script', function () {
 	const misskey = require("./fedi_script_misskey.js");
 
 	before(() => {
-		glue.fedi_config.parser = new window.DOMParser();
+		glue.fediConfig.parser = new window.DOMParser();
 	})
 
 	it('should be able to change image links', async function () {
-		glue.setConfig({'boost_link': 'a'});
-		assert.equal(glue.fedi_config.boost_link, 'a');
+		glue.setConfig({'boostLink': 'a'});
+		assert.equal(glue.fediConfig.boostLink, 'a');
 	});
 
 	it('should be able to render emoji', async function() {
