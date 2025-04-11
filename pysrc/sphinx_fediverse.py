@@ -67,6 +67,8 @@ class FediverseCommentDirective(SphinxDirective):
         'section_title': str,
         'section_level': int,
         'comment_id': str,
+        'default_reaction_emoji': str,
+        'fedi_retry_delay': int,
     }  #: :meta private:
     optional_arguments = len(option_spec)  #: :meta private:
 
@@ -123,6 +125,10 @@ class FediverseCommentDirective(SphinxDirective):
         self.default_reaction_emoji: str = self.options.get(
             'default_reaction_emoji',
             self.env.config.default_reaction_emoji
+        )
+        self.fedi_retry_delay: int = self.options.get(
+            'fedi_retry_delay',
+            self.env.config.fedi_retry_delay
         )
         self.token_names: List[str] = self.options.get(
             'token_names',
@@ -200,7 +206,10 @@ class FediverseCommentDirective(SphinxDirective):
                         allowSensitiveEmoji: {str(self.allow_sensitive_emoji).lower()},
                         allowCustomEmoji: {str(self.allow_custom_emoji).lower()},
                         allowMediaAttachments: {str(self.allow_media_attachments).lower()},
+                        allowAvatars: {str(self.allow_avatars).lower()},
                         delayCommentLoad: {str(self.delay_comment_load).lower()},
+                        defaultReactionEmoji: {str(self.default_reaction_emoji).lower()},
+                        retryDelay: {str(self.fedi_retry_delay).lower()},
                     }});
                     fetchComments({self.fedi_flavor!r}, {self.fedi_instance!r}, '{post_id}', {self.fetch_depth});
                 }});
