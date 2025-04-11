@@ -207,9 +207,9 @@ class FediverseCommentDirective(SphinxDirective):
                         allowCustomEmoji: {str(self.allow_custom_emoji).lower()},
                         allowMediaAttachments: {str(self.allow_media_attachments).lower()},
                         allowAvatars: {str(self.allow_avatars).lower()},
-                        delayCommentLoad: {str(self.delay_comment_load).lower()},
-                        defaultReactionEmoji: {str(self.default_reaction_emoji).lower()},
-                        retryDelay: {str(self.fedi_retry_delay).lower()},
+                        delayCommentLoad: {self.delay_comment_load},
+                        defaultReactionEmoji: {self.default_reaction_emoji!r},
+                        retryDelay: {self.fedi_retry_delay},
                     }});
                     fetchComments({self.fedi_flavor!r}, {self.fedi_instance!r}, '{post_id}', {self.fetch_depth});
                 }});
