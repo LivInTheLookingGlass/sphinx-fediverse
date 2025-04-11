@@ -207,7 +207,7 @@ class FediverseCommentDirective(SphinxDirective):
                         allowCustomEmoji: {str(self.allow_custom_emoji).lower()},
                         allowMediaAttachments: {str(self.allow_media_attachments).lower()},
                         allowAvatars: {str(self.allow_avatars).lower()},
-                        delayCommentLoad: {self.delay_comment_load},
+                        delayCommentLoad: {str(self.delay_comment_load).lower()},
                         defaultReactionEmoji: {self.default_reaction_emoji!r},
                         retryDelay: {self.fedi_retry_delay},
                     }});
