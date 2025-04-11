@@ -49,6 +49,11 @@ const fedi_config = {
 	allow_custom_emoji: true,
 	allow_media_attachments: true,
 	delay_comment_load: true,
+	// TODO: default reaction emoji
+	// TODO: max reply depth
+	// TODO: retry delay
+	// TODO: disable reactions
+	// TODO: threshold for comment lazy loading
 };
 
 /**

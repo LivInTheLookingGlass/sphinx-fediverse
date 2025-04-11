@@ -203,3 +203,17 @@ In the Python stack, you will be utilizing the following:
 - `Sphinx <https://www.sphinx-doc.org/>`_
 - `docutils <https://docutils.sourceforge.io/>`_
 - At least one of: `Mastodon.py <https://github.com/halcy/Mastodon.py>`_, `Misskey.py <https://github.com/YuzuRyo61/Misskey.py>`_
+
+Privacy Policy
+~~~~~~~~~~~~~~
+
+When rendering federated comments, this extension may load images, custom emoji, or avatars directly from third-party
+Fediverse instances (e.g. mastodon.social, misskey.io). As with any embedded resource, your visitors' browsers may send
+requests to those instances, which can include their IP address and user agent.
+
+This extension performs no tracking, remote logging, or cookie storage. All data is fetched live in the browser at page
+load and is never persisted or sent to third parties by the extension itself.
+
+If you are concerned about data exposure to remote domains, you may disable media attachments using directive options
+such as ``:allow_media_attachments: false``. More such options are currently in the works. Any help in ensuring full
+GDPR (and similar) compliance would be greatly appreciated.
