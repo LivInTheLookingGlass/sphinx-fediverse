@@ -18,7 +18,7 @@ async function extractCommentMastodon(fediInstance, comment) {
 	const attachments = [];
 	const commentEmoji = {};
 	const userEmoji = {};
-	const reactions = {"❤": 0};
+	const reactions = {[fediConfig.defaultReactionEmoji]: 0};
 	let handle;
 
 	if (!domain) {
@@ -43,11 +43,11 @@ async function extractCommentMastodon(fediInstance, comment) {
 			if (reaction.name.length === 1) {
 				reactions[reaction.name] = reaction.count;
 			} else {
-				reactions["❤"] += reaction.count;
+				reactions[fediConfig.defaultReactionEmoji] += reaction.count;
 			}
 		}
 	} else {
-		reactions["❤"] = comment.favourites_count;
+		reactions[fediConfig.defaultReactionEmoji] = comment.favourites_count;
 	}
 
 	for (const emoji of user.emojis) {

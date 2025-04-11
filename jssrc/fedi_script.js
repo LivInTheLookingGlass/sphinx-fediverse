@@ -50,7 +50,7 @@ const fediConfig = {
 	allowMediaAttachments: true,
 	allowAvatars: true,
 	delayCommentLoad: true,
-	// TODO: default reaction emoji
+	defaultReactionEmoji: "❤",
 	// TODO: max reply depth
 	// TODO: retry delay
 	// TODO: disable reactions
@@ -72,6 +72,7 @@ const fediConfig = {
  * - ``allowMediaAttachments`` - Allow media attachments to be included in comment contents (privacy)
  * - ``allowAvatars`` - Force avatars to not be loaded (privacy)
  * - ``delayCommentLoad`` - Defers loading of comments section until user brings it into view
+ * - ``defaultReactionEmoji`` - The reaction to use when it is not supported or undefined
  * - ``parser`` - In testing, allows you to replace the DOMParser
  *
  * @param {Object} newValues

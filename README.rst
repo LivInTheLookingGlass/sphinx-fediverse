@@ -90,6 +90,7 @@ There are a several values that you may provide:
    allow_media_attachments   Whether to include attached images               True (default)
    allow_avatars             Whether to include user avatar images            True (default)
    delay_comment_load        Delay loading comments until they are in view    True (default)
+   default_reaction_emoji    The default reaction to use when unsupported     ❤ (default)
    ========================  ===============================================  ===============================
 
 We also rely on environment variables for authentication.
@@ -163,6 +164,7 @@ In addition to the above configuration values, you can modify most of them on a 
    allow_media_attachments   (See Above)                                   (See Above)
    allow_avatars             (See Above)                                   (See Above)
    delay_comment_load        (See Above)                                   (See Above)
+   default_reaction_emoji    (See Above)                                   (See Above)
    ========================  ============================================  ==================================
 
 Supported Themes

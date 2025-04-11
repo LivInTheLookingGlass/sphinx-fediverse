@@ -162,7 +162,7 @@ async function extractCommentMisskey(fediInstance, comment) {
 	const domain = user.host || fediInstance;
 	const handle = `@${user.username}@${domain}`;
 	const attachments = [];
-	const reactions = {"❤": 0};
+	const reactions = {[fediConfig.defaultReactionEmoji]: 0};
 	let commentEmoji = comment.emojis || {};
 	let userEmoji = user.emojis || {};
 
@@ -183,7 +183,7 @@ async function extractCommentMisskey(fediInstance, comment) {
 		if (reaction.length === 1) {
 			reactions[reaction] = comment.reactions[reaction];
 		} else {
-			reactions["❤"] += comment.reactions[reaction];
+			reactions[fediConfig.defaultReactionEmoji] += comment.reactions[reaction];
 		}
 	}
 

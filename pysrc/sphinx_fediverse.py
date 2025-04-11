@@ -120,6 +120,10 @@ class FediverseCommentDirective(SphinxDirective):
             'comments_mapping_file',
             self.env.config.comments_mapping_file
         )
+        self.default_reaction_emoji: str = self.options.get(
+            'default_reaction_emoji',
+            self.env.config.default_reaction_emoji
+        )
         self.token_names: List[str] = self.options.get(
             'token_names',
             'MISSKEY_ACCESS_TOKEN'
@@ -342,6 +346,7 @@ def setup(app: Sphinx) -> Dict[str, Union[str, bool]]:
     app.add_config_value('allow_media_attachments', True, 'env')
     app.add_config_value('allow_avatars', True, 'env')
     app.add_config_value('delay_comment_load', True, 'env')
+    app.add_config_value('default_reaction_emoji', '❤', 'env')
 
     app.add_directive('fedi-comments', FediverseCommentDirective)
     app.connect('builder-inited', on_builder_inited)
