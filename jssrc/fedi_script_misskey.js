@@ -244,7 +244,7 @@ async function extractCommentMisskey(fediInstance, comment) {
  * @param {String} name - The emoji shortcode you are trying to fetch
  */
 async function fetchMisskeyEmoji(fediInstance, name) {
-    if (!fediConfig.allowCustomEmoji) return;
+	if (!fediConfig.allowCustomEmoji) return;
 	const ret = {};
 	if (emojiCache[name]) {
 		ret[name] = emojiCache[name];
