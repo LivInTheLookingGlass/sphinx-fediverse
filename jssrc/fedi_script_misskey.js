@@ -244,6 +244,7 @@ async function extractCommentMisskey(fediInstance, comment) {
  * @param {String} name - The emoji shortcode you are trying to fetch
  */
 async function fetchMisskeyEmoji(fediInstance, name) {
+    if (!fediConfig.allowCustomEmoji) return;
 	const ret = {};
 	if (emojiCache[name]) {
 		ret[name] = emojiCache[name];
@@ -259,7 +260,7 @@ async function fetchMisskeyEmoji(fediInstance, name) {
 		});
 		if (!response.ok) {
 			if (response.status == 429) {
-				await new Promise((resolve) => setTimeout(resolve, retryDelay))
+				await new Promise((resolve) => setTimeout(resolve, fediConfig.retryDelay))
 				return await fetchMisskeyEmoji(fediInstance, name);
 			}
 		} else {
