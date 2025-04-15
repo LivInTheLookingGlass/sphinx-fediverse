@@ -29,12 +29,28 @@ jobs:
           version: 3.11
         - os: macos-latest
           version: 3.12
+        - os: macos-latest
+          version: 3.13
+        - os: macos-latest
+          version: "3.13t"
+        - os: macos-latest
+          version: "3.14-dev"
+        - os: macos-latest
+          version: "3.14t-dev"
         - os: ubuntu-latest
           version: graalpy-23.1
         - os: macos-13
           version: 3.11
         - os: macos-13
           version: 3.12
+        - os: macos-13
+          version: 3.13
+        - os: macos-13
+          version: "3.13t"
+        - os: macos-13
+          version: "3.14-dev"
+        - os: macos-13
+          version: "3.14t-dev"
         - os: ubuntu-latest
           version: graalpy-24.0
         - os: ubuntu-latest
