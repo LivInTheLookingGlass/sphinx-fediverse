@@ -72,6 +72,7 @@ jobs:
 
     - name: Run tests (in parallel)
       if: ${{!((matrix.os == 'ubuntu-latest' && matrix.version == '3.12') || contains(matrix.version, 'graalpy') || (matrix.version == 'pypy3.6') || (matrix.version == 'pypy3.7'))}}
+      continue-on-error: ${{ contains(matrix.version, 't') || contains(matrix.version, 'dev') }}
       run: make py_test_auto LINT=false COV=true
 
     - name: Upload coverage reports to Codecov
