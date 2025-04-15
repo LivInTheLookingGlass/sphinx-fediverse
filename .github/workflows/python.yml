@@ -21,7 +21,6 @@ jobs:
       matrix:
         version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.13t", "3.14-dev", "3.14t-dev"]
         os: [ubuntu-latest, windows-latest]
-        architecture: ['x86', 'x64', 'arm64']
         exclude:
         - os: ubuntu-latest
           version: 3.7
@@ -51,7 +50,6 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.version }}
-        architecture: ${{ matrix.architecture }}
         cache: 'pip'
         cache-dependency-path: |
           pysrc/requirements.txt
